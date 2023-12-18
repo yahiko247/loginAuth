@@ -26,9 +26,9 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("My App"),
-        actions: [IconButton(onPressed: signUserOut, icon: Icon(Icons.logout))],
-        backgroundColor: Colors.grey[300],
+        title: const Text("GigGabay"),
+        actions: [],
+        backgroundColor: const Color.fromARGB(255, 70, 199, 177),
       ),
       bottomNavigationBar: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -73,6 +73,41 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
             )),
       ),
       body: pages[myCurrentIndex],
+      endDrawer: Drawer(
+        child: ListView(
+          children: [
+            ListTile(
+              title: const Text('About'),
+              onTap: () {},
+              contentPadding: const EdgeInsets.only(top: 50, left: 70),
+            ),
+            ListTile(
+              title: const Text('Help'),
+              contentPadding: const EdgeInsets.only(left: 70),
+            ),
+            ListTile(
+              title: const Text('Dark Mode'),
+              contentPadding: const EdgeInsets.only(left: 70),
+            ),
+            ListTile(
+              title: const Text('Freelancer Mode'),
+              contentPadding: const EdgeInsets.only(left: 70),
+            ),
+            ListTile(
+              title: const Text('Account Settings'),
+              contentPadding: const EdgeInsets.only(left: 70),
+            ),
+            ListTile(
+              title: const Text('Log out'),
+              onTap: () {
+                // Add your logic for logging out
+                signUserOut();
+              },
+              leading: Icon(Icons.logout),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
