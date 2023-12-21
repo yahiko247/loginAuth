@@ -154,8 +154,8 @@ class _RegisterFormState extends State<RegisterForm> {
                         ),
                         const SizedBox(width: 4),
                         GestureDetector(
-                          onTap: () async {
-                            var result = await Navigator.push(
+                          onTap: () {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const LoginPage(),
