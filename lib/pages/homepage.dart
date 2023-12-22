@@ -1,9 +1,41 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/pages/profile.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class HomePage2 extends StatelessWidget {
-  const HomePage2({super.key});
+class HomePage2 extends StatefulWidget{
+  //testing http json placeholder from here =>
+  const HomePage2 ({super.key});
+
+  @override
+  State<HomePage2> createState() => _HomePage2();
+}
+
+
+class _HomePage2 extends State<HomePage2> {
+
+  List<dynamic> posts = [];
+
+  @override
+  void initState(){
+    getPosts();
+    super.initState();
+  }
+
+  Future<void> getPosts() async {
+    var url = Uri.parse("https://jsonplaceholder.typicode.com/posts");
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      setState(() {
+        posts = json.decode(response.body);
+      });
+    } else {
+      throw Exception("Failed to load posts");
+    }
+  }
+// => to here
 
   void signUserOut() {
     FirebaseAuth.instance.signOut();
@@ -23,19 +55,40 @@ class HomePage2 extends StatelessWidget {
                 );
               },
               child: Container(
-                  padding: EdgeInsets.only(top: 10, left: 15),
+                  padding: const EdgeInsets.only(top: 10, left: 15),
                   child: Image.asset('images/Avatar1.png', height: 40)),
             ),
           ],
         ),
-        actions: [],
-        backgroundColor: Color.fromARGB(255, 124, 210, 231),
+        actions: const [
+        ],
+        backgroundColor: const Color.fromARGB(255, 124, 210, 231),
       ),
-      body: Center(
-          child: Text(
-        "This is home page",
-        style: TextStyle(fontSize: 40),
-      )),
+      body:posts.isEmpty
+      ? const Center(child: CircularProgressIndicator() ,)
+      : Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+                itemCount: posts.length,
+                itemBuilder: (context,index){
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        title: Text(posts[index]["title"]),
+                        subtitle: Text(posts[index]["body"]),
+                        shape: RoundedRectangleBorder(
+                          side: const BorderSide(color: Colors.lightBlueAccent, width: 1),
+                          borderRadius: BorderRadius.circular(5)
+                        ),
+
+                      ),
+                    );
+                  }
+                ),
+          )
+      ),
+
       endDrawer: Drawer(
         child: ListView(
           children: [
