@@ -76,6 +76,7 @@ class _HomePage2 extends State<HomePage2> {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ListTile(
+                        leading:Image.asset('images/Avatar1.png'),
                         title: Text(posts[index]["title"]),
                         subtitle: Text(posts[index]["body"]),
                         shape: RoundedRectangleBorder(
