@@ -1,12 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/pages/profile.dart';
+import 'package:practice_login/services/auth_service.dart';
+import 'package:provider/provider.dart';
+import 'package:practice_login/services/auth_service.dart';
 
 class HomePage2 extends StatelessWidget {
   const HomePage2({super.key});
 
   void signUserOut() {
     FirebaseAuth.instance.signOut();
+    /* final authService = Provider.of<AuthService>(context, listen: false); */
   }
 
   @override

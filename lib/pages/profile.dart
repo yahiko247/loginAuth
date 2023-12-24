@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/nested_tab/nestedtab.dart';
+import 'package:practice_login/pages/chat_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -26,7 +27,8 @@ class ProfilePage extends StatelessWidget {
                       children: [
                         Image.asset('images/Avatar1.png', height: 120),
                       ],
-                    )),
+                    )
+                ),
               ],
             ),
             backgroundColor: Color.fromARGB(255, 124, 210, 231),
@@ -60,6 +62,13 @@ class ProfilePage extends StatelessWidget {
               ),
               ListTile(
                 title: const Text('Account Settings'),
+                contentPadding: const EdgeInsets.only(left: 70),
+              ),
+              ListTile(
+                title: const Text('Chats'),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage()));
+                },
                 contentPadding: const EdgeInsets.only(left: 70),
               ),
               ListTile(
