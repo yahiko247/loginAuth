@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/pages/profile.dart';
+import 'package:practice_login/services/auth_service.dart';
+import 'package:provider/provider.dart';
+import 'package:practice_login/services/auth_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -40,6 +43,7 @@ class _HomePage2 extends State<HomePage2> {
 
   void signUserOut() {
     FirebaseAuth.instance.signOut();
+    /* final authService = Provider.of<AuthService>(context, listen: false); */
   }
 
   @override
@@ -61,9 +65,8 @@ class _HomePage2 extends State<HomePage2> {
             ),
           ],
         ),
-        actions: const [
-        ],
-        backgroundColor: const Color.fromARGB(255, 124, 210, 231),
+        actions: [],
+        backgroundColor: Color.fromARGB(255, 124, 210, 231),
       ),
       body:posts.isEmpty
       ? const Center(child: CircularProgressIndicator() ,)

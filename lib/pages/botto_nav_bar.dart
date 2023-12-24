@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:practice_login/pages/chat_page.dart';
 import 'package:practice_login/pages/favorite.dart';
 import 'package:practice_login/pages/home_page.dart';
 import 'package:practice_login/pages/homepage.dart';
@@ -22,6 +23,7 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
     SearchPage(),
     SettingPage(),
     ProfilePage(),
+    ChatPage(),
   ];
 
   @override
