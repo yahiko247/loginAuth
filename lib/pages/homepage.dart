@@ -15,7 +15,7 @@ class HomePage2 extends StatefulWidget{
   State<HomePage2> createState() => _HomePage2();
 }
 
-// github token
+// github token Juario
 //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
 class _HomePage2 extends State<HomePage2> {
 
@@ -65,8 +65,8 @@ class _HomePage2 extends State<HomePage2> {
             ),
           ],
         ),
-        actions: [],
-        backgroundColor: Color.fromARGB(255, 124, 210, 231),
+        actions: const [],
+        backgroundColor: const Color.fromARGB(255, 124, 210, 231),
       ),
       body:posts.isEmpty
       ? const Center(child: CircularProgressIndicator() ,)
