@@ -76,14 +76,42 @@ class _HomePage2 extends State<HomePage2> {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ListTile(
-                        leading:Image.asset('images/Avatar1.png'),
-                        title: Text(posts[index]["title"]),
-                        subtitle: Text(posts[index]["body"]),
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(color: Colors.lightBlueAccent, width: 1),
-                          borderRadius: BorderRadius.circular(5)
-                        ),
+                          leading:Image.asset('images/Avatar1.png'),
+                          title: Text(posts[index]["title"]),
+                          subtitle: Column(
+                            children: [
+                              Text(posts[index]["body"]),
+                                ButtonBar(
+                                 alignment: MainAxisAlignment.center,
+                                 mainAxisSize: MainAxisSize.max,
+                                 children: [
+                                  GestureDetector(
+                                    onTap: (){
+                                      print("Tapped Like");
+                                    },
+                                    child: const Text("Like"),
+                                  ),
+                                   GestureDetector(
+                                       onTap: (){
+                                         print("Tapped Comment");
+                                       },
+                                       child: const Text("Comment"),
+                                   ),
+                                   GestureDetector(
+                                       onTap: (){
+                                         print("Tapped Share");
+                                       },
+                                       child: const Text("Share"),
+                                   ),
+                                ],
 
+                              )
+                            ],
+                          ),
+                            shape: RoundedRectangleBorder(
+                            side: const BorderSide(color: Colors.lightBlueAccent, width: 1),
+                            borderRadius: BorderRadius.circular(5)
+                          ),
                       ),
                     );
                   }
@@ -99,21 +127,21 @@ class _HomePage2 extends State<HomePage2> {
               onTap: () {},
               contentPadding: const EdgeInsets.only(top: 50, left: 70),
             ),
-            ListTile(
-              title: const Text('Help'),
-              contentPadding: const EdgeInsets.only(left: 70),
+            const ListTile(
+              title: Text('Help'),
+              contentPadding: EdgeInsets.only(left: 70),
             ),
-            ListTile(
-              title: const Text('Dark Mode'),
-              contentPadding: const EdgeInsets.only(left: 70),
+            const ListTile(
+              title: Text('Dark Mode'),
+              contentPadding: EdgeInsets.only(left: 70),
             ),
-            ListTile(
-              title: const Text('Freelancer Mode'),
-              contentPadding: const EdgeInsets.only(left: 70),
+            const ListTile(
+              title: Text('Freelancer Mode'),
+              contentPadding: EdgeInsets.only(left: 70),
             ),
-            ListTile(
-              title: const Text('Account Settings'),
-              contentPadding: const EdgeInsets.only(left: 70),
+            const ListTile(
+              title: Text('Account Settings'),
+              contentPadding: EdgeInsets.only(left: 70),
             ),
             ListTile(
               title: const Text('Log out'),
@@ -121,7 +149,7 @@ class _HomePage2 extends State<HomePage2> {
                 // Add your logic for logging out
                 signUserOut();
               },
-              leading: Icon(Icons.logout),
+              leading: const Icon(Icons.logout),
             ),
           ],
         ),
