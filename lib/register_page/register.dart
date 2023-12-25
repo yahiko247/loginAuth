@@ -4,21 +4,46 @@ import 'package:practice_login/Components/my_button.dart';
 import 'package:practice_login/Components/my_textfield.dart';
 import 'package:practice_login/Components/square_tile.dart';
 import 'package:practice_login/pages/login_page.dart';
+import 'package:practice_login/services/auth_service.dart';
+import 'package:practice_login/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class RegisterForm extends StatefulWidget {
-  const RegisterForm({Key? key}) : super(key: key);
+  final void Function()? onTap;
+  const RegisterForm({super.key, required this.onTap});
 
   @override
   State<RegisterForm> createState() => _RegisterFormState();
 }
 
 class _RegisterFormState extends State<RegisterForm> {
-  var fnameController = TextEditingController();
-  var lnameController = TextEditingController();
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
-  void RegisterUser() {}
+  void RegisterUser() async {
+    if (passwordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("password do not match")),
+      );
+      return;
+    }
+
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    try {
+      await authService.signUp(
+        emailController.text,
+        passwordController.text,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,23 +77,6 @@ class _RegisterFormState extends State<RegisterForm> {
 
                     const SizedBox(height: 25),
 
-                    //First Name
-
-                    MyTextField(
-                      controller: fnameController,
-                      hintText: 'First Name',
-                      obscuretext: false,
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    MyTextField(
-                      controller: lnameController,
-                      hintText: 'Last Name',
-                      obscuretext: false,
-                    ),
-                    const SizedBox(height: 10),
-
                     //usename textfield
                     MyTextField(
                       controller: emailController,
@@ -86,6 +94,13 @@ class _RegisterFormState extends State<RegisterForm> {
                     ),
 
                     const SizedBox(height: 10),
+
+                    //confirm password
+                    MyTextField(
+                      controller: confirmPasswordController,
+                      hintText: 'Confrim Password',
+                      obscuretext: true,
+                    ),
 
                     const SizedBox(height: 25),
 
@@ -154,14 +169,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         ),
                         const SizedBox(width: 4),
                         GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginPage(),
-                              ),
-                            );
-                          },
+                          onTap: widget.onTap,
                           child: SizedBox(
                             child: Container(
                                 padding: EdgeInsets.all(16),
