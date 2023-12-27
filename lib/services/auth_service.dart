@@ -15,10 +15,14 @@ class AuthService extends ChangeNotifier {
           email: email,
           password: password
       );
-      _fireStore.collection('users').doc(userCredential.user!.uid).set({
-        'uid' : userCredential.user!.uid,
-        'email' : email,
-      }, SetOptions(merge: true));
+      var userDocSnapshotUsingUID = await _fireStore.collection('users').doc(userCredential.user!.uid).get();
+      if (!userDocSnapshotUsingUID.exists) {
+        _fireStore.collection('users').doc(userCredential.user!.uid).set({
+          'uid' : userCredential.user!.uid,
+          'email' : email,
+          'contacts': []
+        }, SetOptions(merge: true));
+      }
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.code);
@@ -34,6 +38,7 @@ class AuthService extends ChangeNotifier {
       _fireStore.collection('users').doc(userCredential.user!.uid).set({
         'uid' : userCredential.user!.uid,
         'email' : email,
+        'contacts': []
       });
       return userCredential;
     } on FirebaseAuthException catch(e) {
