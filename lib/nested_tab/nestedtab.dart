@@ -31,8 +31,8 @@ class _NestedTabBar extends State<NestedTabBar> with TickerProviderStateMixin {
           labelColor: Colors.black,
           controller: _tabController,
           tabs: const <Widget>[
-            Tab(text: 'Profile'),
-            Tab(text: 'Post'),
+            Tab(text: 'P R O F I L E'),
+            Tab(text: 'P O S T'),
           ]),
       Expanded(
           child: TabBarView(controller: _tabController, children: <Widget>[
