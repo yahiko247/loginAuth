@@ -23,7 +23,7 @@ class _ChatBoxState extends State<ChatBox> {
 
   void sendMessage() async {
     if (_messageInputController.text.isNotEmpty) {
-      await _chatService.sendMessage(widget.userId, _messageInputController.text);
+      await _chatService.sendMessage(widget.userId, widget.userEmail, _messageInputController.text);
       _messageInputController.clear();
     }
   }
@@ -68,13 +68,12 @@ class _ChatBoxState extends State<ChatBox> {
 
     var currentUser = _firebaseAuth.currentUser!;
     var alignment = (data['senderId'] == currentUser.uid) ? Alignment.centerRight : Alignment.centerLeft;
-
     return Container(
       padding: EdgeInsets.all(15),
       alignment: alignment,
       child: Column(
         children: [
-          ChatBubble(message: data['message'], sender: data['senderEmail'], msgtimestamp: data['timestamp']),
+          ChatBubble(message: data['message'], sender: data['senderEmail'], msgtimestamp: (data['timestamp'])),
         ],
       )
     );

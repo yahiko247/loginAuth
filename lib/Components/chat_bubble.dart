@@ -19,23 +19,25 @@ class ChatBubble extends StatelessWidget {
   }
 
   static FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  static String? currentUser = _firebaseAuth.currentUser!.email;
 
   const ChatBubble({super.key, required this.message, required this.sender, required this.msgtimestamp});
 
   @override
   Widget build(BuildContext context){
     return Column(
-      crossAxisAlignment: (sender == currentUser) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      mainAxisAlignment: (sender == currentUser) ? MainAxisAlignment.end : MainAxisAlignment.start,
+      crossAxisAlignment: (sender == _firebaseAuth.currentUser!.email) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      mainAxisAlignment: (sender == _firebaseAuth.currentUser!.email) ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        Container(child: Text('${sender} - ${formatMsgTimestamp(msgtimestamp)}'), padding: EdgeInsets.fromLTRB(5, 0, 5, 5)),
+        Container(
+            padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+            child: Text('${!(sender == _firebaseAuth.currentUser!.email) ? sender : 'You'} - ${formatMsgTimestamp(msgtimestamp)}')
+        ),
         Container(
             constraints: BoxConstraints(maxWidth: 300),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(9),
-                color: (currentUser == sender) ? Colors.blue : Colors.grey
+                color: (_firebaseAuth.currentUser!.email == sender) ? Colors.blue : Colors.grey
             ),
             child: Text(message, style: TextStyle(fontSize: 16),)
         ),
