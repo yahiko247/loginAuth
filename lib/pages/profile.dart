@@ -4,7 +4,8 @@ import 'package:practice_login/nested_tab/nestedtab.dart';
 import 'package:practice_login/pages/chat_page.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  ProfilePage({super.key});
+  final currentUser = FirebaseAuth.instance.currentUser!;
 
   void signUserOut() {
     FirebaseAuth.instance.signOut();
@@ -23,12 +24,13 @@ class ProfilePage extends StatelessWidget {
                 Container(
                     padding: EdgeInsets.only(top: 20, left: 20),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Image.asset('images/Avatar1.png', height: 120),
+                        SizedBox(width: 10),
+                        Text(currentUser.email!)
                       ],
-                    )
-                ),
+                    )),
               ],
             ),
             backgroundColor: Color.fromARGB(255, 124, 210, 231),
@@ -43,36 +45,38 @@ class ProfilePage extends StatelessWidget {
         endDrawer: Drawer(
           child: ListView(
             children: [
-              ListTile(
-                title: const Text('About'),
-                onTap: () {},
-                contentPadding: const EdgeInsets.only(top: 50, left: 70),
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 124, 210, 231),
+                ),
+                child: Text('A B OU T'),
               ),
-              ListTile(
+              const ListTile(
                 title: const Text('Help'),
                 contentPadding: const EdgeInsets.only(left: 70),
               ),
-              ListTile(
+              const ListTile(
                 title: const Text('Dark Mode'),
                 contentPadding: const EdgeInsets.only(left: 70),
               ),
-              ListTile(
+              const ListTile(
                 title: const Text('Freelancer Mode'),
                 contentPadding: const EdgeInsets.only(left: 70),
               ),
-              ListTile(
+              const ListTile(
                 title: const Text('Account Settings'),
                 contentPadding: const EdgeInsets.only(left: 70),
               ),
               ListTile(
                 title: const Text('Chats'),
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ChatPage()));
                 },
                 contentPadding: const EdgeInsets.only(left: 70),
               ),
               ListTile(
-                title: const Text('Log out'),
+                title: const Text('log out'),
                 onTap: () {
                   // Add your logic for logging out
                   signUserOut();

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:practice_login/pages/chat_page.dart';
 import 'package:practice_login/pages/profile.dart';
 import 'package:practice_login/services/auth_service.dart';
 import 'package:provider/provider.dart';
@@ -7,9 +8,9 @@ import 'package:practice_login/services/auth_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class HomePage2 extends StatefulWidget{
+class HomePage2 extends StatefulWidget {
   //testing http json placeholder from here =>
-  const HomePage2 ({super.key});
+  const HomePage2({super.key});
 
   @override
   State<HomePage2> createState() => _HomePage2();
@@ -18,11 +19,10 @@ class HomePage2 extends StatefulWidget{
 // github token Juario
 //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
 class _HomePage2 extends State<HomePage2> {
-
   List<dynamic> posts = [];
 
   @override
-  void initState(){
+  void initState() {
     getPosts();
     super.initState();
   }
@@ -50,128 +50,140 @@ class _HomePage2 extends State<HomePage2> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey,
-        appBar: AppBar(
-          flexibleSpace: Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProfilePage()),
-                  );
-                },
-                child: Container(
-                    padding: const EdgeInsets.only(top: 10, left: 15),
-                    child: Image.asset('images/Avatar1.png', height: 40)),
-              ),
-            ],
-          ),
-          actions: const [],
-          backgroundColor: const Color.fromARGB(255, 124, 210, 231),
+      appBar: AppBar(
+        flexibleSpace: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
+              },
+              child: Container(
+                  padding: const EdgeInsets.only(top: 10, left: 15),
+                  child: Image.asset('images/Avatar1.png', height: 40)),
+            ),
+          ],
         ),
-        body:posts.isEmpty
-        ? const Center(child: CircularProgressIndicator() ,)
-        : Center(
-            child: Padding(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.message),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatPage(),
+                ),
+              );
+            },
+          ),
+        ],
+        backgroundColor: const Color.fromARGB(255, 124, 210, 231),
+      ),
+      body: posts.isEmpty
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Center(
+              child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ListView.builder(
                   itemCount: posts.length,
-                  itemBuilder: (context,index){
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 5.0,bottom: 5.0),
-                        child: ListTile(
-                            tileColor: Colors.white,
-                            isThreeLine: true,
-                            leading:Image.asset('images/Avatar1.png'),
-                            title: Text(posts[index]["title"]),
-                            subtitle: Column(
-                              children: [
-                                Text(posts[index]["body"]),
-                                  const Divider(
-                                      thickness: 1
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 5,bottom: 5),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                     crossAxisAlignment: CrossAxisAlignment.center,
-                                     mainAxisSize: MainAxisSize.max,
-                                     children: [
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: (){
-                                            print("Tapped Like");
-                                          },
-                                          child: const Text("Like"),
-                                        ),
-                                      ),
-                                       Expanded(
-                                         child: GestureDetector(
-                                             onTap: (){
-                                               print("Tapped Comment");
-                                             },
-                                             child: const Text("Comment"),
-                                         ),
-                                       ),
-                                       Expanded(
-                                         child: GestureDetector(
-                                             onTap: (){
-                                               print("Tapped Share");
-                                             },
-                                             child: const Text("Share"),
-                                         ),
-                                       ),
-                                      ],
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+                      child: ListTile(
+                        tileColor: Colors.white,
+                        isThreeLine: true,
+                        leading: Image.asset('images/Avatar1.png'),
+                        title: Text(posts[index]["title"]),
+                        subtitle: Column(
+                          children: [
+                            Text(posts[index]["body"]),
+                            const Divider(thickness: 1),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5, bottom: 5),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        print("Tapped Like");
+                                      },
+                                      child: const Text("Like"),
                                     ),
-                                  )
-                              ],
-                            ),
-                              shape: RoundedRectangleBorder(
-                              side: const BorderSide(color: Colors.white,width: 1,),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                                  ),
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        print("Tapped Comment");
+                                      },
+                                      child: const Text("Comment"),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        print("Tapped Share");
+                                      },
+                                      child: const Text("Share"),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
                         ),
-                      );
-                    }
-                  ),
-            )
+                        shape: RoundedRectangleBorder(
+                          side: const BorderSide(
+                            color: Colors.white,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    );
+                  }),
+            )),
+      endDrawer: Drawer(
+        child: ListView(
+          children: [
+            ListTile(
+              title: const Text('About'),
+              onTap: () {},
+              contentPadding: const EdgeInsets.only(top: 50, left: 70),
+            ),
+            const ListTile(
+              title: Text('Help'),
+              contentPadding: EdgeInsets.only(left: 70),
+            ),
+            const ListTile(
+              title: Text('Dark Mode'),
+              contentPadding: EdgeInsets.only(left: 70),
+            ),
+            const ListTile(
+              title: Text('Freelancer Mode'),
+              contentPadding: EdgeInsets.only(left: 70),
+            ),
+            const ListTile(
+              title: Text('Account Settings'),
+              contentPadding: EdgeInsets.only(left: 70),
+            ),
+            ListTile(
+              title: const Text('Log out'),
+              onTap: () {
+                // Add your logic for logging out
+                signUserOut();
+              },
+              leading: const Icon(Icons.logout),
+            ),
+          ],
         ),
-
-        endDrawer: Drawer(
-          child: ListView(
-            children: [
-              ListTile(
-                title: const Text('About'),
-                onTap: () {},
-                contentPadding: const EdgeInsets.only(top: 50, left: 70),
-              ),
-              const ListTile(
-                title: Text('Help'),
-                contentPadding: EdgeInsets.only(left: 70),
-              ),
-              const ListTile(
-                title: Text('Dark Mode'),
-                contentPadding: EdgeInsets.only(left: 70),
-              ),
-              const ListTile(
-                title: Text('Freelancer Mode'),
-                contentPadding: EdgeInsets.only(left: 70),
-              ),
-              const ListTile(
-                title: Text('Account Settings'),
-                contentPadding: EdgeInsets.only(left: 70),
-              ),
-              ListTile(
-                title: const Text('Log out'),
-                onTap: () {
-                  // Add your logic for logging out
-                  signUserOut();
-                },
-                leading: const Icon(Icons.logout),
-              ),
-            ],
-          ),
-        ),
+      ),
     );
   }
 }

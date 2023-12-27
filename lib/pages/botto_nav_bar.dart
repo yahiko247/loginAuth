@@ -17,7 +17,7 @@ class MyButtomNavBar extends StatefulWidget {
 
 class _MyBottomNavBarState extends State<MyButtomNavBar> {
   int myCurrentIndex = 0;
-  List<Widget> pages = const [
+  List<Widget> pages = [
     HomePage2(),
     FavoritePage(),
     SearchPage(),

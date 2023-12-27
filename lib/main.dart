@@ -10,7 +10,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(ChangeNotifierProvider(create: (context) => AuthService(), child: const MyApp()));
+  runApp(ChangeNotifierProvider(
+      create: (context) => AuthService(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:  AuthPage(),
+      home: AuthPage(),
     );
   }
 }
