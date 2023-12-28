@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class FirestoreDatabase {
   User? user = FirebaseAuth.instance.currentUser;
@@ -18,9 +19,18 @@ class FirestoreDatabase {
   Stream<QuerySnapshot> getPostsStream() {
     final postsStream = FirebaseFirestore.instance
         .collection('Posts')
-        .orderBy('TimeStamp',descending: true,)
+        .orderBy('TimeStamp', descending: true,)
         .snapshots();
 
     return postsStream;
+  }
+
+  String formatPostTimeStamp(Timestamp timestamp) {
+    DateTime dateTime = timestamp.toDate();
+
+    final timeFormat = DateFormat('yyyy-MM-dd \'at\' hh:mm a');
+    String formattedTimestamp = timeFormat.format(dateTime);
+
+    return formattedTimestamp;
   }
 }
