@@ -23,7 +23,7 @@ class _ChatBoxState extends State<ChatBox> {
 
   void sendMessage() async {
     if (_messageInputController.text.isNotEmpty) {
-      await _chatService.sendMessage(widget.userId, _messageInputController.text);
+      await _chatService.sendMessage(widget.userId, widget.userEmail, _messageInputController.text);
       _messageInputController.clear();
     }
   }
@@ -74,7 +74,7 @@ class _ChatBoxState extends State<ChatBox> {
       alignment: alignment,
       child: Column(
         children: [
-          ChatBubble(message: data['message'], sender: data['senderEmail'], msgtimestamp: data['timestamp']),
+          ChatBubble(message: data['message'], sender: data['senderEmail'], msgtimestamp: (data['timestamp']) ?? Timestamp.now()),
         ],
       )
     );
@@ -98,7 +98,7 @@ class _ChatBoxState extends State<ChatBox> {
             ),
           ),
           SizedBox(width: 15),
-          IconButton(onPressed: sendMessage, icon: Icon(Icons.send))
+          IconButton(onPressed: sendMessage, icon: Icon(Icons.send), color: Colors.black,)
         ],
       ),
     );

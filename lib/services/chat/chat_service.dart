@@ -7,24 +7,31 @@ class ChatService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
-  Future<void> sendMessage(String userId, String message) async {
+  List<String> memberList(String user, otherUser) {
+    return [user, otherUser,];
+  }
+
+  Future<void> sendMessage(String receiverId, String receiverEmail, String message) async {
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String currentUserEmail = _firebaseAuth.currentUser!.email.toString();
-    final Timestamp timestamp = Timestamp.now();
 
     Message newMessage = Message(
         senderId: currentUserId,
         senderEmail: currentUserEmail,
-        receiverId: userId,
-        message: message,
-        timestamp: timestamp
+        receiverId: receiverId,
+        receiverEmail: receiverEmail,
+        message: message
     );
 
-    List<String> ids = [currentUserId, userId];
+    List<String> ids = [currentUserId, receiverId];
     ids.sort();
     String chatRoomId = ids.join("_");
 
-    await _fireStore.collection('chat_rooms').doc(chatRoomId).collection('messages').add(newMessage.toMap());
+    try {await _fireStore.collection('chat_rooms').doc(chatRoomId).collection('messages').add(newMessage.toMap());}
+    catch (e) {print(e);}
+
+    try {await _fireStore.collection('chat_rooms').doc(chatRoomId).set({'members' : memberList(currentUserId, receiverId)});}
+    catch (e) {print(e);}
   }
 
   Stream<QuerySnapshot> getMessages(String userId, String otherUserId) {
@@ -33,5 +40,33 @@ class ChatService extends ChangeNotifier {
     String chatRoomId = ids.join("_");
 
     return _fireStore.collection("chat_rooms").doc(chatRoomId).collection('messages').orderBy('timestamp', descending: false).snapshots();
+  }
+
+  Stream<QuerySnapshot> getChatRoom(String userId) {
+    final chatRoomIdList = _fireStore.collection("chat_rooms");
+
+    List<String> ids = [userId];
+    ids.sort();
+    String chatRoomId = ids.join("_");
+
+    return _fireStore.collection("chat_rooms").doc(chatRoomId).collection('messages').orderBy('timestamp', descending: false).snapshots();
+  }
+
+  Future<List<dynamic>?> getContacts(String documentId) async {
+    DocumentReference contacts = _fireStore.collection('users').doc(documentId);
+
+    try {
+      DocumentSnapshot contactsSnapshot = await contacts.get();
+      if (contactsSnapshot.exists) {
+        List<dynamic>? contactsArr = contactsSnapshot.get('contacts');
+        return contactsArr;
+      } else {
+        print('Document does not exist');
+        return null;
+      }
+    } catch (e) {
+      print('Error getting document: $e');
+      return null;
+    }
   }
 }

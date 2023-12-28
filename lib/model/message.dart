@@ -5,15 +5,15 @@ class Message {
   final String senderId;
   final String senderEmail;
   final String receiverId;
+  final String receiverEmail;
   final String message;
-  final Timestamp timestamp;
 
   Message({
     required this.senderId,
     required this.senderEmail,
     required this.receiverId,
-    required this.message,
-    required this.timestamp
+    required this.receiverEmail,
+    required this.message
   });
 
   Map<String, dynamic> toMap() {
@@ -22,7 +22,7 @@ class Message {
       'senderEmail' : senderEmail,
       'receiverId' : receiverId,
       'message' : message,
-      'timestamp' : timestamp
+      'timestamp' : FieldValue.serverTimestamp()
     };
   }
 }

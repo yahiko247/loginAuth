@@ -227,6 +227,14 @@ class _HomePage2 extends State<HomePage2> {
                 contentPadding: EdgeInsets.only(left: 70),
               ),
               ListTile(
+                title: const Text('Chats'),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ChatPage()));
+                },
+                contentPadding: const EdgeInsets.only(left: 70),
+              ),
+              ListTile(
                 title: const Text('Log out'),
                 onTap: () {
                   // Add your logic for logging out
