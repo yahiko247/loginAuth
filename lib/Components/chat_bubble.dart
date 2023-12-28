@@ -2,21 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:intl/intl.dart';
+import 'package:practice_login/services/chat/chat_service.dart';
 
 class ChatBubble extends StatelessWidget {
   final String message;
   final String sender;
   final Timestamp msgtimestamp;
-
-  String formatMsgTimestamp(Timestamp timestamp) {
-    DateTime dateTime = timestamp.toDate();
-
-    final timeFormat = DateFormat('hh:mm a');
-    String formattedTimestamp = timeFormat.format(dateTime);
-
-    return formattedTimestamp;
-  }
+  static ChatService _chatService = ChatService();
 
   static FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
@@ -30,7 +22,7 @@ class ChatBubble extends StatelessWidget {
       children: [
         Container(
             padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-            child: Text('${!(sender == _firebaseAuth.currentUser!.email) ? sender : 'You'} - ${formatMsgTimestamp(msgtimestamp)}')
+            child: Text('${!(sender == _firebaseAuth.currentUser!.email) ? sender : 'You'} - ${_chatService.formatMsgTimestamp(msgtimestamp)}')
         ),
         Container(
             constraints: BoxConstraints(maxWidth: 300),

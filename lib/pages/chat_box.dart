@@ -10,8 +10,15 @@ import 'package:practice_login/services/chat/chat_service.dart';
 class ChatBox extends StatefulWidget {
   final String userEmail;
   final String userId;
+  final String userFirstName;
+  final String userLastName;
 
-  const ChatBox({Key? key, required this.userEmail, required this.userId}) : super(key: key);
+  const ChatBox({Key? key,
+    required this.userEmail,
+    required this.userId,
+    required this.userFirstName,
+    required this.userLastName
+  }) : super(key: key);
 
   State<ChatBox> createState() => _ChatBoxState();
 }
@@ -32,7 +39,32 @@ class _ChatBoxState extends State<ChatBox> {
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.userEmail)
+        actions: [
+          Container(
+            padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
+            child: Row(
+              children: [
+                Icon(Icons.menu)
+              ],
+            ),
+          )
+        ],
+        title: Container(
+          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+          child: Column(
+            children: [
+              Align(child: Text('${widget.userFirstName} ${widget.userLastName}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),), alignment: Alignment.centerLeft),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  widget.userEmail,
+                  style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
+                ),
+              )
+            ],
+          ),
+        ),
+        titleSpacing: 0,
       ),
       body: Column(
         children: [
@@ -52,12 +84,12 @@ class _ChatBoxState extends State<ChatBox> {
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text('loading');
+          return Center(child: CircularProgressIndicator(color: Colors.black));
         }
 
         return ListView(
-          children: snapshot.data!.docs.reversed.map((document) => _buildMessageItem(document)).toList(),
           reverse: true,
+          children: snapshot.data!.docs.reversed.map((document) => _buildMessageItem(document)).toList(),
         );
       },
     );

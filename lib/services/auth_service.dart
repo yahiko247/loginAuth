@@ -15,7 +15,7 @@ class AuthService extends ChangeNotifier {
           email: email,
           password: password
       );
-      var userDocSnapshotUsingUID = await _fireStore.collection('users').doc(userCredential.user!.uid).get();
+      DocumentSnapshot<Map<String, dynamic>> userDocSnapshotUsingUID = await _fireStore.collection('users').doc(userCredential.user!.uid).get();
       if (!userDocSnapshotUsingUID.exists) {
         _fireStore.collection('users').doc(userCredential.user!.uid).set({
           'uid' : userCredential.user!.uid,
@@ -29,7 +29,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<UserCredential> signUp(String email, password) async {
+  Future<UserCredential> signUp(String email, password, firstName, String? lastName) async {
     try {
       UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email,
@@ -38,7 +38,9 @@ class AuthService extends ChangeNotifier {
       _fireStore.collection('users').doc(userCredential.user!.uid).set({
         'uid' : userCredential.user!.uid,
         'email' : email,
-        'contacts' : []
+        'contacts' : [],
+        'first_name' : firstName,
+        'last_name' : lastName
       });
       return userCredential;
     } on FirebaseAuthException catch(e) {

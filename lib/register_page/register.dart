@@ -20,6 +20,8 @@ class _RegisterFormState extends State<RegisterForm> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  var firstNameController = TextEditingController();
+  var lastNameController = TextEditingController();
 
   void RegisterUser() async {
     if (passwordController.text != confirmPasswordController.text) {
@@ -31,10 +33,14 @@ class _RegisterFormState extends State<RegisterForm> {
 
     final authService = Provider.of<AuthService>(context, listen: false);
 
+    String? myLastName = lastNameController.text;
+
     try {
       await authService.signUp(
         emailController.text,
         passwordController.text,
+        firstNameController.text,
+        myLastName
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -100,6 +106,22 @@ class _RegisterFormState extends State<RegisterForm> {
                       controller: confirmPasswordController,
                       hintText: 'Confrim Password',
                       obscuretext: true,
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    MyTextField(
+                      controller: firstNameController,
+                      hintText: 'First Name',
+                      obscuretext: false,
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    MyTextField(
+                      controller: lastNameController,
+                      hintText: 'Last Name',
+                      obscuretext: false,
                     ),
 
                     const SizedBox(height: 25),
