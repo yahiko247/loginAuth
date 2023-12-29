@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:practice_login/onBoardPage/onboard.dart';
 import 'package:practice_login/pages/auth_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:practice_login/services/auth_service.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:  const AuthPage(),
+      home: const OnBoard(),
       /*theme: lightMode,
       darkTheme: darkMode,*/
     );
