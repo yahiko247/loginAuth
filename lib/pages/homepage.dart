@@ -72,139 +72,151 @@ class _HomePage2 extends State<HomePage2> {
           actions: const [],
           backgroundColor: const Color.fromARGB(255, 124, 210, 231),
         ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 25,right: 25),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: MyTextField(
-                        controller: newPostController,
-                        hintText: "Say Something",
-                        obscuretext: false,
-                    ),
-                  ),
-                  PostButton(
-                      onTap: postMessage
-                  )
-                ],
-              ),
-            ),
-            StreamBuilder(
-                stream: database.getPostsStream(),
-                builder: (context,snapshot){
-                  if (snapshot.connectionState == ConnectionState.waiting){
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  final posts = snapshot.data!.docs;
-
-                  if (snapshot.data == null || posts.isEmpty) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(25),
-                        child: Text("No posts... Post Something"),
+        body: SingleChildScrollView(
+          child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 25, right: 25),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: MyTextField(
+                          controller: newPostController,
+                          hintText: "Say Something",
+                          obscuretext: false,
+                        ),
                       ),
-                    );
-                  }
-                  return Expanded(
-                      child: ListView.builder(
+                      PostButton(
+                          onTap: postMessage
+                      )
+                    ],
+                  ),
+                ),
+                StreamBuilder(
+                    stream: database.getPostsStream(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      final posts = snapshot.data!.docs;
+
+                      if (snapshot.data == null || posts.isEmpty) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(25),
+                            child: Text("No posts... Post Something"),
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: posts.length,
-                          itemBuilder: (context,index){
+                          itemBuilder: (context, index) {
                             final post = posts[index];
 
                             String message = post['PostMessage'];
                             String userEmail = post['UserEmail'];
                             Timestamp timestamp = post['TimeStamp'];
                             Timestamp postTimeStamp = posts[index]['TimeStamp'];
-                            String formattedTimestamp = _firestoreDatabase.formatPostTimeStamp(postTimeStamp);
+                            String formattedTimestamp = _firestoreDatabase
+                                .formatPostTimeStamp(postTimeStamp);
 
 
                             return Padding(
                               padding: const EdgeInsets.all(10),
-                                child: ListTile(
-                                  tileColor: Colors.white,
-                                  isThreeLine: true,
-                                  title: Padding(
-                                    padding: const EdgeInsets.only(bottom: 5),
-                                    child: ListTile(
-                                      contentPadding: EdgeInsets.zero,
-                                      trailing: const Text("try"),
-                                      leading: const CircleAvatar(
+                              child: ListTile(
+                                tileColor: Colors.white,
+                                isThreeLine: true,
+                                title: Padding(
+                                  padding: const EdgeInsets.only(bottom: 5),
+                                  child: ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    trailing: const Text("try"),
+                                    leading: const CircleAvatar(
                                         radius: 20,
-                                        backgroundImage:AssetImage('images/Avatar1.png')
-                                      ),
-                                      title: Column(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(userEmail),
-                                                  Text(formattedTimestamp,
-                                                    style: const TextStyle(fontSize: 10),)
-                                                ],
-                                              ),
+                                        backgroundImage: AssetImage(
+                                            'images/Avatar1.png')
+                                    ),
+                                    title: Column(
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .start,
+                                      crossAxisAlignment: CrossAxisAlignment
+                                          .start,
+                                      children: [
+                                        Text(userEmail),
+                                        Text(formattedTimestamp,
+                                          style: const TextStyle(
+                                              fontSize: 10),)
+                                      ],
                                     ),
                                   ),
-                                  
-
-
-
-                                  subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(message),
-                                      const Divider(
-                                          thickness: 1
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 5,bottom: 5),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            GestureDetector(
-                                                  onTap: (){
-                                                    print("Tapped Like");
-                                                  },
-                                                  child: const Text("Like"),
-                                                ),
-
-                                            GestureDetector(
-                                                  onTap: (){
-                                                    print("Tapped Comment");
-                                                  },
-                                                  child: const Text("Comment"),
-                                                ),
-
-
-                                            GestureDetector(
-                                                      onTap: (){
-                                                        print("Tapped Share");
-                                                      },
-                                                      child: const Text("Share"),
-                                                    ),
-
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                    shape: RoundedRectangleBorder(
-                                    side: const BorderSide(color: Colors.white,width: 1,),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
                                 ),
+
+
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment
+                                      .start,
+                                  children: [
+                                    Text(message),
+                                    const Divider(
+                                        thickness: 1
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 5, bottom: 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .center,
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              print("Tapped Like");
+                                            },
+                                            child: const Text("Like"),
+                                          ),
+
+                                          GestureDetector(
+                                            onTap: () {
+                                              print("Tapped Comment");
+                                            },
+                                            child: const Text("Comment"),
+                                          ),
+
+
+                                          GestureDetector(
+                                            onTap: () {
+                                              print("Tapped Share");
+                                            },
+                                            child: const Text("Share"),
+                                          ),
+
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  side: const BorderSide(
+                                    color: Colors.white, width: 1,),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
                             );
                           }
-                      ),
-                  );
-                }
-            )
-          ],
+                      );
+                    }
+                )
+              ],
+            ),
         ),
+        
 
 
         endDrawer: Drawer(
