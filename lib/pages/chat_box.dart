@@ -20,6 +20,7 @@ class ChatBox extends StatefulWidget {
     required this.userLastName
   }) : super(key: key);
 
+  @override
   State<ChatBox> createState() => _ChatBoxState();
 }
 
@@ -114,13 +115,14 @@ class _ChatBoxState extends State<ChatBox> {
 
   Widget _buildMessageInput() {
     return Container(
-      padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+      padding: EdgeInsets.all(13),
       child: Row(
         children: [
           Expanded(
             child: TextFormField(
               controller: _messageInputController,
               decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(vertical: 13, horizontal: 13),
                   hintText: 'Enter a message',
                   border: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.blue, width: 1),
@@ -129,8 +131,8 @@ class _ChatBoxState extends State<ChatBox> {
               ),
             ),
           ),
-          SizedBox(width: 15),
-          IconButton(onPressed: sendMessage, icon: Icon(Icons.send), color: Colors.black,)
+          SizedBox(width: 13),
+          IconButton(onPressed: sendMessage, icon: Icon(Icons.send), color: Colors.black, iconSize: 25)
         ],
       ),
     );

@@ -37,12 +37,11 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await authService.signIn(emailcontroller.text, passwordcontroller.text);
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     }
 
     //pop the circle
-    Navigator.pop(context);
+    if (mounted) Navigator.pop(context);
   }
 
   @override

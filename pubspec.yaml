@@ -38,7 +38,9 @@ dependencies:
   firebase_auth: ^4.13.0
   http: ^1.1.0
   cloud_firestore: ^4.13.6
+  searchable_listview:  2.9.1
   intl: ^0.17.0
+  email_validator: ^2.1.16
   provider:
   smooth_page_indicator: ^1.1.0
 

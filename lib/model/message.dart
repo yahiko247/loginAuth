@@ -16,7 +16,7 @@ class Message {
     required this.message
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> mapMessage() {
     return {
       'senderId' : senderId,
       'senderEmail' : senderEmail,

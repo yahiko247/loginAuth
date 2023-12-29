@@ -22,45 +22,42 @@ class _ChatPageState extends State<ChatPage> {
   final ChatService _chatService = ChatService();
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
 
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
         title: Text('Chats'),
         titleSpacing: 0,
+        centerTitle: true,
         actions: [
-          Icon(Icons.edit)
-        ],
-      ),
-      body: _buildChatPage(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) {
-                return AddChat();
-              },
+          InkWell(
+            borderRadius: BorderRadius.circular(100),
+            onTap: () {Navigator.of(context).push(PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) {return AddChat();},
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 var begin = Offset(.900, 0.0);
                 var end = Offset.zero;
-                var curve = Curves.easeInOut;
-
+                var curve = Curves.ease;
                 var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
                 var offsetAnimation = animation.drive(tween);
-
                 return SlideTransition(
                   position: offsetAnimation,
                   child: child,
-                );
-              },
-              transitionDuration: Duration(milliseconds: 400),
+                );},
+              transitionDuration: Duration(milliseconds: 300),
+            ),);},
+            child: Container(
+              padding: EdgeInsets.all(15),
+              child: Icon(Icons.edit),
             ),
-          );
-        },
-        child: Icon(Icons.edit),
-        backgroundColor: Colors.blue,
+          )
+        ],
       ),
+      body: Column(children: [
+        _chatSearchBar(), Expanded(child: _buildChatPage())
+      ],),
     );
   }
 
@@ -101,11 +98,11 @@ class _ChatPageState extends State<ChatPage> {
 
   }
 
-  List<Widget> _buildChatPageItems(Map<String, dynamic>? currentUserData) {
+  List<Widget> _buildChatPageItems(Map<String, dynamic>? _currentUserData) {
 
-    List<dynamic> chatKeysList = currentUserData!['chat_room_keys'];
+    List<dynamic> chatKeysList = _currentUserData!['chat_room_keys'];
 
-    List<Widget> items = chatKeysList.map((key) {
+    List<Widget> chats = chatKeysList.map((key) {
       return StreamBuilder(
           stream: _chatService.getChatRoom(key),
           builder: (context, chatRoomSnapshot) {
@@ -125,9 +122,27 @@ class _ChatPageState extends State<ChatPage> {
                 stream: _userDataServices.getUserDataAsStream(chatMembers[0]),
                 builder: (context, userDataSnapshot) {
                   if (userDataSnapshot.hasError) {
-                    return Text('Error loading messages');
+                    return ListTile(
+                      contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 5),
+                      title: Text('Error Loading Chat'),
+                      leading: Container(
+                        child: Icon(Icons.person, size: 35),
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
+                      ),
+                      subtitle: Text(' '),
+                    );
                   } else if (userDataSnapshot.connectionState == ConnectionState.waiting) {
-                    return ListTile(title: Text('User'),);
+                    return ListTile(
+                      contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 5),
+                      title: Text('User'),
+                      leading: Container(
+                        child: Icon(Icons.person, size: 35),
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
+                      ),
+                      subtitle: Text(' '),
+                    );
                   }
 
                   Map<String, dynamic>? userData = userDataSnapshot.data!.data();
@@ -143,7 +158,13 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                     subtitle: Text(
                         '${(chatRoomData['latest_message']['senderId'] == _auth.currentUser!.uid) ? 'You' : userData['first_name']}'
-                            ': ${chatRoomData['latest_message']['message']} · ${_chatService.formatMsgTimestamp(chatRoomData['latest_message_timestamp'] ?? Timestamp.now())}'),
+                            ': ${chatRoomData['latest_message']['message']} · ${_chatService.formatMsgTimestamp(chatRoomData['latest_message_timestamp'] ?? Timestamp.now())}'
+                    ),
+                    onLongPress: () {
+                      showDialog(context: context, builder: (context) => Center(child: CircularProgressIndicator(
+
+                      )));
+                    },
                     onTap: () {
                       Navigator.push(
                           context,
@@ -160,11 +181,33 @@ class _ChatPageState extends State<ChatPage> {
                   );
                 }
             );
-
           }
       );
     }).toList();
+    return chats;
+  }
 
-    return items;
+  Widget _chatSearchBar() {
+    return Container(
+      padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextFormField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
+                  hintText: 'Search',
+                  prefixIcon: Container(child: Icon(Icons.search, color: Colors.grey[600],), padding: EdgeInsets.fromLTRB(5, 0, 0, 0),),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0)
+                  ),
+                contentPadding: EdgeInsets.symmetric(vertical: 13, horizontal: 13)
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
