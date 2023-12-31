@@ -34,23 +34,10 @@ class _ChatPageState extends State<ChatPage> {
         actions: [
           InkWell(
             borderRadius: BorderRadius.circular(100),
-            onTap: () {Navigator.of(context).push(PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) {return AddChat();},
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                var begin = Offset(.900, 0.0);
-                var end = Offset.zero;
-                var curve = Curves.ease;
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                var offsetAnimation = animation.drive(tween);
-                return SlideTransition(
-                  position: offsetAnimation,
-                  child: child,
-                );},
-              transitionDuration: Duration(milliseconds: 300),
-            ),);},
+            onTap: () {},
             child: Container(
               padding: EdgeInsets.all(15),
-              child: Icon(Icons.edit),
+              child: Icon(Icons.menu),
             ),
           )
         ],
@@ -58,13 +45,32 @@ class _ChatPageState extends State<ChatPage> {
       body: Column(children: [
         _chatSearchBar(), Expanded(child: _buildChatPage())
       ],),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {Navigator.of(context).push(PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {return AddChat();},
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            var begin = Offset(.900, 0.0);
+            var end = Offset.zero;
+            var curve = Curves.ease;
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );},
+          transitionDuration: Duration(milliseconds: 300),
+        ),);},
+        child: Icon(Icons.edit),
+        backgroundColor: Color.fromARGB(255, 124, 210, 231),
+      ),
     );
   }
 
   //Build User List
 
   Widget _buildChatPage() {
-    
+
     return StreamBuilder(
         stream: _userDataServices.getCurrentUserDataAsStream(),
         builder: (context, currentUserDataSnapshot) {
@@ -79,7 +85,7 @@ class _ChatPageState extends State<ChatPage> {
           List<dynamic> checkList = currentUserData!['chat_room_keys'];
           if (checkList.isEmpty) {
             return Container(
-              padding: EdgeInsets.all(60),
+                padding: EdgeInsets.all(60),
                 child: const Center(
                     child: Text(
                         'It\'s quiet here, tap the button below to start a conversation. '
@@ -194,15 +200,16 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           Expanded(
             child: TextFormField(
+              onTap: () {print('wow');},
               controller: _searchController,
               decoration: InputDecoration(
-                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                   hintText: 'Search',
                   prefixIcon: Container(child: Icon(Icons.search, color: Colors.grey[600],), padding: EdgeInsets.fromLTRB(5, 0, 0, 0),),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0)
                   ),
-                contentPadding: EdgeInsets.symmetric(vertical: 13, horizontal: 13)
+                  contentPadding: EdgeInsets.symmetric(vertical: 13, horizontal: 13)
               ),
             ),
           )

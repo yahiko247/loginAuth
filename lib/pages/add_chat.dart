@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_login/database/firestore.dart';
-import 'package:practice_login/pages/add_contact.dart';
 import 'package:practice_login/services/user_data_services.dart';
 import 'package:email_validator/email_validator.dart';
 import 'chat_box.dart';
+import 'package:searchable_listview/searchable_listview.dart';
 
 class AddChat extends StatefulWidget {
   const AddChat ({Key? key}) : super(key:key);
@@ -22,50 +21,34 @@ class _AddChatState extends State<AddChat> {
   final TextEditingController _searchController = TextEditingController();
   var formKey = GlobalKey<FormState>();
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Start a conversation'),
+        title: Text('Contacts'),
         titleSpacing: 0,
         centerTitle: true,
         actions: [],
       ),
-      body: Column(children: [RecipientInputForm(), Expanded(child: _buildContactList())]),
+      body: Container(child: _searchableContactList(), padding: EdgeInsets.fromLTRB(15, 10, 15, 0),),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return SimpleDialog(
-                  children: [Container(
-                    height: 300,
-                    child: Column(
-                      children: [
-                        Expanded(child: Center(child: Text('Dialog Content'))),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // Close the dialog
-                              },
-                              child: Text('Add'),
-                            ),
-                            SizedBox(width: 50,),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // Close the dialog
-                              },
-                              child: Text('Cancel'),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  )]
-                );
-              }
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return BottomSheet();
+            },
           );
         },
         child: Icon(Icons.add),
@@ -74,202 +57,272 @@ class _AddChatState extends State<AddChat> {
     );
   }
 
-  Widget _buildContactList() {
+  Widget _searchableContactList() {
     return FutureBuilder(
         future: _userDataServices.getCurrentUserDataAsFuture(),
         builder: (context, currentUserSnapshot) {
+          if (currentUserSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
           if (currentUserSnapshot.hasError) {
-            return const Center(child: Text('Error Loading Contacts'));
-          } else if (currentUserSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: Text('Loading Contacts'));
+            return Dialog(child: Text('An error has occured'),);
           }
+          
+          Map<String, dynamic>? userData = currentUserSnapshot.data!.data();
+          List<dynamic> contactList = userData!['contacts'];
+          
+          return FutureBuilder(
+              future: _firestore.collection('users').where(FieldPath.documentId, whereIn: contactList).get(),
+              builder: (context, contactsSnapshot) {
+                if (contactsSnapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (contactsSnapshot.hasError) {
+                  return Dialog(child: Text('An error has occured'),);
+                }
 
-          Map<String, dynamic>? currentUserData = currentUserSnapshot.data!.data() as Map<String, dynamic>;
-          List<dynamic> checkContactList = currentUserData['contacts'];
-          if (checkContactList.isEmpty) {
-            return Container(
-                padding: EdgeInsets.all(60),
-                child: const Center(
-                    child: Text(
-                        'Tap the \'add\' button below to add a contact',
-                        textAlign: TextAlign.center
-                    )
-                )
-            );
-          }
+                var contactsDocs = contactsSnapshot.data!.docs;
+                List<ContactUser> contacts = contactsDocs.map((doc) {
+                  return ContactUser.fromSnapshot(doc);
+                }).toList();
 
-          return ListView(
-            children: _buildContactItems(currentUserData),
+                return SearchableList<ContactUser>(
+                  listViewPadding: EdgeInsets.zero,
+                  style: const TextStyle(fontSize: 16),
+                  searchTextController: _searchController,
+                  builder: (list, index, item) {
+                    return ContactUserItem(contact: item, doublePop: false);
+                  },
+                  errorWidget: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.error,
+                        color: Colors.red,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text('Error while fetching actors')
+                    ],
+                  ),
+                  initialList: contacts,
+                  filter: (p0) {
+                    return contacts.where((element) => element.first_name.toLowerCase().contains(p0.toLowerCase()) ||
+                        element.last_name.toLowerCase().contains(p0.toLowerCase()) ||
+                        ('${element.first_name.toLowerCase()}${element.last_name.toLowerCase()}').contains(p0.replaceAll(' ', '').toLowerCase()) ||
+                        element.email.toLowerCase().contains(p0.toLowerCase())).toList();
+                  },
+                  reverse: false,
+                  emptyWidget: Column(children: [const SizedBox(height: 150), EmptyView(displayIcon: true, message: 'Contact not found.\n\nTap the add button below to add a new contact.')]),
+                  onRefresh: () async {},
+                  onItemSelected: (ContactUser item) {},
+                  spaceBetweenSearchAndList: 10,
+                  inputDecoration: InputDecoration(
+                    focusColor: Colors.black,
+                    contentPadding: EdgeInsets.zero,
+                    prefixIcon: Container(child: Text('To:', style: TextStyle(color: Colors.grey[600], fontSize: 16),), padding: EdgeInsets.fromLTRB(15, 10, 10, 10)),
+                    fillColor: Colors.white,
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                  ),
+                );
+              }
           );
         }
     );
   }
+}
 
-  List<Widget> _buildContactItems(Map<String, dynamic> _currentUserData) {
-    List<dynamic> contactList = _currentUserData['contacts'];
+class ContactUser {
+  final String email;
+  final String uid;
+  final String first_name;
+  final String last_name;
 
-    List<Widget> contacts = contactList.map((contactID) {
-      return FutureBuilder(
-          future: _userDataServices.getUserDataAsFuture(contactID),
-          builder: (context, contactSnapshot) {
-            if (contactSnapshot.hasError) {
-              return ListTile(
-                contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 5),
-                title: Text('Error Loading User'),
-                leading: Container(
-                  child: Icon(Icons.person, size: 35),
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
-                ),
-                subtitle: Text(' '),
-              );
-            } else if (contactSnapshot.connectionState == ConnectionState.waiting) {
-              return ListTile(
-                contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 5),
-                title: Text('User'),
-                leading: Container(
-                  child: Icon(Icons.person, size: 35),
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
-                ),
-                subtitle: Text(' '),
-              );;
-            }
+  const ContactUser({
+    required this.email,
+    required this.uid,
+    required this.first_name,
+    required this.last_name
+  });
 
-            Map<String, dynamic>? contactData = contactSnapshot.data!.data() as Map<String, dynamic>;
-            String contactFullName = '${contactData['first_name']} ${contactData['last_name']}';
-
-            return ListTile(
-              contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 5),
-              title: Text(contactFullName),
-              leading: Container(
-                child: Icon(Icons.person, size: 35),
-                padding: EdgeInsets.all(5),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
-              ),
-              subtitle: Text('${contactData['email']}'),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>
-                        ChatBox(
-                            userEmail: contactData['email'],
-                            userId: contactData['uid'],
-                            userFirstName: contactData['first_name'],
-                            userLastName: contactData['last_name']
-                        )
-                    )
-                );
-              },
-            );
-          }
-      );
-    }).toList();
-
-    return contacts;
+  factory ContactUser.fromSnapshot(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    return ContactUser(email: data['email'], uid: data['uid'], first_name: data['first_name'], last_name: data['last_name']);
   }
 
+  factory ContactUser.fromMap(Map<String, dynamic> data) {
+    return ContactUser(email: data['email'], uid: data['uid'], first_name: data['first_name'], last_name: data['last_name']);
+  }
 }
 
-class RecipientInputForm extends StatefulWidget {
-  const RecipientInputForm({Key? key}) : super(key: key);
+class ContactUserItem extends StatelessWidget {
+  final ContactUser contact;
+  final bool doublePop;
+
+  const ContactUserItem({Key? key, required this.contact, required this.doublePop}) : super(key: key);
 
   @override
-  State<RecipientInputForm> createState() => _RecipientInputFormState();
-}
-
-class _RecipientInputFormState extends State<RecipientInputForm> {
-  final TextEditingController _searchController = TextEditingController();
-  bool isEmail = false;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
-
-  void _showDialog(BuildContext context, String title, String errorMessage) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(errorMessage),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.all(5),
+      title: Text('${contact.first_name} ${contact.last_name}'),
+      leading: Container(
+        child: Icon(Icons.person, size: 35),
+        padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
+      ),
+      subtitle: Text('${contact.email}'),
+      onTap: () {
+        Navigator.pop(context);
+        doublePop ? Navigator.pop(context) : null;
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>
+                ChatBox(
+                    userEmail: contact.email,
+                    userId: contact.uid,
+                    userFirstName: contact.first_name,
+                    userLastName: contact.last_name
+                )
+            )
         );
       },
     );
   }
+}
+
+class EmptyView extends StatelessWidget {
+  final String message;
+  final bool displayIcon;
+
+  EmptyView({Key? key, required this.message, required this.displayIcon}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-      child: Row(
+    return Container(padding: EdgeInsets.fromLTRB(35, 0, 35, 0), child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
-            child: TextFormField(
-              onChanged: (value) {
-                setState(() {
-                  if (!(value == '') && !(value == null)) {
-                    (EmailValidator.validate(value)) ? isEmail = true : isEmail = false;
-                  } else {
-                    isEmail = false;
-                  }
-                });
-              },
-              controller: _searchController,
-              decoration: InputDecoration(
-                  hintText: 'Enter an email...',
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
-                  prefixIcon: Container(child: Text('To:', style: TextStyle(color: Colors.grey[600], fontSize: 16),), padding: EdgeInsets.fromLTRB(15, 10, 10, 10),),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0)
-                  ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 13, horizontal: 13)
-              ),
+          displayIcon! ? Icon(
+            Icons.question_mark,
+            color: Colors.red,
+          ) : Container(),
+          const SizedBox(height: 5,),
+          Text(message, textAlign: TextAlign.center,),
+        ],
+      ));
+    }
+}
+
+class BottomSheet extends StatefulWidget {
+  const BottomSheet({Key? key}) : super(key: key);
+  
+  @override
+  State<BottomSheet> createState() => _BottomSheetState();
+}
+
+class _BottomSheetState extends State<BottomSheet> {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
+  final TextEditingController _addEmailController = TextEditingController();
+
+  bool isEmail = false;
+
+  @override
+  void initState() {
+    _addEmailController.addListener(_isEmail);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _addEmailController.removeListener(_isEmail);
+    _addEmailController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context){
+    return Container(
+      padding: EdgeInsets.all(15),
+      height: 300, // Adjust height as needed
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: TextFormField(
+                      controller: _addEmailController,
+                      decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
+                          hintText: 'Enter an email',
+                          prefixIcon: Container(child: Icon(Icons.email, color: Colors.grey[600],), padding: EdgeInsets.fromLTRB(5, 0, 0, 0),),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0)
+                          ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 13, horizontal: 13)
+                      ),
+                    ),
+                  )
+                )
+              ],
             ),
           ),
-          SizedBox(width: 13),
-          IconButton(
-            onPressed: isEmail ? () async {
-              _userDataServices.getUserDataThroughEmail(_searchController.text).then((value) {
-                if (value.docs.isNotEmpty) {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return FutureBuilder(
-                        future: _userDataServices.getUserDataThroughEmail(_searchController.text),
-                        builder: (context, userDataSnapshot) {
-                          if (userDataSnapshot.connectionState == ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          }
-                          if (userDataSnapshot.hasError){
-                            return Text('Error Creating Chat');
-                          }
-                          Map<String, dynamic> userData = userDataSnapshot.data!.docs.first.data();
-
-                          return ChatBox(userEmail: userData['email'],
-                              userId: userData['uid'],
-                              userFirstName: userData['first_name'],
-                              userLastName: userData['last_name']
-                          );
-                        }
-                    );
-                  }));
-                } else {
-                  _showDialog(context, 'Error', 'The email you have entered does not exist.');
-                }
-              });
-            } : null,
-            icon: Icon(Icons.add),
-            color: Colors.black, iconSize: 25,
-          ),
-        ],
+          _addEmailController.text == ''
+              ? Column(children: [SizedBox(height: 75), EmptyView(displayIcon: false, message: 'Please enter an email')])
+              : (EmailValidator.validate(_addEmailController.text))
+              ? isEmail
+              ? _addNewContactItem()
+              : Column(children: [SizedBox(height: 50), EmptyView(displayIcon: true, message: 'The email you have entered doesn\'t seem to exist.')])
+              : Column(children: [SizedBox(height: 75), EmptyView(displayIcon: false, message: 'Please enter a valid email')]),
+        ]
       ),
     );
   }
-}
 
+  void _isEmail() {
+    if (EmailValidator.validate(_addEmailController.text)) {
+      Future<QuerySnapshot<Map<String, dynamic>>> snapshot = _firestore.collection('users').where('email', isEqualTo: _addEmailController.text).get();
+      snapshot.then((value) {
+        if (value.docs.isNotEmpty) {
+          setState(() {
+            isEmail = true;
+          });
+        } else {
+          setState(() {
+            isEmail = false;
+          });
+        }
+      });
+    }
+    setState(() {
+      isEmail = false;
+    });
+  }
+
+  Widget _addNewContactItem() {
+    return FutureBuilder(
+        future: _userDataServices.getUserDataThroughEmail(_addEmailController.text),
+        builder: (context, userDataSnapshot) {
+          if (userDataSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (userDataSnapshot.hasError) {
+            return Dialog(child: Text('An error has occured'),);
+          }
+
+          Map<String, dynamic>? userData = userDataSnapshot.data!.docs.first.data();
+          ContactUser newContactUser = ContactUser.fromMap(userData);
+
+          return ContactUserItem(contact: newContactUser, doublePop: true,);
+        }
+    );
+  }
+}

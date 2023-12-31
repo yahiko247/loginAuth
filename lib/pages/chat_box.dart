@@ -72,7 +72,7 @@ class _ChatBoxState extends State<ChatBox> {
           Expanded(child: _buildMessageList()),
           _buildMessageInput(),
         ],
-      )
+      ),
     );
   }
 
