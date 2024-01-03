@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:practice_login/pages/chat_page.dart';
 import 'package:practice_login/pages/favorite.dart';
 import 'package:practice_login/pages/home_page.dart';
 import 'package:practice_login/pages/homepage.dart';
 import 'package:practice_login/pages/profile.dart';
+import 'package:practice_login/pages/search.dart';
 import 'package:practice_login/pages/setting.dart';
 
 class MyButtomNavBar extends StatefulWidget {
@@ -15,23 +17,19 @@ class MyButtomNavBar extends StatefulWidget {
 
 class _MyBottomNavBarState extends State<MyButtomNavBar> {
   int myCurrentIndex = 0;
-  List<Widget> pages = const [
+  List<Widget> pages = [
     HomePage2(),
     FavoritePage(),
+    SearchPage(),
     SettingPage(),
-    ProfilePage()
+    ProfilePage(),
+    ChatPage(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("GigGabay"),
-        actions: [],
-        backgroundColor: const Color.fromARGB(255, 70, 199, 177),
-      ),
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
@@ -41,73 +39,38 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
           ],
         ),
         child: ClipRRect(
-            borderRadius: BorderRadius.circular(30),
             child: BottomNavigationBar(
-              backgroundColor: Colors.white,
-              selectedItemColor: Colors.redAccent,
-              unselectedItemColor: Colors.black,
-              currentIndex: myCurrentIndex,
-              onTap: (index) {
-                setState(() {
-                  myCurrentIndex = index;
-                });
-              },
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: "Home",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.favorite),
-                  label: "Favorite",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.settings),
-                  label: "Setting",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  label: "Profile",
-                ),
-              ],
-            )),
-      ),
-      body: pages[myCurrentIndex],
-      endDrawer: Drawer(
-        child: ListView(
-          children: [
-            ListTile(
-              title: const Text('About'),
-              onTap: () {},
-              contentPadding: const EdgeInsets.only(top: 50, left: 70),
+          backgroundColor: Color.fromARGB(255, 13, 14, 13),
+          selectedItemColor: Color.fromARGB(255, 46, 126, 112),
+          unselectedItemColor: Colors.black,
+          currentIndex: myCurrentIndex,
+          onTap: (index) {
+            setState(() {
+              myCurrentIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Home",
             ),
-            ListTile(
-              title: const Text('Help'),
-              contentPadding: const EdgeInsets.only(left: 70),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.library_books),
+              label: "Listed Book",
             ),
-            ListTile(
-              title: const Text('Dark Mode'),
-              contentPadding: const EdgeInsets.only(left: 70),
+            BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications),
+              label: "Notifications",
             ),
-            ListTile(
-              title: const Text('Freelancer Mode'),
-              contentPadding: const EdgeInsets.only(left: 70),
-            ),
-            ListTile(
-              title: const Text('Account Settings'),
-              contentPadding: const EdgeInsets.only(left: 70),
-            ),
-            ListTile(
-              title: const Text('Log out'),
-              onTap: () {
-                // Add your logic for logging out
-                signUserOut();
-              },
-              leading: Icon(Icons.logout),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: "Profile",
             ),
           ],
-        ),
+        )),
       ),
+      body: pages[myCurrentIndex],
     );
   }
 

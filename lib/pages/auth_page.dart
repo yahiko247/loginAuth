@@ -5,6 +5,7 @@ import 'package:practice_login/pages/botto_nav_bar.dart';
 import 'package:practice_login/pages/home_page.dart';
 import 'package:practice_login/pages/homepage.dart';
 import 'package:practice_login/pages/login_page.dart';
+import 'package:practice_login/services/login_register.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -22,7 +23,7 @@ class AuthPage extends StatelessWidget {
 
           //user is not log in
           else {
-            return LoginPage();
+            return LoginOrRegisterPage();
           }
         },
       ),

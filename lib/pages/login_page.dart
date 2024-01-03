@@ -5,9 +5,12 @@ import 'package:practice_login/Components/my_button.dart';
 import 'package:practice_login/Components/my_textfield.dart';
 import 'package:practice_login/Components/square_tile.dart';
 import 'package:practice_login/register_page/register.dart';
+import 'package:practice_login/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final void Function()? onTap;
+  const LoginPage({super.key, required this.onTap});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -16,7 +19,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   //text editing  controllers
   final emailcontroller = TextEditingController();
-
   final passwordcontroller = TextEditingController();
 
   //sign user in method
@@ -31,19 +33,15 @@ class _LoginPageState extends State<LoginPage> {
         });
 
     //try sign in
+    final authService = Provider.of<AuthService>(context, listen: false);
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailcontroller.text, password: passwordcontroller.text);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found that email/password');
-      } else if (e.code == 'wrong-password') {
-        print('wrong password');
-      }
+      await authService.signIn(emailcontroller.text, passwordcontroller.text);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     }
 
     //pop the circle
-    Navigator.pop(context);
+    if (mounted) Navigator.pop(context);
   }
 
   @override
@@ -170,14 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(width: 4),
                           GestureDetector(
-                            onTap: () async {
-                              var result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const RegisterForm(),
-                                ),
-                              );
-                            },
+                            onTap: widget.onTap,
                             child: SizedBox(
                               child: Container(
                                 padding: const EdgeInsets.all(16),
