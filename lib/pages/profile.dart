@@ -22,13 +22,46 @@ class ProfilePage extends StatelessWidget {
             flexibleSpace: Row(
               children: [
                 Container(
-                    padding: EdgeInsets.only(top: 20, left: 20),
+                    padding: EdgeInsets.only(top: 10, left: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Image.asset('images/Avatar1.png', height: 120),
-                        SizedBox(width: 10),
-                        Text(currentUser.email!)
+                        Container(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10, top: 50),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(currentUser.email!.toUpperCase(),
+                                      style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold)),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Container(
+                                    width: 120,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                        color: const Color.fromARGB(
+                                            255, 209, 207, 207),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: const Padding(
+                                      padding: EdgeInsets.only(left: 5, top: 3),
+                                      child: Text(
+                                        'Gold Member',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 9),
+                                      ),
+                                    ),
+                                  )
+                                ]),
+                          ),
+                        )
                       ],
                     )),
               ],

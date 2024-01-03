@@ -36,12 +36,8 @@ class _RegisterFormState extends State<RegisterForm> {
     String? myLastName = lastNameController.text;
 
     try {
-      await authService.signUp(
-        emailController.text,
-        passwordController.text,
-        firstNameController.text,
-        myLastName
-      );
+      await authService.signUp(emailController.text, passwordController.text,
+          firstNameController.text, myLastName);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -194,8 +190,8 @@ class _RegisterFormState extends State<RegisterForm> {
                           onTap: widget.onTap,
                           child: SizedBox(
                             child: Container(
-                                padding: EdgeInsets.all(16),
-                                child: Text('Sign Up',
+                                padding: const EdgeInsets.all(16),
+                                child: const Text('Sign Up',
                                     style: TextStyle(color: Colors.blue))),
                           ),
                         ),

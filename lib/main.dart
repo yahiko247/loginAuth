@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:practice_login/Components/onBoardpageButton.dart';
 import 'package:practice_login/onBoardPage/onboard.dart';
 import 'package:practice_login/pages/auth_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,8 +26,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const OnBoard(),
-      /*theme: lightMode,
-      darkTheme: darkMode,*/
+      //theme: lightMode,
+      //darkTheme: darkMode,
     );
   }
 }
