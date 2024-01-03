@@ -10,12 +10,13 @@ class ChatBox extends StatefulWidget {
   final String userFirstName;
   final String userLastName;
 
-  const ChatBox({Key? key,
-    required this.userEmail,
-    required this.userId,
-    required this.userFirstName,
-    required this.userLastName
-  }) : super(key: key);
+  const ChatBox(
+      {Key? key,
+      required this.userEmail,
+      required this.userId,
+      required this.userFirstName,
+      required this.userLastName})
+      : super(key: key);
 
   @override
   State<ChatBox> createState() => _ChatBoxState();
@@ -28,22 +29,21 @@ class _ChatBoxState extends State<ChatBox> {
 
   void sendMessage() async {
     if (_messageInputController.text.isNotEmpty) {
-      await _chatService.sendMessage(widget.userId, widget.userEmail, _messageInputController.text);
+      await _chatService.sendMessage(
+          widget.userId, widget.userEmail, _messageInputController.text);
       _messageInputController.clear();
     }
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         actions: [
           Container(
             padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
             child: Row(
-              children: [
-                Icon(Icons.menu)
-              ],
+              children: [Icon(Icons.menu)],
             ),
           )
         ],
@@ -51,7 +51,12 @@ class _ChatBoxState extends State<ChatBox> {
           margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
           child: Column(
             children: [
-              Align(child: Text('${widget.userFirstName} ${widget.userLastName}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),), alignment: Alignment.centerLeft),
+              Align(
+                  child: Text(
+                    '${widget.userFirstName} ${widget.userLastName}',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  alignment: Alignment.centerLeft),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -75,7 +80,8 @@ class _ChatBoxState extends State<ChatBox> {
 
   Widget _buildMessageList() {
     return StreamBuilder(
-      stream: _chatService.getMessages(widget.userId, _firebaseAuth.currentUser!.uid),
+      stream: _chatService.getMessages(
+          widget.userId, _firebaseAuth.currentUser!.uid),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Error ${snapshot.error}');
@@ -87,7 +93,9 @@ class _ChatBoxState extends State<ChatBox> {
 
         return ListView(
           reverse: true,
-          children: snapshot.data!.docs.reversed.map((document) => _buildMessageItem(document)).toList(),
+          children: snapshot.data!.docs.reversed
+              .map((document) => _buildMessageItem(document))
+              .toList(),
         );
       },
     );
@@ -97,17 +105,21 @@ class _ChatBoxState extends State<ChatBox> {
     Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
     var currentUser = _firebaseAuth.currentUser!;
-    var alignment = (data['senderId'] == currentUser.uid) ? Alignment.centerRight : Alignment.centerLeft;
+    var alignment = (data['senderId'] == currentUser.uid)
+        ? Alignment.centerRight
+        : Alignment.centerLeft;
 
     return Container(
-      padding: EdgeInsets.all(15),
-      alignment: alignment,
-      child: Column(
-        children: [
-          ChatBubble(message: data['message'], sender: data['senderEmail'], msgtimestamp: (data['timestamp']) ?? Timestamp.now()),
-        ],
-      )
-    );
+        padding: EdgeInsets.all(15),
+        alignment: alignment,
+        child: Column(
+          children: [
+            ChatBubble(
+                message: data['message'],
+                sender: data['senderEmail'],
+                msgtimestamp: (data['timestamp']) ?? Timestamp.now()),
+          ],
+        ));
   }
 
   Widget _buildMessageInput() {
@@ -119,17 +131,20 @@ class _ChatBoxState extends State<ChatBox> {
             child: TextFormField(
               controller: _messageInputController,
               decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(vertical: 13, horizontal: 13),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 13, horizontal: 13),
                   hintText: 'Enter a message',
                   border: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.blue, width: 1),
-                      borderRadius: BorderRadius.circular(8.0)
-                  )
-              ),
+                      borderRadius: BorderRadius.circular(8.0))),
             ),
           ),
           SizedBox(width: 13),
-          IconButton(onPressed: sendMessage, icon: Icon(Icons.send), color: Colors.black, iconSize: 25)
+          IconButton(
+              onPressed: sendMessage,
+              icon: Icon(Icons.send),
+              color: Colors.black,
+              iconSize: 25)
         ],
       ),
     );
