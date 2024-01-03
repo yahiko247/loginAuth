@@ -76,16 +76,16 @@ class _ChatPageState extends State<ChatPage> {
         builder: (context, currentUserDataSnapshot) {
 
           if (currentUserDataSnapshot.hasError) {
-            return Text('Error Loading Chat Page');
+            return const Text('Error Loading Chat Page');
           } else if (currentUserDataSnapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           Map<String, dynamic>? currentUserData = currentUserDataSnapshot.data!.data();
           List<dynamic> checkList = currentUserData!['chat_room_keys'];
           if (checkList.isEmpty) {
             return Container(
-                padding: EdgeInsets.all(60),
+                padding: const EdgeInsets.all(60),
                 child: const Center(
                     child: Text(
                         'It\'s quiet here, tap the button below to start a conversation. '
