@@ -1,10 +1,7 @@
-import 'dart:html';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/Components/chat_bubble.dart';
-import 'package:practice_login/Components/my_textfield.dart';
 import 'package:practice_login/services/chat/chat_service.dart';
 
 class ChatBox extends StatefulWidget {
