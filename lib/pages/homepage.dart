@@ -1,16 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_login/Components/my_list_tile.dart';
 import 'package:practice_login/Components/my_post_button.dart';
 import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/pages/chat_page.dart';
 import 'package:practice_login/pages/profile.dart';
-import 'package:practice_login/services/auth_service.dart';
-import 'package:provider/provider.dart';
-import 'package:practice_login/services/auth_service.dart';
 import 'package:practice_login/Components/my_textfield.dart';
-import 'package:intl/intl.dart';
+
 
 class HomePage2 extends StatefulWidget {
   //testing http json placeholder from here =>
@@ -75,7 +71,7 @@ class _HomePage2 extends State<HomePage2> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 25, right: 25),
+              padding: const EdgeInsets.only(top: 10, right: 10,left: 10),
               child: Row(
                 children: [
                   Expanded(
@@ -117,7 +113,7 @@ class _HomePage2 extends State<HomePage2> {
 
                         String message = post['PostMessage'];
                         String userEmail = post['UserEmail'];
-                        Timestamp timestamp = post['TimeStamp'];
+                        /*Timestamp timestamp = post['TimeStamp'];*/
                         Timestamp postTimeStamp = posts[index]['TimeStamp'];
                         String formattedTimestamp = _firestoreDatabase
                             .formatPostTimeStamp(postTimeStamp);
