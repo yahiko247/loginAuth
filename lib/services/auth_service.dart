@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
-  //signIn
+  // Sign In
   Future<UserCredential> signIn(String email, password) async {
     try {
       UserCredential userCredential = await _firebaseAuth
@@ -20,7 +19,8 @@ class AuthService extends ChangeNotifier {
         _fireStore.collection('users').doc(userCredential.user!.uid).set({
           'uid' : userCredential.user!.uid,
           'email' : email,
-          'contacts': []
+          'contacts': [],
+          'chat_room_keys': []
         }, SetOptions(merge: true));
       }
       return userCredential;
@@ -29,6 +29,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  // Sign Up
   Future<UserCredential> signUp(String email, password, firstName, String? lastName) async {
     try {
       UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
@@ -39,6 +40,7 @@ class AuthService extends ChangeNotifier {
         'uid' : userCredential.user!.uid,
         'email' : email,
         'contacts' : [],
+        'chat_room_keys' : [],
         'first_name' : firstName,
         'last_name' : lastName
       });
@@ -48,6 +50,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  // Sign Out
   Future<void> signOut() async {
     return await FirebaseAuth.instance.signOut();
   }

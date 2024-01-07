@@ -1,15 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_login/pages/add_chat.dart';
-import 'package:practice_login/pages/chat_box.dart';
+import 'package:practice_login/pages/chat/add_chat.dart';
+import 'package:practice_login/pages/chat/chat_box.dart';
 import 'package:practice_login/services/chat/chat_service.dart';
 import 'package:practice_login/services/user_data_services.dart';
-import 'package:practice_login/theme/dark_mode.dart';
-import 'package:practice_login/theme/light_mode.dart';
 
 class ChatPage extends StatefulWidget {
-
   const ChatPage({Key? key}) : super(key: key);
 
   @override
@@ -18,85 +15,106 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ChatService _chatService = ChatService();
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
-
   final TextEditingController _searchController = TextEditingController();
+
+  String formatPreviewMessage(String message) {
+    String formattedMessage = '';
+    if(message.contains('\n')) {
+      formattedMessage = message.split(RegExp(r'\r?\n'))[0];
+      if (formattedMessage.length > 20) {
+        formattedMessage = '${formattedMessage.substring(0, 20)}...';
+      } else {
+        formattedMessage = '$formattedMessage...';
+      }
+    } else if (message.length > 20) {
+      formattedMessage = '${message.substring(0, 20)}...';
+    } else {
+      formattedMessage = message;
+    }
+    return formattedMessage;
+  }
 
   @override
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chats'),
-        titleSpacing: 0,
+        title: const Text('Chats'),
         centerTitle: true,
         actions: [
           InkWell(
             borderRadius: BorderRadius.circular(100),
-            onTap: () {},
+            onTap: () {
+              // Logic here
+            },
             child: Container(
-              padding: EdgeInsets.all(15),
-              child: Icon(Icons.menu),
+                padding: const EdgeInsets.all(15),
+                child: const Icon(Icons.menu)
             ),
           )
-        ],
+        ]
       ),
-      body: Column(children: [
-        _chatSearchBar(), Expanded(child: _buildChatPage())
-      ],),
-
+      body: Container(
+          padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+          child: Column(
+              children: [
+                _chatSearchBar(),
+                Expanded(child: _buildChatPage())
+              ]
+          )
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {Navigator.of(context).push(PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) {return AddChat();},
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            var begin = Offset(.900, 0.0);
-            var end = Offset.zero;
-            var curve = Curves.ease;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-            var offsetAnimation = animation.drive(tween);
-            return SlideTransition(
-              position: offsetAnimation,
-              child: child,
-            );},
-          transitionDuration: Duration(milliseconds: 300),
-        ),);},
-        child: Icon(Icons.edit),
-        backgroundColor: Color.fromARGB(255, 124, 210, 231),
+        onPressed: () {
+          Navigator.of(context).push(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) {return const AddChat();},
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                var begin = const Offset(.900, 0.0);
+                var end = Offset.zero;
+                var curve = Curves.ease;
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: child);
+                },
+              transitionDuration: const Duration(milliseconds: 300),
+            ));
+          },
+          backgroundColor: const Color.fromARGB(255, 124, 210, 231),
+          child: const Icon(Icons.edit)
       ),
     );
   }
 
-  //Build User List
-
   Widget _buildChatPage() {
-
     return StreamBuilder(
         stream: _userDataServices.getCurrentUserDataAsStream(),
         builder: (context, currentUserDataSnapshot) {
 
           if (currentUserDataSnapshot.hasError) {
-            return Text('Error Loading Chat Page');
+            return const Text('Error Loading Chat Page');
           } else if (currentUserDataSnapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           Map<String, dynamic>? currentUserData = currentUserDataSnapshot.data!.data();
           List<dynamic> checkList = currentUserData!['chat_room_keys'];
           if (checkList.isEmpty) {
             return Container(
-                padding: EdgeInsets.all(60),
+                padding: const EdgeInsets.all(60),
                 child: const Center(
                     child: Text(
-                        'It\'s quiet here, tap the button below to start a conversation. '
-                            '\n\nNOTE (FOR DEBUG): Use test@gmail.com para naay mu tunga nga messages',
+                        'It\'s quiet here, tap the button below to start a conversation.',
                         textAlign: TextAlign.center
                     )
                 )
             );
           }
-
           return ListView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            cacheExtent: 100,
             children: _buildChatPageItems(currentUserData),
           );
         }
@@ -104,16 +122,16 @@ class _ChatPageState extends State<ChatPage> {
 
   }
 
-  List<Widget> _buildChatPageItems(Map<String, dynamic>? _currentUserData) {
+  List<Widget> _buildChatPageItems(Map<String, dynamic>? currentUserData) {
 
-    List<dynamic> chatKeysList = _currentUserData!['chat_room_keys'];
+    List<dynamic> chatKeysList = currentUserData!['chat_room_keys'];
 
     List<Widget> chats = chatKeysList.map((key) {
       return StreamBuilder(
           stream: _chatService.getChatRoom(key),
           builder: (context, chatRoomSnapshot) {
             if (chatRoomSnapshot.hasError) {
-              return Text('Error loading messages');
+              return const Text('Error loading messages');
             } else if (chatRoomSnapshot.connectionState == ConnectionState.waiting) {
               return Container();
             }
@@ -129,25 +147,25 @@ class _ChatPageState extends State<ChatPage> {
                 builder: (context, userDataSnapshot) {
                   if (userDataSnapshot.hasError) {
                     return ListTile(
-                      contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 5),
-                      title: Text('Error Loading Chat'),
+                      contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      title: const Text('Error Loading Chat'),
                       leading: Container(
-                        child: Icon(Icons.person, size: 35),
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
+                        child: const Icon(Icons.person, size: 35),
                       ),
-                      subtitle: Text(' '),
+                      subtitle: const Text(''),
                     );
                   } else if (userDataSnapshot.connectionState == ConnectionState.waiting) {
                     return ListTile(
-                      contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 5),
-                      title: Text('User'),
+                      contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      title: const Text('User'),
                       leading: Container(
-                        child: Icon(Icons.person, size: 35),
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
+                        child: const Icon(Icons.person, size: 35),
                       ),
-                      subtitle: Text(' '),
+                      subtitle: const Text(''),
                     );
                   }
 
@@ -155,21 +173,19 @@ class _ChatPageState extends State<ChatPage> {
                   String userFullName = '${userData!['first_name']} ${userData['last_name']}';
 
                   return ListTile(
-                    contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 5),
+                    contentPadding: const EdgeInsets.all(0),
                     title: Text(userFullName),
                     leading: Container(
-                      child: Icon(Icons.person, size: 35),
-                      padding: EdgeInsets.all(5),
+                      padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
+                      child: const Icon(Icons.person, size: 35),
                     ),
                     subtitle: Text(
                         '${(chatRoomData['latest_message']['senderId'] == _auth.currentUser!.uid) ? 'You' : userData['first_name']}'
-                            ': ${chatRoomData['latest_message']['message']} · ${_chatService.formatMsgTimestamp(chatRoomData['latest_message_timestamp'] ?? Timestamp.now())}'
+                            ': ${formatPreviewMessage(chatRoomData['latest_message']['message'])} · ${_chatService.formatMsgTimestamp(chatRoomData['latest_message_timestamp'] ?? Timestamp.now())}'
                     ),
                     onLongPress: () {
-                      showDialog(context: context, builder: (context) => Center(child: CircularProgressIndicator(
-
-                      )));
+                      showDialog(context: context, builder: (context) => const Center(child: CircularProgressIndicator()));
                     },
                     onTap: () {
                       Navigator.push(
@@ -195,21 +211,23 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _chatSearchBar() {
     return Container(
-      padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
       child: Row(
         children: [
           Expanded(
             child: TextFormField(
-              onTap: () {print('wow');},
+              autofocus: false,
+              onTap: () {
+              },
               controller: _searchController,
               decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
+                  focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                   hintText: 'Search',
-                  prefixIcon: Container(child: Icon(Icons.search, color: Colors.grey[600],), padding: EdgeInsets.fromLTRB(5, 0, 0, 0),),
+                  prefixIcon: Container(padding: const EdgeInsets.fromLTRB(0, 0, 0, 0), child: Icon(Icons.contacts, color: Colors.grey[600],),),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0)
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 13, horizontal: 13)
+                  contentPadding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13)
               ),
             ),
           )

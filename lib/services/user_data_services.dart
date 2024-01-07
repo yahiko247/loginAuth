@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_login/model/message.dart';
-
-// USE THIS DART FILE TO HANDLE USER DATA MANIPULATION AND HANDLING (GET, UPDATE, DELETE)
 
 class UserDataServices extends ChangeNotifier {
   final String userID;
@@ -13,26 +10,32 @@ class UserDataServices extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
+  // Current User Data as Stream
   Stream<DocumentSnapshot<Map<String, dynamic>>> getCurrentUserDataAsStream() {
     return _fireStore.collection('users').doc(userID).snapshots();
   }
 
+  // Current User Data as Future
   Future<DocumentSnapshot<Map<String, dynamic>>> getCurrentUserDataAsFuture() {
     return _fireStore.collection('users').doc(userID).get();
   }
 
+  // User Data as Stream
   Stream<DocumentSnapshot<Map<String, dynamic>>> getUserDataAsStream(String uid) {
     return _fireStore.collection('users').doc(uid).snapshots();
   }
 
+  // User Data as Future
   Future<DocumentSnapshot<Map<String, dynamic>>> getUserDataAsFuture(String uid) {
     return _fireStore.collection('users').doc(uid).get();
   }
 
+  // User Data Using Email
   Future<QuerySnapshot<Map<String, dynamic>>> getUserDataThroughEmail(String email) {
     return _fireStore.collection('users').where('email', isEqualTo: email).limit(1).get();
   }
 
+  // Used for handling the 'contacts' field of each user
   Future<void> handleContactList(String newContactId) async {
     DocumentSnapshot<Map<String, dynamic>> userDataSnapshot = await getCurrentUserDataAsFuture();
 
@@ -69,6 +72,7 @@ class UserDataServices extends ChangeNotifier {
     }
   }
 
+  // Used for handling the 'chat_room_keys' field of each user
   Future<void> handleChatRoomKeys(String chatRoomID, String receiverID) async {
     DocumentSnapshot<Map<String, dynamic>> userDataSnapshot = await getCurrentUserDataAsFuture();
     DocumentSnapshot<Map<String, dynamic>> otherUserDataSnapshot = await getUserDataAsFuture(receiverID);
