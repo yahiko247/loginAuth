@@ -18,28 +18,28 @@ class ChatService extends ChangeNotifier {
   }
 
   Future<void> sendMessage(String receiverId, String receiverEmail, String message) async {
-    final String _currentUserId = _firebaseAuth.currentUser!.uid;
-    final String _currentUserEmail = _firebaseAuth.currentUser!.email.toString();
+    final String currentUserId = _firebaseAuth.currentUser!.uid;
+    final String currentUserEmail = _firebaseAuth.currentUser!.email.toString();
 
     Message newMessage = Message(
-        senderId: _currentUserId,
-        senderEmail: _currentUserEmail,
+        senderId: currentUserId,
+        senderEmail: currentUserEmail,
         receiverId: receiverId,
         receiverEmail: receiverEmail,
         message: message
     );
 
     try {
-      _userDataServices.handleChatRoomKeys(generateChatRoomID([_currentUserId, receiverId]), receiverId);
+      _userDataServices.handleChatRoomKeys(generateChatRoomID([currentUserId, receiverId]), receiverId);
       _userDataServices.handleContactList(receiverId);
       await _fireStore.collection('chat_rooms')
-          .doc(generateChatRoomID([_currentUserId, receiverId]))
+          .doc(generateChatRoomID([currentUserId, receiverId]))
           .collection('messages')
           .add(newMessage.mapMessage());
       await _fireStore.collection('chat_rooms')
-          .doc(generateChatRoomID([_currentUserId, receiverId]))
+          .doc(generateChatRoomID([currentUserId, receiverId]))
           .set({
-        'members' : [_currentUserId, receiverId],
+        'members' : [currentUserId, receiverId],
         'latest_message' : newMessage.mapMessage(),
         'latest_message_timestamp' : FieldValue.serverTimestamp(),
       });
@@ -58,37 +58,36 @@ class ChatService extends ChangeNotifier {
   }
 
   Future<void> createChatRoom(String otherUserID, String otherUserEmail, String message) async {
-    final String _currentUserId = _firebaseAuth.currentUser!.uid;
-    final String _currentUserEmail = _firebaseAuth.currentUser!.email.toString();
+    final String currentUserId = _firebaseAuth.currentUser!.uid;
+    final String currentUserEmail = _firebaseAuth.currentUser!.email.toString();
 
     Message newMessage = Message(
-        senderId: _currentUserId,
-        senderEmail: _currentUserEmail,
+        senderId: currentUserId,
+        senderEmail: currentUserEmail,
         receiverId: otherUserID,
         receiverEmail: otherUserEmail,
         message: message);
 
-    ChatRoom newChatRoom = ChatRoom(latestMessage: newMessage.mapMessage(), members: [_currentUserId, otherUserID]);
-    // check if chat_rrom exists
+    ChatRoom newChatRoom = ChatRoom(latestMessage: newMessage.mapMessage(), members: [currentUserId, otherUserID]);
     DocumentSnapshot<Map<String, dynamic>> chatRoomCheck = await _fireStore
         .collection('chat_rooms')
-        .doc(generateChatRoomID([_currentUserId, otherUserID]))
+        .doc(generateChatRoomID([currentUserId, otherUserID]))
         .get();
     if (!chatRoomCheck.exists) {
       try {
         //create chat_room
         await _fireStore.collection('chat_rooms')
-            .doc(generateChatRoomID([_currentUserId, otherUserID]))
+            .doc(generateChatRoomID([currentUserId, otherUserID]))
             .set(newChatRoom.mapChatRoom());
         //add first message
         await _fireStore.collection('chat_rooms')
-            .doc(generateChatRoomID([_currentUserId, otherUserID]))
+            .doc(generateChatRoomID([currentUserId, otherUserID]))
             .collection('messages')
             .add(newMessage.mapMessage());
         //add chat_room_id to user: chat_room_keys
-        _userDataServices.handleChatRoomKeys(generateChatRoomID([_currentUserId, otherUserID]), otherUserID);
+        _userDataServices.handleChatRoomKeys(generateChatRoomID([currentUserId, otherUserID]), otherUserID);
       } catch (e) {
-        print(e);
+        throw Exception(e);
       }
     }
   }

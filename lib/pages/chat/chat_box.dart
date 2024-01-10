@@ -1,8 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_login/Components/chat_bubble.dart';
+
+// Dependencies
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+// Services / API
 import 'package:practice_login/services/chat/chat_service.dart';
+
+// Components
+import 'package:practice_login/components/chat/chat_bubble.dart';
+import 'package:practice_login/components/chat/chat_input.dart';
 
 class ChatBox extends StatefulWidget {
   final String userEmail;
@@ -23,17 +30,8 @@ class ChatBox extends StatefulWidget {
 }
 
 class _ChatBoxState extends State<ChatBox> {
-  final TextEditingController _messageInputController = TextEditingController();
   final ChatService _chatService = ChatService();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
-  void sendMessage() async {
-    if (_messageInputController.text.isNotEmpty) {
-      await _chatService.sendMessage(
-          widget.userId, widget.userEmail, _messageInputController.text);
-      _messageInputController.clear();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,27 +39,28 @@ class _ChatBoxState extends State<ChatBox> {
       appBar: AppBar(
         actions: [
           Container(
-            padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
-            child: Row(
+            padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+            child: const Row(
               children: [Icon(Icons.menu)],
             ),
           )
         ],
         title: Container(
-          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+          margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           child: Column(
             children: [
               Align(
-                  child: Text(
-                    '${widget.userFirstName} ${widget.userLastName}',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  alignment: Alignment.centerLeft),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '${widget.userFirstName} ${widget.userLastName}',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                )
+              ),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   widget.userEmail,
-                  style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
+                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
                 ),
               )
             ],
@@ -72,9 +71,9 @@ class _ChatBoxState extends State<ChatBox> {
       body: Column(
         children: [
           Expanded(child: _buildMessageList()),
-          _buildMessageInput(),
+          MessageInput(userId: widget.userId, userEmail: widget.userEmail),
         ],
-      ),
+      )
     );
   }
 
@@ -88,10 +87,12 @@ class _ChatBoxState extends State<ChatBox> {
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator(color: Colors.black));
+          return const Center(child: CircularProgressIndicator(color: Colors.black));
         }
 
         return ListView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          cacheExtent: 50,
           reverse: true,
           children: snapshot.data!.docs.reversed
               .map((document) => _buildMessageItem(document))
@@ -110,7 +111,7 @@ class _ChatBoxState extends State<ChatBox> {
         : Alignment.centerLeft;
 
     return Container(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         alignment: alignment,
         child: Column(
           children: [
@@ -122,31 +123,4 @@ class _ChatBoxState extends State<ChatBox> {
         ));
   }
 
-  Widget _buildMessageInput() {
-    return Container(
-      padding: EdgeInsets.all(13),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextFormField(
-              controller: _messageInputController,
-              decoration: InputDecoration(
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 13, horizontal: 13),
-                  hintText: 'Enter a message',
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue, width: 1),
-                      borderRadius: BorderRadius.circular(8.0))),
-            ),
-          ),
-          SizedBox(width: 13),
-          IconButton(
-              onPressed: sendMessage,
-              icon: Icon(Icons.send),
-              color: Colors.black,
-              iconSize: 25)
-        ],
-      ),
-    );
-  }
 }

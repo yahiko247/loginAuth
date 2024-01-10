@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:practice_login/Components/my_list_tile.dart';
 import 'package:practice_login/Components/my_post_button.dart';
 import 'package:practice_login/database/firestore.dart';
-import 'package:practice_login/pages/chat_page.dart';
+import 'package:practice_login/pages/chat/chat_page.dart';
 import 'package:practice_login/pages/profile.dart';
 import 'package:practice_login/services/auth_service.dart';
 import 'package:provider/provider.dart';
