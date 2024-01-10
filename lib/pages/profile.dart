@@ -17,12 +17,12 @@ class ProfilePage extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(150.0),
+          preferredSize: const Size.fromHeight(150.0),
           child: AppBar(
             flexibleSpace: Row(
               children: [
                 Container(
-                    padding: EdgeInsets.only(top: 10, left: 20),
+                    padding: const EdgeInsets.only(top: 10, left: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -66,7 +66,7 @@ class ProfilePage extends StatelessWidget {
                     )),
               ],
             ),
-            backgroundColor: Color.fromARGB(255, 124, 210, 231),
+            backgroundColor: const Color.fromARGB(255, 124, 210, 231),
           ),
         ),
         body: TabBarView(
@@ -104,7 +104,7 @@ class ProfilePage extends StatelessWidget {
                 title: const Text('Chats'),
                 onTap: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ChatPage()));
+                      MaterialPageRoute(builder: (context) => const ChatPage()));
                 },
                 contentPadding: const EdgeInsets.only(left: 70),
               ),
@@ -114,7 +114,7 @@ class ProfilePage extends StatelessWidget {
                   // Add your logic for logging out
                   signUserOut();
                 },
-                leading: Icon(Icons.logout),
+                leading: const Icon(Icons.logout),
               ),
             ],
           ),

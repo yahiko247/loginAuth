@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:practice_login/services/auth_service.dart';
 import 'package:practice_login/Components/my_textfield.dart';
 import 'package:intl/intl.dart';
-
+import 'feedback_page.dart';
 class HomePage2 extends StatefulWidget {
   //testing http json placeholder from here =>
   const HomePage2({super.key});
@@ -240,6 +240,16 @@ class _HomePage2 extends State<HomePage2> {
                 signUserOut();
               },
               leading: const Icon(Icons.logout),
+            ),
+
+            ListTile(
+              title: const Text('Debug/Test Feedback Page'),
+              onTap: () {
+                // Add your logic for logging out
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Ratings()));
+              },
+
             ),
           ],
         ),

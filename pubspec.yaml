@@ -43,7 +43,7 @@ dependencies:
   email_validator: ^2.1.16
   provider:
   smooth_page_indicator: ^1.1.0
-
+  flutter_rating_bar: ^4.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
