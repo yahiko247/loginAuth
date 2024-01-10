@@ -32,6 +32,7 @@ class _OnBoard extends State<OnBoard> {
         child: PageView(
           controller: controller,
           children: [
+            // page 1
             Container(
               color: Colors.grey[300],
               child: const Center(
@@ -52,6 +53,7 @@ class _OnBoard extends State<OnBoard> {
                 ),
               ),
             ),
+            //2
             Container(
               color: Colors.grey[300],
               child: Center(
@@ -98,6 +100,7 @@ class _OnBoard extends State<OnBoard> {
                 )
               ])),
             ),
+            //page 3
             Container(
               color: Colors.grey[300],
               child: Center(
