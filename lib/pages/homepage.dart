@@ -1,23 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_login/Components/my_list_tile.dart';
 import 'package:practice_login/Components/my_post_button.dart';
 import 'package:practice_login/database/firestore.dart';
-import 'package:practice_login/pages/chat/chat_box.dart';
 import 'package:practice_login/pages/chat/chat_page.dart';
 import 'package:practice_login/pages/profile.dart';
-import 'package:practice_login/services/auth_service.dart';
-import 'package:provider/provider.dart';
-import 'package:practice_login/services/auth_service.dart';
 import 'package:practice_login/Components/my_textfield.dart';
-import 'package:intl/intl.dart';
-import 'feedback_page.dart';
-
-import 'package:practice_login/components/end_drawer.dart';
 
 class HomePage2 extends StatefulWidget {
-  //testing http json placeholder from here =>
+
   const HomePage2({super.key});
 
   @override
@@ -75,7 +66,7 @@ class _HomePage2 extends State<HomePage2> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.message),
+            icon: const Icon(Icons.message),
             onPressed: () {
               Navigator.push(
                 context,
