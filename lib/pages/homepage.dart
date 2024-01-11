@@ -6,9 +6,9 @@ import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/pages/chat/chat_page.dart';
 import 'package:practice_login/pages/profile.dart';
 import 'package:practice_login/Components/my_textfield.dart';
+import 'package:practice_login/pages/stalking_page.dart';
 
 class HomePage2 extends StatefulWidget {
-
   const HomePage2({super.key});
 
   @override
@@ -40,6 +40,15 @@ class _HomePage2 extends State<HomePage2> {
   void signUserOut() {
     FirebaseAuth.instance.signOut();
     /* final authService = Provider.of<AuthService>(context, listen: false); */
+  }
+
+  void NavigatorDetails(
+    String userEmail,
+  ) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => StalkPage(userEmail: userEmail)));
   }
 
   @override
@@ -146,7 +155,12 @@ class _HomePage2 extends State<HomePage2> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(userEmail),
+                                    GestureDetector(
+                                      onTap: () {
+                                        NavigatorDetails(userEmail);
+                                      },
+                                      child: Text(userEmail),
+                                    ),
                                     Text(
                                       formattedTimestamp,
                                       style: const TextStyle(fontSize: 10),

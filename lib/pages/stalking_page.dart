@@ -1,18 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_login/nested_tab/nestedtab.dart';
-import 'package:practice_login/components/end_drawer.dart';
+
+import 'package:practice_login/nested_tab/nestedtab2.dart';
 import 'package:practice_login/services/user_data_services.dart';
 
-class ProfilePage extends StatelessWidget {
-  ProfilePage({super.key});
+class StalkPage extends StatelessWidget {
+  String userEmail;
+  StalkPage({super.key, required this.userEmail});
   final currentUser = FirebaseAuth.instance.currentUser!;
   final UserDataServices _userDataServices =
       UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
-
-  void signUserOut() {
-    FirebaseAuth.instance.signOut();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +56,7 @@ class ProfilePage extends StatelessWidget {
 
                                         Map<String, dynamic>? userData =
                                             userDataSnapshot.data!.data()!;
-                                        return Text(
-                                            '${userData['first_name']} ${userData['last_name']}',
+                                        return Text(userEmail,
                                             style: const TextStyle(
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.bold));
@@ -94,16 +90,34 @@ class ProfilePage extends StatelessWidget {
                     )),
               ],
             ),
-            backgroundColor: const Color.fromARGB(255, 124, 210, 231),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.all(1),
+                child: IconButton(
+                  icon: Icon(Icons.messenger),
+                  onPressed: () {},
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: IconButton(
+                  icon: Icon(Icons.book),
+                  onPressed: () {},
+                ),
+              )
+            ],
+            backgroundColor: Color.fromARGB(255, 107, 199, 191),
           ),
         ),
         body: TabBarView(
           children: <Widget>[
-            NestedTabBar('first Page'),
-            NestedTabBar('secondTab')
+            NestedTabBar2('first', userEmail: userEmail),
+            NestedTabBar2(
+              'second tab',
+              userEmail: userEmail,
+            )
           ],
         ),
-        endDrawer: const MyDrawer(),
       ),
     );
   }
