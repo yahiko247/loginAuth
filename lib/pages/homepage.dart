@@ -12,6 +12,8 @@ import 'package:practice_login/services/auth_service.dart';
 import 'package:practice_login/Components/my_textfield.dart';
 import 'package:intl/intl.dart';
 import 'feedback_page.dart';
+
+import 'package:practice_login/components/end_drawer.dart';
 class HomePage2 extends StatefulWidget {
   //testing http json placeholder from here =>
   const HomePage2({super.key});
@@ -201,59 +203,7 @@ class _HomePage2 extends State<HomePage2> {
           ],
         ),
       ),
-      endDrawer: Drawer(
-        child: ListView(
-          children: [
-            ListTile(
-              title: const Text('About'),
-              onTap: () {},
-              contentPadding: const EdgeInsets.only(top: 50, left: 70),
-            ),
-            const ListTile(
-              title: Text('Help'),
-              contentPadding: EdgeInsets.only(left: 70),
-            ),
-            const ListTile(
-              title: Text('Dark Mode'),
-              contentPadding: EdgeInsets.only(left: 70),
-            ),
-            const ListTile(
-              title: Text('Freelancer Mode'),
-              contentPadding: EdgeInsets.only(left: 70),
-            ),
-            const ListTile(
-              title: Text('Account Settings'),
-              contentPadding: EdgeInsets.only(left: 70),
-            ),
-            ListTile(
-              title: const Text('Chats'),
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ChatPage()));
-              },
-              contentPadding: const EdgeInsets.only(left: 70),
-            ),
-            ListTile(
-              title: const Text('Log out'),
-              onTap: () {
-                // Add your logic for logging out
-                signUserOut();
-              },
-              leading: const Icon(Icons.logout),
-            ),
-
-            ListTile(
-              title: const Text('Debug/Test Feedback Page'),
-              onTap: () {
-                // Add your logic for logging out
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Ratings()));
-              },
-
-            ),
-          ],
-        ),
-      ),
+      endDrawer: const MyDrawer(),
     );
   }
 }

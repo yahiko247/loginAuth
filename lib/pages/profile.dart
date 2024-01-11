@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/nested_tab/nestedtab.dart';
-import 'package:practice_login/pages/chat/chat_page.dart';
-
+import 'package:practice_login/components/end_drawer.dart';
 class ProfilePage extends StatelessWidget {
   ProfilePage({super.key});
   final currentUser = FirebaseAuth.instance.currentUser!;
@@ -75,50 +74,7 @@ class ProfilePage extends StatelessWidget {
             NestedTabBar('secondTab')
           ],
         ),
-        endDrawer: Drawer(
-          child: ListView(
-            children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 124, 210, 231),
-                ),
-                child: Text('A B OU T'),
-              ),
-              const ListTile(
-                title: const Text('Help'),
-                contentPadding: const EdgeInsets.only(left: 70),
-              ),
-              const ListTile(
-                title: const Text('Dark Mode'),
-                contentPadding: const EdgeInsets.only(left: 70),
-              ),
-              const ListTile(
-                title: const Text('Freelancer Mode'),
-                contentPadding: const EdgeInsets.only(left: 70),
-              ),
-              const ListTile(
-                title: const Text('Account Settings'),
-                contentPadding: const EdgeInsets.only(left: 70),
-              ),
-              ListTile(
-                title: const Text('Chats'),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const ChatPage()));
-                },
-                contentPadding: const EdgeInsets.only(left: 70),
-              ),
-              ListTile(
-                title: const Text('log out'),
-                onTap: () {
-                  // Add your logic for logging out
-                  signUserOut();
-                },
-                leading: const Icon(Icons.logout),
-              ),
-            ],
-          ),
-        ),
+        endDrawer: const MyDrawer(),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:practice_login/register_page/register.dart';
 import 'package:practice_login/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
+
 class LoginPage extends StatefulWidget {
   final void Function()? onTap;
   const LoginPage({super.key, required this.onTap});
