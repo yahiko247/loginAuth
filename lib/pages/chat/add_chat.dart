@@ -24,6 +24,7 @@ class _AddChatState extends State<AddChat> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: const Text('Contacts'),
         titleSpacing: 0,
         centerTitle: true,
@@ -116,7 +117,7 @@ class _ContactListState extends State<ContactList> {
                   style: const TextStyle(fontSize: 16),
                   searchTextController: _searchController,
                   builder: (list, index, item) {
-                    return ContactUserItem(contact: item, doublePop: false);
+                    return ContactUserItem(contact: item);
                   },
                   initialList: contacts,
                   filter: (p0) {
@@ -178,10 +179,9 @@ class ContactUser {
 
 class ContactUserItem extends StatelessWidget {
   final ContactUser contact;
-  final bool? doublePop;
   final Color? textColor;
 
-  const ContactUserItem({Key? key, required this.contact, this.doublePop, this.textColor}) : super(key: key);
+  const ContactUserItem({Key? key, required this.contact, this.textColor}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -192,15 +192,12 @@ class ContactUserItem extends StatelessWidget {
         contentPadding: const EdgeInsets.all(0),
         title: Text('${contact.firstName} ${contact.lastName}', style: TextStyle(color: textColor ?? Colors.black),),
         leading: Container(
-          padding: const EdgeInsets.all(5),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
-          child: const Icon(Icons.person, size: 35),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
+          child: Image.asset('images/Avatar1.png', height: 50),
         ),
         subtitle: Text(contact.email, style: TextStyle(color: (textColor ?? Colors.black).withOpacity(0.6),),),
         onTap: () {
-          Navigator.pop(context);
-          doublePop ?? (doublePop == true) ? Navigator.pop(context) : null;
-          Navigator.push(
+          Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) =>
                   ChatBox(
@@ -327,7 +324,7 @@ class _AddContactDialogState extends State<AddContactDialog> {
           Map<String, dynamic>? userData = userDataSnapshot.data!.docs.first.data();
           ContactUser newContactUser = ContactUser.fromMap(userData);
 
-          return ContactUserItem(contact: newContactUser, textColor: Colors.white, doublePop: true);
+          return ContactUserItem(contact: newContactUser, textColor: Colors.white);
         }
     );
   }

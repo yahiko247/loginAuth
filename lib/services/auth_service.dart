@@ -14,15 +14,6 @@ class AuthService extends ChangeNotifier {
           email: email,
           password: password
       );
-      DocumentSnapshot<Map<String, dynamic>> userDocSnapshotUsingUID = await _fireStore.collection('users').doc(userCredential.user!.uid).get();
-      if (!userDocSnapshotUsingUID.exists) {
-        _fireStore.collection('users').doc(userCredential.user!.uid).set({
-          'uid' : userCredential.user!.uid,
-          'email' : email,
-          'contacts': [],
-          'chat_room_keys': []
-        }, SetOptions(merge: true));
-      }
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.code);
@@ -41,6 +32,7 @@ class AuthService extends ChangeNotifier {
         'email' : email,
         'contacts' : [],
         'chat_room_keys' : [],
+        'archived_chat_rooms' : [],
         'first_name' : firstName,
         'last_name' : lastName
       });

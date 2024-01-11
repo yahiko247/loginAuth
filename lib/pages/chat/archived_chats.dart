@@ -4,30 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:practice_login/Components/chat/empty_view.dart';
 import 'package:practice_login/components/chat/warning_dialog.dart';
 import 'package:practice_login/pages/chat/add_chat.dart';
-import 'package:practice_login/pages/chat/archived_chats.dart';
 import 'package:practice_login/pages/chat/chat_box.dart';
 import 'package:practice_login/services/chat/chat_service.dart';
 import 'package:practice_login/services/user_data_services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key}) : super(key: key);
+class ChatArchives extends StatefulWidget {
+  const ChatArchives({Key? key}) : super(key: key);
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatArchives> createState() => _ChatArchivesState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatArchivesState extends State<ChatArchives> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final ChatService _chatService = ChatService();
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
   final TextEditingController _searchController = TextEditingController();
-
-  @override void dispose() {
-    super.dispose();
-    _searchController.dispose();
-  }
 
   String formatPreviewMessage(String message) {
     String formattedMessage = '';
@@ -50,14 +43,12 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        title: const Text('Chats'),
-        centerTitle: true,
-        actions: const [],
+          title: const Text('Archived Chats'),
+          centerTitle: true,
+          actions: const []
       ),
       body: Column(
           children: [
-            _chatSearchBar(),
             Expanded(child: _buildChatPage())
           ]
       ),
@@ -121,41 +112,11 @@ class _ChatPageState extends State<ChatPage> {
             ),
             const Divider(thickness: 1),
             ListTile(
-              title: const Text('Archived Chats'),
+              title: const Text('Clear Archives'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ChatArchives()
-                    )
-                );
               },
-              leading: const Icon(Icons.archive),
-              contentPadding: const EdgeInsets.only(left: 35),
-            ),
-            ListTile(
-              title: const Text('Contacts'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.of(context).push(
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) {return const AddChat();},
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        var begin = const Offset(.900, 0.0);
-                        var end = Offset.zero;
-                        var curve = Curves.ease;
-                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                        var offsetAnimation = animation.drive(tween);
-                        return SlideTransition(
-                            position: offsetAnimation,
-                            child: child);
-                      },
-                      transitionDuration: const Duration(milliseconds: 300),
-                    )
-                );
-              },
-              leading: const Icon(Icons.contacts),
+              leading: const Icon(Icons.cleaning_services_rounded),
               contentPadding: const EdgeInsets.only(left: 35),
             ),
           ],
@@ -176,13 +137,13 @@ class _ChatPageState extends State<ChatPage> {
           }
 
           Map<String, dynamic>? currentUserData = currentUserDataSnapshot.data!.data();
-          List<dynamic> checkList = currentUserData!['chat_room_keys'];
+          List<dynamic> checkList = currentUserData!['archived_chat_rooms'];
           if (checkList.isEmpty) {
             return Container(
                 padding: const EdgeInsets.fromLTRB(60, 0, 60, 60),
                 child: const Center(
                     child: EmptyView(
-                      message: 'It\'s quiet here, tap the button below to start a conversation.',
+                      message: 'You have no archived chats.',
                       displayIcon: true,
                     )
                 )
@@ -200,7 +161,7 @@ class _ChatPageState extends State<ChatPage> {
 
   List<Widget> _buildChatPageItems(Map<String, dynamic>? currentUserData) {
 
-    List<dynamic> chatKeysList = currentUserData!['chat_room_keys'];
+    List<dynamic> chatKeysList = currentUserData!['archived_chat_rooms'];
 
     List<Widget> chats = chatKeysList.map((key) {
       return StreamBuilder(
@@ -226,8 +187,9 @@ class _ChatPageState extends State<ChatPage> {
                       contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                       title: const Text('Error Loading Chat'),
                       leading: Container(
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
-                        child: Image.asset('images/Avatar1.png', height: 50),
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
+                        child: const Icon(Icons.person, size: 35),
                       ),
                       subtitle: const Text(''),
                     );
@@ -236,8 +198,9 @@ class _ChatPageState extends State<ChatPage> {
                       contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                       title: const Text('User'),
                       leading: Container(
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
-                        child: Image.asset('images/Avatar1.png', height: 50),
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
+                        child: const Icon(Icons.person, size: 35),
                       ),
                       subtitle: const Text(''),
                     );
@@ -254,45 +217,19 @@ class _ChatPageState extends State<ChatPage> {
                         children: [
                           SlidableAction(
                             onPressed: (context) {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return WarningDialog(
-                                        title: 'Delete Chat?',
-                                        message: 'Are you sure you want to delete this conversation? (Only your copy of the conversation will be deleted)',
-                                        confirmButtonText: 'Delete',
-                                        confirmAction: () {
-                                          Navigator.pop(context);
-                                          _userDataServices.deleteChatRoomKey(_auth.currentUser!.uid, userData['uid']);
-                                        }
-                                    );
-                                  }
-                              );
-                            },
+
+                              },
                             backgroundColor: Colors.red,
                             foregroundColor: Colors.white,
                             icon: Icons.delete,
                           ),
                           SlidableAction(
                             onPressed: (context) {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return WarningDialog(
-                                        title: 'Archive conversation?',
-                                        message: 'Are you sure you want to archive this conversation? (You will still be able to unarchive this conversation in the future)',
-                                        confirmButtonText: 'Archive',
-                                        confirmAction: () {
-                                          Navigator.pop(context);
-                                          _userDataServices.archiveChatRoom(_auth.currentUser!.uid, userData['uid']);
-                                        }
-                                    );
-                                  }
-                              );
-                            },
-                            backgroundColor: Colors.blue,
+                              _userDataServices.restoreFromArchive(_auth.currentUser!.uid, userData['uid']);
+                              },
+                            backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
-                            icon: Icons.archive,
+                            icon: Icons.unarchive,
                           ),
                         ],
                       ),
@@ -300,101 +237,15 @@ class _ChatPageState extends State<ChatPage> {
                         contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                         title: Text(userFullName),
                         leading: Container(
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
-                          child: Image.asset('images/Avatar1.png', height: 50),
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Colors.red),
+                          child: const Icon(Icons.person, size: 35),
                         ),
                         subtitle: Text(
                             '${(chatRoomData['latest_message']['senderId'] == _auth.currentUser!.uid) ? 'You' : userData['first_name']}'
                                 ': ${formatPreviewMessage(chatRoomData['latest_message']['message'])} · ${_chatService.formatMsgTimestamp(chatRoomData['latest_message_timestamp'] ?? Timestamp.now())}'
                         ),
-                        onLongPress: () {
-                          showModalBottomSheet(
-                            showDragHandle: true,
-                            context: context,
-                            builder: (BuildContext context) {
-                              return SizedBox(
-                                height: 240,
-                                child: ListView(
-                                  children: [
-                                    ListTile(
-                                      contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                                      onTap: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return WarningDialog(
-                                                  title: 'Delete Chat?',
-                                                  message: 'Are you sure you want to delete this conversation? (Only your copy of the conversation will be deleted)',
-                                                  confirmButtonText: 'Delete',
-                                                  confirmAction: () {
-                                                    Navigator.pop(context);
-                                                    Navigator.pop(context);
-                                                    _userDataServices.deleteChatRoomKey(_auth.currentUser!.uid, userData['uid']);
-                                                  }
-                                              );
-                                            }
-                                        );
-                                      },
-                                      leading: const Icon(Icons.delete),
-                                      title: const Text('Delete this conversation'),
-                                    ),
-                                    ListTile(
-                                      contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                                      onTap: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return WarningDialog(
-                                                  title: 'Archive conversation',
-                                                  message: 'Are you sure you want to archive this conversation? You will still be able to open this conversation in the future.',
-                                                  confirmButtonText: 'Archive',
-                                                  confirmAction: () {
-                                                    Navigator.pop(context);
-                                                    Navigator.pop(context);
-                                                    _userDataServices.archiveChatRoom(_auth.currentUser!.uid, userData['uid']);
-                                                  }
-                                              );
-                                            }
-                                        );
-                                      },
-                                      leading: const Icon(Icons.archive),
-                                      title: const Text('Archive'),
-                                    ),
-                                    ListTile(
-                                      contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                      leading: const Icon(Icons.check_box),
-                                      title: const Text('Mark as read / unread'),
-                                    ),
-                                    ListTile(
-                                      contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                                      onTap: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return WarningDialog(
-                                                  title: 'Mute Chat?',
-                                                  message: 'You will still be able to change this in the future.',
-                                                  confirmButtonText: 'Mute',
-                                                  confirmAction: () {
-                                                    Navigator.pop(context);
-                                                    Navigator.pop(context);
-                                                  }
-                                              );
-                                            }
-                                        );
-                                      },
-                                      leading: const Icon(Icons.notifications_off),
-                                      title: const Text('Mute conversation'),
-                                    )
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
+                        onLongPress: () {},
                         onTap: () {
                           Navigator.push(
                               context,

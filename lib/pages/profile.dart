@@ -2,9 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/nested_tab/nestedtab.dart';
 import 'package:practice_login/components/end_drawer.dart';
+import 'package:practice_login/services/user_data_services.dart';
 class ProfilePage extends StatelessWidget {
   ProfilePage({super.key});
   final currentUser = FirebaseAuth.instance.currentUser!;
+  final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
 
   void signUserOut() {
     FirebaseAuth.instance.signOut();
@@ -32,10 +34,20 @@ class ProfilePage extends StatelessWidget {
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(currentUser.email!.toUpperCase(),
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)),
+                                  FutureBuilder(
+                                      future: _userDataServices.getUserDataAsFuture(currentUser.uid),
+                                      builder: (context, userDataSnapshot) {
+                                        if (userDataSnapshot.connectionState == ConnectionState.waiting) {
+                                          return Text(currentUser.email!.toUpperCase(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold));
+                                        }
+                                        if (userDataSnapshot.hasError) {
+                                          return Text(currentUser.email!.toUpperCase(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold));
+                                        }
+
+                                        Map<String, dynamic>? userData = userDataSnapshot.data!.data()!;
+                                        return Text('${userData['first_name']} ${userData['last_name']}', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold));
+                                      }
+                                  ),
                                   const SizedBox(
                                     height: 5,
                                   ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// Services / API
+// Services
 import 'package:practice_login/services/chat/chat_service.dart';
 
 class MessageInput extends StatefulWidget {

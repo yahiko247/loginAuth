@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// Services / API
+// Service(s)
 import 'package:practice_login/services/chat/chat_service.dart';
 
 // Components
 import 'package:practice_login/components/chat/chat_bubble.dart';
 import 'package:practice_login/components/chat/chat_input.dart';
+import 'package:practice_login/services/user_data_services.dart';
 
 class ChatBox extends StatefulWidget {
   final String userEmail;
@@ -17,13 +18,13 @@ class ChatBox extends StatefulWidget {
   final String userFirstName;
   final String userLastName;
 
-  const ChatBox(
-      {Key? key,
-      required this.userEmail,
-      required this.userId,
-      required this.userFirstName,
-      required this.userLastName})
-      : super(key: key);
+  const ChatBox({
+    Key? key,
+    required this.userEmail,
+    required this.userId,
+    required this.userFirstName,
+    required this.userLastName
+  }) : super(key: key);
 
   @override
   State<ChatBox> createState() => _ChatBoxState();
@@ -31,20 +32,16 @@ class ChatBox extends StatefulWidget {
 
 class _ChatBoxState extends State<ChatBox> {
   final ChatService _chatService = ChatService();
+  final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-            child: const Row(
-              children: [Icon(Icons.menu)],
-            ),
-          )
-        ],
+        backgroundColor: Color.fromARGB(255, 124, 210, 231),
+        surfaceTintColor: const Color.fromARGB(255, 124, 210, 231),
+        actions: [],
         title: Container(
           margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           child: Column(
@@ -68,6 +65,79 @@ class _ChatBoxState extends State<ChatBox> {
         ),
         titleSpacing: 0,
       ),
+        endDrawer: Drawer(
+          width: 275,
+          child: ListView(
+            children: [
+              FutureBuilder(
+                  future: _userDataServices.getUserDataAsFuture(widget.userId),
+                  builder: (BuildContext context, userDataSnapshot) {
+                    if (userDataSnapshot.connectionState == ConnectionState.waiting) {
+                      return ListTile(
+                        title: const Text(''),
+                        subtitle: const Text(''),
+                        onTap: () {},
+                        trailing: IconButton(icon: const Icon(Icons.settings), onPressed: () {},),
+                        contentPadding: const EdgeInsets.only(left: 35, right: 20),
+                      );
+                    }
+                    if (userDataSnapshot.hasError) {
+                      return ListTile(
+                        title: const Text('Error Loading Data'),
+                        subtitle: const Text('Err'),
+                        onTap: () {},
+                        trailing: IconButton(icon: const Icon(Icons.settings), onPressed: () {},),
+                        contentPadding: const EdgeInsets.only(left: 35, right: 20),
+                      );
+                    }
+
+                    Map<String, dynamic>? userData = userDataSnapshot.data!.data()!;
+
+                    return ListTile(
+                      leading: Image.asset('images/Avatar1.png', height: 45),
+                      title: Text('${userData['first_name']} ${userData['last_name']}'),
+                      subtitle: Text('${userData['email']}'),
+                      onTap: () {},
+                      contentPadding: const EdgeInsets.only(left: 30, right: 20),
+                    );
+                  }
+              ),
+              const Divider(thickness: 1),
+              ListTile(
+                title: const Text('Mute Conversation'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                leading: const Icon(Icons.notifications_off),
+                contentPadding: const EdgeInsets.only(left: 30),
+              ),
+              ListTile(
+                title: const Text('Delete Conversation'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                leading: const Icon(Icons.delete),
+                contentPadding: const EdgeInsets.only(left: 30),
+              ),
+              ListTile(
+                title: const Text('Archive Conversation'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                leading: const Icon(Icons.archive),
+                contentPadding: const EdgeInsets.only(left: 30),
+              ),
+              ListTile(
+                title: const Text('Block this user'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                leading: const Icon(Icons.block),
+                contentPadding: const EdgeInsets.only(left: 30),
+              ),
+            ],
+          ),
+        ),
       body: Column(
         children: [
           Expanded(child: _buildMessageList()),
@@ -79,22 +149,21 @@ class _ChatBoxState extends State<ChatBox> {
 
   Widget _buildMessageList() {
     return StreamBuilder(
-      stream: _chatService.getMessages(
-          widget.userId, _firebaseAuth.currentUser!.uid),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error ${snapshot.error}');
+      stream: _chatService.getMessages(_firebaseAuth.currentUser!.uid, widget.userId),
+      builder: (context, messagesSnapshot) {
+        if (messagesSnapshot.hasError) {
+          return Text('Error ${messagesSnapshot.error}');
         }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (messagesSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator(color: Colors.black));
         }
 
         return ListView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          cacheExtent: 50,
+          cacheExtent: 25,
           reverse: true,
-          children: snapshot.data!.docs.reversed
+          children: messagesSnapshot.data!.docs.reversed
               .map((document) => _buildMessageItem(document))
               .toList(),
         );
@@ -113,14 +182,13 @@ class _ChatBoxState extends State<ChatBox> {
     return Container(
         padding: const EdgeInsets.all(15),
         alignment: alignment,
-        child: Column(
-          children: [
-            ChatBubble(
-                message: data['message'],
-                sender: data['senderEmail'],
-                msgtimestamp: (data['timestamp']) ?? Timestamp.now()),
-          ],
-        ));
+        child: ChatBubble(
+            message: data['message'],
+            senderId: data['senderId'],
+            senderName: data['senderId'] == _firebaseAuth.currentUser!.uid ? 'You' : widget.userFirstName,
+            messageTimestamp: (data['timestamp']) ?? Timestamp.now()
+        )
+    );
   }
 
 }
