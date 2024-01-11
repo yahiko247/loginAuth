@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:practice_login/Components/my_list_tile.dart';
 import 'package:practice_login/Components/my_post_button.dart';
 import 'package:practice_login/database/firestore.dart';
+import 'package:practice_login/pages/chat/chat_box.dart';
 import 'package:practice_login/pages/chat/chat_page.dart';
 import 'package:practice_login/pages/profile.dart';
 import 'package:practice_login/services/auth_service.dart';
@@ -66,7 +67,8 @@ class _HomePage2 extends State<HomePage2> {
                 );
               },
               child: Container(
-                  padding: const EdgeInsets.only(top: 10, left: 15),
+                  padding: const EdgeInsets.only(left: 15),
+                  alignment: Alignment.center,
                   child: Image.asset('images/Avatar1.png', height: 40)),
             ),
           ],
