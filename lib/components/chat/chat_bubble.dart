@@ -1,39 +1,42 @@
+import 'package:flutter/material.dart';
+
+// Dependencies
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+
+// Service(s)
 import 'package:practice_login/services/chat/chat_service.dart';
 
 class ChatBubble extends StatelessWidget {
   final String message;
-  final String sender;
-  final Timestamp msgtimestamp;
-  static ChatService _chatService = ChatService();
+  final String senderId;
+  final String senderName;
+  final Timestamp messageTimestamp;
+  final ChatService _chatService = ChatService();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  static FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
-  const ChatBubble({super.key, required this.message, required this.sender, required this.msgtimestamp});
+  ChatBubble({super.key, required this.message, required this.senderId, required this.senderName, required this.messageTimestamp});
 
   @override
   Widget build(BuildContext context){
     return Column(
-      crossAxisAlignment: (sender == _firebaseAuth.currentUser!.email) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      mainAxisAlignment: (sender == _firebaseAuth.currentUser!.email) ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
+      crossAxisAlignment: (senderId == _firebaseAuth.currentUser!.uid) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      mainAxisAlignment: (senderId == _firebaseAuth.currentUser!.uid) ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: <Widget>[
         Container(
             padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-            child: Text('${!(sender == _firebaseAuth.currentUser!.email) ? sender : 'You'} - ${_chatService.formatMsgTimestamp(msgtimestamp)}')
+            child: Text('$senderName - ${_chatService.formatMsgTimestamp(messageTimestamp)}')
         ),
         Container(
-            constraints: BoxConstraints(maxWidth: 300),
+            constraints: const BoxConstraints(maxWidth: 300),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(9),
-                color: (_firebaseAuth.currentUser!.email == sender) ? Colors.blue : Colors.grey
+                color: (senderId == _firebaseAuth.currentUser!.uid) ? Colors.blue : Colors.grey
             ),
-            child: Text(message, style: TextStyle(fontSize: 16),)
+            child: Text(message, style: const TextStyle(fontSize: 16),)
         ),
-      ],
+      ]
     );
   }
 }

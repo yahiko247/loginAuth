@@ -47,6 +47,12 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
             setState(() {
               myCurrentIndex = index;
             });
+            if (index == 5) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChatPage()),
+              );
+            }
           },
           items: const [
             BottomNavigationBarItem(
@@ -66,6 +72,10 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
               icon: Icon(Icons.person),
               label: "Profile",
             ),
+            /*BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: "Chat",
+            ),*/
           ],
         )),
       ),

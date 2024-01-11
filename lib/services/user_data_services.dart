@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:practice_login/services/chat/chat_service.dart';
 
 class UserDataServices extends ChangeNotifier {
   final String userID;
@@ -9,6 +10,12 @@ class UserDataServices extends ChangeNotifier {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+
+  String generateChatRoomID(List<String> ids) {
+    ids.sort();
+    String chatRoomId = ids.join("_");
+    return chatRoomId;
+  }
 
   // Current User Data as Stream
   Stream<DocumentSnapshot<Map<String, dynamic>>> getCurrentUserDataAsStream() {
@@ -121,4 +128,84 @@ class UserDataServices extends ChangeNotifier {
       } catch (e) {print(e);}
     }
   }
+
+  Future<void> deleteChatRoomKey(String userId, String otherUserId) async {
+    DocumentSnapshot<Map<String, dynamic>> userDataSnapshot = await getCurrentUserDataAsFuture();
+
+    if (userDataSnapshot.exists) {
+      List<dynamic> chatRoomKeys = userDataSnapshot.data()!['chat_room_keys'];
+      if (chatRoomKeys.contains(generateChatRoomID([userId, otherUserId]))) {
+        chatRoomKeys.remove(generateChatRoomID([userId, otherUserId]));
+        try {
+          await _fireStore.collection('users')
+              .doc(_firebaseAuth.currentUser!.uid)
+              .set({'chat_room_keys': chatRoomKeys}, SetOptions(merge: true));
+        } catch (e) {
+          throw Exception(e);
+        }
+      }
+    }
+  }
+
+  Future<void> archiveChatRoom(String userId, String otherUserId) async {
+    DocumentSnapshot<Map<String, dynamic>> userDataSnapshot = await getCurrentUserDataAsFuture();
+
+    if (userDataSnapshot.exists) {
+      List<dynamic> chatRoomKeys = userDataSnapshot.data()!['chat_room_keys'];
+      if (userDataSnapshot.data()!.containsKey('archived_chat_rooms')) {
+        List<dynamic> archivedChatRooms = userDataSnapshot.data()!['archived_chat_rooms'];
+        if (chatRoomKeys.contains(generateChatRoomID([userId, otherUserId]))) {
+          chatRoomKeys.remove(generateChatRoomID([userId, otherUserId]));
+          archivedChatRooms.insert(0, generateChatRoomID([userId, otherUserId]));
+          try {
+            await _fireStore.collection('users')
+                .doc(_firebaseAuth.currentUser!.uid)
+                .set({'chat_room_keys': chatRoomKeys}, SetOptions(merge: true));
+            await _fireStore.collection('users')
+                .doc(_firebaseAuth.currentUser!.uid)
+                .set({'archived_chat_rooms': archivedChatRooms}, SetOptions(merge: true));
+          } catch (e) {
+            throw Exception(e);
+          }
+        } else {
+          List<dynamic> archivedChatRooms = [];
+          chatRoomKeys.remove(generateChatRoomID([userId, otherUserId]));
+          archivedChatRooms.insert(0, generateChatRoomID([userId, otherUserId]));
+          try {
+            await _fireStore.collection('users')
+                .doc(_firebaseAuth.currentUser!.uid)
+                .set({'chat_room_keys': chatRoomKeys}, SetOptions(merge: true));
+            await _fireStore.collection('users')
+                .doc(_firebaseAuth.currentUser!.uid)
+                .set({'archived_chat_rooms': archivedChatRooms}, SetOptions(merge: true));
+          } catch (e) {
+            throw Exception(e);
+          }
+        }
+      }
+    }
+  }
+
+  Future<void> restoreFromArchive(String userId, String otherUserId) async {
+    DocumentSnapshot<Map<String, dynamic>> userDataSnapshot = await getCurrentUserDataAsFuture();
+    if(userDataSnapshot.exists) {
+      List<dynamic> chatRoomKeys = userDataSnapshot.data()!['chat_room_keys'];
+      List<dynamic> archivedChatRooms = userDataSnapshot.data()!['archived_chat_rooms'];
+      if (archivedChatRooms.contains(generateChatRoomID([userId, otherUserId]))) {
+        archivedChatRooms.remove(generateChatRoomID([userId, otherUserId]));
+        chatRoomKeys.insert(0, generateChatRoomID([userId, otherUserId]));
+        try {
+          await _fireStore.collection('users')
+              .doc(_firebaseAuth.currentUser!.uid)
+              .set({'archived_chat_rooms': archivedChatRooms}, SetOptions(merge: true));
+          await _fireStore.collection('users')
+              .doc(_firebaseAuth.currentUser!.uid)
+              .set({'chat_room_keys': chatRoomKeys}, SetOptions(merge: true));
+        } catch (e) {
+          throw Exception(e);
+        }
+      }
+    }
+  }
+
 }

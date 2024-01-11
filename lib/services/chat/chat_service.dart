@@ -1,10 +1,17 @@
+import 'package:flutter/material.dart';
+
+// Dependencies
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+// Services
+import 'package:practice_login/services/user_data_services.dart';
+
+// Models
 import 'package:practice_login/model/chat_room.dart';
 import 'package:practice_login/model/message.dart';
-import 'package:practice_login/services/user_data_services.dart';
-import 'package:intl/intl.dart';
+
 
 class ChatService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -94,10 +101,8 @@ class ChatService extends ChangeNotifier {
 
   String formatMsgTimestamp(Timestamp timestamp) {
     DateTime dateTime = timestamp.toDate();
-
     final timeFormat = DateFormat('hh:mm a');
     String formattedTimestamp = timeFormat.format(dateTime);
-
     return formattedTimestamp;
   }
 
