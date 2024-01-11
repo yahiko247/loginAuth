@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:practice_login/pages/reviews_page.dart';
 import '../pages/feedback_page.dart';
 
-class MyDrawer extends StatelessWidget{
-  const MyDrawer ({super.key});
+class MyDrawer extends StatelessWidget {
+  const MyDrawer({super.key});
 
   void signUserOut() {
     FirebaseAuth.instance.signOut();
@@ -13,15 +13,15 @@ class MyDrawer extends StatelessWidget{
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Drawer(
       child: Drawer(
         child: ListView(
           children: [
-            ListTile(
-              title: const Text('About'),
-              onTap: () {},
-              contentPadding: const EdgeInsets.only(top: 50, left: 70),
+            const DrawerHeader(
+              decoration:
+                  BoxDecoration(color: Color.fromARGB(225, 124, 210, 213)),
+              child: Text('A B O U T'),
             ),
             const ListTile(
               title: Text('Help'),
@@ -67,8 +67,10 @@ class MyDrawer extends StatelessWidget{
               title: const Text('Debug/Test Reviews Page'),
               onTap: () {
                 // Add your logic for logging out
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const ReviewsPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ReviewsPage()));
               },
             ),
           ],

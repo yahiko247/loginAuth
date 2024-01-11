@@ -6,8 +6,11 @@ class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-      child: Text('This is Search page', style: TextStyle(fontSize: 40)),
-    ));
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text('Search Tab'),
+        backgroundColor: Color.fromARGB(255, 124, 210, 231),
+      ),
+    );
   }
 }

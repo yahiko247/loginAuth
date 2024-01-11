@@ -5,12 +5,12 @@ class SettingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-          child: Text(
-        "This is Setting page",
-        style: TextStyle(fontSize: 40),
-      )),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text('Notification'),
+        backgroundColor: Color.fromARGB(255, 124, 210, 231),
+      ),
     );
   }
 }

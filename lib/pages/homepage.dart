@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'feedback_page.dart';
 
 import 'package:practice_login/components/end_drawer.dart';
+
 class HomePage2 extends StatefulWidget {
   //testing http json placeholder from here =>
   const HomePage2({super.key});
@@ -70,7 +71,17 @@ class _HomePage2 extends State<HomePage2> {
             ),
           ],
         ),
-        actions: const [],
+        actions: [
+          IconButton(
+            icon: Icon(Icons.message),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChatPage()),
+              );
+            },
+          )
+        ],
         backgroundColor: const Color.fromARGB(255, 124, 210, 231),
       ),
       body: SingleChildScrollView(
@@ -203,7 +214,6 @@ class _HomePage2 extends State<HomePage2> {
           ],
         ),
       ),
-      endDrawer: const MyDrawer(),
     );
   }
 }

@@ -5,12 +5,12 @@ class FavoritePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-          child: Text(
-        "This is Pavorite page",
-        style: TextStyle(fontSize: 40),
-      )),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text('Listed Book'),
+        backgroundColor: const Color.fromARGB(255, 124, 210, 231),
+      ),
     );
   }
 }
