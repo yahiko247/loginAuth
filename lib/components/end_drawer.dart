@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:practice_login/pages/calendar.dart';
 import 'package:practice_login/pages/chat/chat_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:practice_login/pages/reviews_page.dart';
@@ -71,6 +72,16 @@ class MyDrawer extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const ReviewsPage()));
+              },
+            ),
+            ListTile(
+              title: const Text('Debug/Calendar Page'),
+              onTap: () {
+                // Add your logic for logging out
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CalendarSchedule()));
               },
             ),
           ],

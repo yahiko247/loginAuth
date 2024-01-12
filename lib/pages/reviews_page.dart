@@ -77,6 +77,7 @@ class _ReviewsPage extends State<ReviewsPage>{
                             )
                         ),
                         Flexible(
+                          fit: FlexFit.tight,
                           flex: 6,
                           child: Padding(
                             padding: const EdgeInsets.only(top:10),
