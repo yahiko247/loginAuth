@@ -52,27 +52,6 @@ class _ChatArchivesState extends State<ChatArchives> {
             Expanded(child: _buildChatPage())
           ]
       ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) {return const AddChat();},
-                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    var begin = const Offset(.900, 0.0);
-                    var end = Offset.zero;
-                    var curve = Curves.ease;
-                    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                    var offsetAnimation = animation.drive(tween);
-                    return SlideTransition(
-                        position: offsetAnimation,
-                        child: child);
-                  },
-                  transitionDuration: const Duration(milliseconds: 300),
-                ));
-          },
-          backgroundColor: const Color.fromARGB(255, 124, 210, 231),
-          child: const Icon(Icons.edit)
-      ),
       endDrawer: Drawer(
         width: 275,
         child: ListView(
@@ -165,7 +144,7 @@ class _ChatArchivesState extends State<ChatArchives> {
 
     List<Widget> chats = chatKeysList.map((key) {
       return StreamBuilder(
-          stream: _chatService.getChatRoom(key),
+          stream: _chatService.getChatRoomAsStream(key),
           builder: (context, chatRoomSnapshot) {
             if (chatRoomSnapshot.hasError) {
               return const Text('Error loading messages');
@@ -217,7 +196,20 @@ class _ChatArchivesState extends State<ChatArchives> {
                         children: [
                           SlidableAction(
                             onPressed: (context) {
-
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return WarningDialog(
+                                        title: 'Delete Chat?',
+                                        message: 'Are you sure you want to delete this conversation? (Only your copy of the conversation will be deleted)',
+                                        confirmButtonText: 'Delete',
+                                        confirmAction: () {
+                                          Navigator.pop(context);
+                                          _userDataServices.deleteConversation(_auth.currentUser!.uid, userData['uid']);
+                                        }
+                                    );
+                                  }
+                              );
                               },
                             backgroundColor: Colors.red,
                             foregroundColor: Colors.white,
@@ -225,7 +217,20 @@ class _ChatArchivesState extends State<ChatArchives> {
                           ),
                           SlidableAction(
                             onPressed: (context) {
-                              _userDataServices.restoreFromArchive(_auth.currentUser!.uid, userData['uid']);
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return WarningDialog(
+                                        title: 'Restore Conversation?',
+                                        message: 'You are about to unarchive this conversation',
+                                        confirmButtonText: 'Unarchive',
+                                        confirmAction: () {
+                                          Navigator.pop(context);
+                                          _userDataServices.restoreFromArchive(_auth.currentUser!.uid, userData['uid']);
+                                        }
+                                    );
+                                  }
+                              );
                               },
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
@@ -251,10 +256,12 @@ class _ChatArchivesState extends State<ChatArchives> {
                               context,
                               MaterialPageRoute(builder: (context) =>
                                   ChatBox(
-                                      userEmail: userData['email'],
-                                      userId: userData['uid'],
-                                      userFirstName: userData['first_name'],
-                                      userLastName: userData['last_name']
+                                    userEmail: userData['email'],
+                                    userId: userData['uid'],
+                                    userFirstName: userData['first_name'],
+                                    userLastName: userData['last_name'],
+                                    disableInput: true,
+                                    origin: 'archived_chats',
                                   )
                               )
                           );
@@ -269,30 +276,4 @@ class _ChatArchivesState extends State<ChatArchives> {
     return chats;
   }
 
-  Widget _chatSearchBar() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextFormField(
-              autofocus: false,
-              onTap: () {
-              },
-              controller: _searchController,
-              decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
-                  hintText: 'Search',
-                  prefixIcon: Container(padding: const EdgeInsets.fromLTRB(0, 0, 0, 0), child: Icon(Icons.contacts, color: Colors.grey[600],),),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0)
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 13, horizontal: 13)
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
 }

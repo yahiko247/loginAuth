@@ -66,7 +66,7 @@ class UserDataServices extends ChangeNotifier {
               .set({'contacts': userContactList}, SetOptions(merge: true));
         }
       } catch (e) {
-        print(e);
+        throw Exception(e);
       }
     } else {
       try {
@@ -83,6 +83,7 @@ class UserDataServices extends ChangeNotifier {
   Future<void> handleChatRoomKeys(String chatRoomID, String receiverID) async {
     DocumentSnapshot<Map<String, dynamic>> userDataSnapshot = await getCurrentUserDataAsFuture();
     DocumentSnapshot<Map<String, dynamic>> otherUserDataSnapshot = await getUserDataAsFuture(receiverID);
+
     if (userDataSnapshot.exists && userDataSnapshot.data()!.containsKey('chat_room_keys')) {
       try {
         List<dynamic> userChatRoomKeys = userDataSnapshot.data()!['chat_room_keys'];
@@ -105,31 +106,72 @@ class UserDataServices extends ChangeNotifier {
         await _fireStore.collection('users').doc(_firebaseAuth.currentUser!.uid).set({'chat_room_keys': userChatRoomKeys}, SetOptions(merge: true));
       } catch (e) {print(e);}
     }
-    if (userDataSnapshot.exists && userDataSnapshot.data()!.containsKey('chat_room_keys')) {
+
+    if (otherUserDataSnapshot.exists) {
+
       try {
-        List<dynamic> userChatRoomKeys = otherUserDataSnapshot.data()!['chat_room_keys'];
-        if (userChatRoomKeys.isNotEmpty) {
-          if (userChatRoomKeys.contains(chatRoomID)) {
-            userChatRoomKeys.remove(chatRoomID);
-            userChatRoomKeys.insert(0, chatRoomID);
+        if (otherUserDataSnapshot.data()!.containsKey('archived_chat_rooms')) {
+          List<dynamic> archivedChatKeys = otherUserDataSnapshot.data()!['archived_chat_rooms'];
+          if (archivedChatKeys.contains(chatRoomID)) {
+            archivedChatKeys.remove(chatRoomID);
+            archivedChatKeys.insert(0, chatRoomID);
+            await _fireStore.collection('users').doc(receiverID).update({'archived_chat_rooms': archivedChatKeys});
           } else {
-            userChatRoomKeys.insert(0, chatRoomID);
+            List<dynamic> userChatRoomKeys = otherUserDataSnapshot.data()!['chat_room_keys'];
+            if (userChatRoomKeys.isNotEmpty) {
+              if (userChatRoomKeys.contains(chatRoomID)) {
+                userChatRoomKeys.remove(chatRoomID);
+                userChatRoomKeys.insert(0, chatRoomID);
+              } else {
+                userChatRoomKeys.insert(0, chatRoomID);
+              }
+              await _fireStore.collection('users').doc(receiverID).update({'chat_room_keys': userChatRoomKeys});
+            } else {
+              userChatRoomKeys.insert(0, chatRoomID);
+              await _fireStore.collection('users').doc(receiverID).set({'chat_room_keys': userChatRoomKeys}, SetOptions(merge: true));
+            }
           }
-          await _fireStore.collection('users').doc(receiverID).update({'chat_room_keys': userChatRoomKeys});
-        } else {
-          userChatRoomKeys.insert(0, chatRoomID);
-          await _fireStore.collection('users').doc(receiverID).set({'chat_room_keys': userChatRoomKeys}, SetOptions(merge: true));
         }
-      } catch(e) {print(e);}
-    } else {
-      try {
-        List<dynamic> userChatRoomKeys = [chatRoomID];
-        await _fireStore.collection('users').doc(receiverID).set({'chat_room_keys': userChatRoomKeys}, SetOptions(merge: true));
-      } catch (e) {print(e);}
+      } catch (e) {
+        throw Exception(e);
+      }
+
     }
   }
 
-  Future<void> deleteChatRoomKey(String userId, String otherUserId) async {
+  Future<void> setRead(chatRoomId) async {
+    DocumentSnapshot<Map<String, dynamic>> userDataSnapshot = await getCurrentUserDataAsFuture();
+
+    if (userDataSnapshot.exists) {
+      try {
+        await _fireStore.collection('users')
+            .doc(_firebaseAuth.currentUser!.uid)
+            .collection('chat_rooms')
+            .doc(chatRoomId)
+            .set({'read': true}, SetOptions(merge: true));
+      } catch (e) {
+        throw Exception(e);
+      }
+    }
+  }
+
+  Future<void> setUnread(chatRoomId) async {
+    DocumentSnapshot<Map<String, dynamic>> userDataSnapshot = await getCurrentUserDataAsFuture();
+
+    if (userDataSnapshot.exists) {
+      try {
+        await _fireStore.collection('users')
+            .doc(_firebaseAuth.currentUser!.uid)
+            .collection('chat_rooms')
+            .doc(chatRoomId)
+            .set({'read': false}, SetOptions(merge: true));
+      } catch (e) {
+        throw Exception(e);
+      }
+    }
+  }
+
+  Future<void> deleteConversation(String userId, String otherUserId) async {
     DocumentSnapshot<Map<String, dynamic>> userDataSnapshot = await getCurrentUserDataAsFuture();
 
     if (userDataSnapshot.exists) {
@@ -140,6 +182,56 @@ class UserDataServices extends ChangeNotifier {
           await _fireStore.collection('users')
               .doc(_firebaseAuth.currentUser!.uid)
               .set({'chat_room_keys': chatRoomKeys}, SetOptions(merge: true));
+        } catch (e) {
+          throw Exception(e);
+        }
+        try {
+          QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(_firebaseAuth.currentUser!.uid)
+              .collection('chat_rooms')
+              .doc(generateChatRoomID([userId, otherUserId]))
+              .collection('messages')
+              .get();
+          for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+            await docSnapshot.reference.delete();
+          }
+          await _fireStore.collection('users')
+              .doc(_firebaseAuth.currentUser!.uid)
+              .collection('chat_rooms')
+              .doc(generateChatRoomID([userId, otherUserId]))
+              .delete();
+        } catch (e) {
+          throw Exception(e);
+        }
+      }
+
+      List<dynamic> archivedChatKeys = userDataSnapshot.data()!['archived_chat_rooms'];
+      if (archivedChatKeys.contains(generateChatRoomID([userId, otherUserId]))) {
+        archivedChatKeys.remove(generateChatRoomID([userId, otherUserId]));
+        try {
+          await _fireStore.collection('users')
+              .doc(_firebaseAuth.currentUser!.uid)
+              .set({'archived_chat_rooms': archivedChatKeys}, SetOptions(merge: true));
+        } catch (e) {
+          throw Exception(e);
+        }
+        try {
+          QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(_firebaseAuth.currentUser!.uid)
+              .collection('chat_rooms')
+              .doc(generateChatRoomID([userId, otherUserId]))
+              .collection('messages')
+              .get();
+          for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+            await docSnapshot.reference.delete();
+          }
+          await _fireStore.collection('users')
+              .doc(_firebaseAuth.currentUser!.uid)
+              .collection('chat_rooms')
+              .doc(generateChatRoomID([userId, otherUserId]))
+              .delete();
         } catch (e) {
           throw Exception(e);
         }

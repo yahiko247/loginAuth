@@ -138,7 +138,7 @@ class _ContactListState extends State<ContactList> {
                   ),
                   spaceBetweenSearchAndList: 10,
                   inputDecoration: InputDecoration(
-                    hintText: 'To:',
+                    hintText: 'Search',
                     focusColor: Colors.black,
                     contentPadding: EdgeInsets.zero,
                     prefixIcon: Container(padding: const EdgeInsets.fromLTRB(0, 0, 0, 0), child: Icon(Icons.contacts, color: Colors.grey[600]),),
@@ -197,14 +197,15 @@ class ContactUserItem extends StatelessWidget {
         ),
         subtitle: Text(contact.email, style: TextStyle(color: (textColor ?? Colors.black).withOpacity(0.6),),),
         onTap: () {
-          Navigator.pushReplacement(
+          Navigator.push(
               context,
               MaterialPageRoute(builder: (context) =>
                   ChatBox(
-                      userEmail: contact.email,
-                      userId: contact.uid,
-                      userFirstName: contact.firstName,
-                      userLastName: contact.lastName
+                    userEmail: contact.email,
+                    userId: contact.uid,
+                    userFirstName: contact.firstName,
+                    userLastName: contact.lastName,
+                    origin: 'add_chat',
                   )
               )
           );

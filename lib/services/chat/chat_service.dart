@@ -36,6 +36,53 @@ class ChatService extends ChangeNotifier {
         message: message
     );
 
+    // for user copy
+    try {
+      await _fireStore.collection('users')
+          .doc(currentUserId)
+          .collection('chat_rooms')
+          .doc(generateChatRoomID([currentUserId, receiverId]))
+          .collection('messages')
+          .add(newMessage.mapMessage());
+      await _fireStore.collection('users')
+          .doc(currentUserId)
+          .collection('chat_rooms')
+          .doc(generateChatRoomID([currentUserId, receiverId]))
+          .set({
+        'read' : true,
+        'members' : [currentUserId, receiverId],
+        'latest_message' : newMessage.mapMessage(),
+        'latest_message_timestamp' : FieldValue.serverTimestamp(),
+      });
+    }
+    catch (e) {
+      throw Exception(e);
+    }
+
+    //other user copy
+    try {
+      await _fireStore.collection('users')
+          .doc(receiverId)
+          .collection('chat_rooms')
+          .doc(generateChatRoomID([currentUserId, receiverId]))
+          .collection('messages')
+          .add(newMessage.mapMessage());
+      await _fireStore.collection('users')
+          .doc(receiverId)
+          .collection('chat_rooms')
+          .doc(generateChatRoomID([currentUserId, receiverId]))
+          .set({
+        'read' : false,
+        'members' : [currentUserId, receiverId],
+        'latest_message' : newMessage.mapMessage(),
+        'latest_message_timestamp' : FieldValue.serverTimestamp(),
+      });
+    }
+    catch (e) {
+      throw Exception(e);
+    }
+
+    // for chat_rooms collection
     try {
       _userDataServices.handleChatRoomKeys(generateChatRoomID([currentUserId, receiverId]), receiverId);
       _userDataServices.handleContactList(receiverId);
@@ -52,16 +99,42 @@ class ChatService extends ChangeNotifier {
       });
     }
     catch (e) {
-      print(e);
+      throw Exception(e);
     }
   }
 
-  Stream<QuerySnapshot> getMessages(String userId, String otherUserId) {
+  Stream<QuerySnapshot> getMyMessages(String userId, String otherUserId) {
+    return _fireStore.collection('users')
+        .doc(_firebaseAuth.currentUser!.uid)
+        .collection('chat_rooms')
+        .doc(generateChatRoomID([userId, otherUserId]))
+        .collection('messages')
+        .orderBy('timestamp', descending: false)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getMessages(String userId, String otherUserId) {/*
+    if(_fireStore.collection('users')
+        .doc(_firebaseAuth.currentUser!.uid).collection('chat_rooms')
+        .doc(generateChatRoomID([userId, otherUserId])).collection('messa')
+    )*/
+    
     return _fireStore.collection('chat_rooms').doc(generateChatRoomID([userId, otherUserId])).collection('messages').orderBy('timestamp', descending: false).snapshots();
   }
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>> getChatRoom(String chatRoomID) {
-    return FirebaseFirestore.instance.collection('chat_rooms').doc(chatRoomID).snapshots();
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getChatRoomAsStream(String chatRoomID) {
+    Future<DocumentSnapshot<Map<String, dynamic>>> chatRoom = _fireStore.collection('users').doc(_firebaseAuth.currentUser!.uid).collection('chat_rooms').doc(chatRoomID).get();
+
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(_firebaseAuth.currentUser!.uid)
+        .collection('chat_rooms')
+        .doc(chatRoomID)
+        .snapshots();
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getChatRoomAsFuture(String chatRoomID) {
+    return _fireStore.collection('users').doc(_firebaseAuth.currentUser!.uid).collection('chat_rooms').doc(chatRoomID).get();
   }
 
   Future<void> createChatRoom(String otherUserID, String otherUserEmail, String message) async {

@@ -1,14 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/Components/chat/empty_view.dart';
 import 'package:practice_login/components/chat/warning_dialog.dart';
+import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/pages/chat/add_chat.dart';
 import 'package:practice_login/pages/chat/archived_chats.dart';
 import 'package:practice_login/pages/chat/chat_box.dart';
+import 'package:practice_login/pages/profile.dart';
 import 'package:practice_login/services/chat/chat_service.dart';
 import 'package:practice_login/services/user_data_services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ChatPage extends StatefulWidget {
@@ -22,12 +24,6 @@ class _ChatPageState extends State<ChatPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final ChatService _chatService = ChatService();
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
-  final TextEditingController _searchController = TextEditingController();
-
-  @override void dispose() {
-    super.dispose();
-    _searchController.dispose();
-  }
 
   String formatPreviewMessage(String message) {
     String formattedMessage = '';
@@ -57,7 +53,7 @@ class _ChatPageState extends State<ChatPage> {
       ),
       body: Column(
           children: [
-            _chatSearchBar(),
+            ChatSearchBar(),
             Expanded(child: _buildChatPage())
           ]
       ),
@@ -77,10 +73,11 @@ class _ChatPageState extends State<ChatPage> {
                         child: child);
                   },
                   transitionDuration: const Duration(milliseconds: 300),
-                ));
+                )
+            );
           },
           backgroundColor: const Color.fromARGB(255, 124, 210, 231),
-          child: const Icon(Icons.edit)
+          child: const Icon(Icons.contacts)
       ),
       endDrawer: Drawer(
         width: 275,
@@ -113,7 +110,12 @@ class _ChatPageState extends State<ChatPage> {
                   return ListTile(
                     title: Text('${userData['first_name']} ${userData['last_name']}'),
                     subtitle: Text('${userData['email']}'),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {return ProfilePage();})
+                      );
+                    },
                     trailing: IconButton(icon: const Icon(Icons.settings), onPressed: () {},),
                     contentPadding: const EdgeInsets.only(left: 35, right: 20),
                   );
@@ -127,7 +129,7 @@ class _ChatPageState extends State<ChatPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ChatArchives()
+                        builder: (context) => const ChatArchives()
                     )
                 );
               },
@@ -203,8 +205,8 @@ class _ChatPageState extends State<ChatPage> {
     List<dynamic> chatKeysList = currentUserData!['chat_room_keys'];
 
     List<Widget> chats = chatKeysList.map((key) {
-      return StreamBuilder(
-          stream: _chatService.getChatRoom(key),
+      return FutureBuilder(
+          future: _chatService.getChatRoomAsFuture(key),
           builder: (context, chatRoomSnapshot) {
             if (chatRoomSnapshot.hasError) {
               return const Text('Error loading messages');
@@ -218,8 +220,8 @@ class _ChatPageState extends State<ChatPage> {
               chatMembers.remove(_auth.currentUser!.uid);
             }
 
-            return StreamBuilder(
-                stream: _userDataServices.getUserDataAsStream(chatMembers[0]),
+            return FutureBuilder(
+                future: _userDataServices.getUserDataAsFuture(chatMembers[0]),
                 builder: (context, userDataSnapshot) {
                   if (userDataSnapshot.hasError) {
                     return ListTile(
@@ -250,7 +252,7 @@ class _ChatPageState extends State<ChatPage> {
                       key: UniqueKey(),
                       endActionPane: ActionPane(
                         extentRatio: 0.35,
-                        motion: StretchMotion(),
+                        motion: const StretchMotion(),
                         children: [
                           SlidableAction(
                             onPressed: (context) {
@@ -263,7 +265,7 @@ class _ChatPageState extends State<ChatPage> {
                                         confirmButtonText: 'Delete',
                                         confirmAction: () {
                                           Navigator.pop(context);
-                                          _userDataServices.deleteChatRoomKey(_auth.currentUser!.uid, userData['uid']);
+                                          _userDataServices.deleteConversation(_auth.currentUser!.uid, userData['uid']);
                                         }
                                     );
                                   }
@@ -298,14 +300,45 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       child: ListTile(
                         contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                        title: Text(userFullName),
+                        title: StreamBuilder(
+                            stream: _chatService.getChatRoomAsStream(key),
+                            builder: (context, chatRoomStreamSnapshot) {
+                              if (chatRoomStreamSnapshot.connectionState == ConnectionState.waiting) {
+                                return Text(userFullName);
+                              }
+                              if (chatRoomStreamSnapshot.connectionState == ConnectionState.waiting) {
+                                return const Text('Error loading name');
+                              }
+
+                              Map<String, dynamic>? chatRoomStreamData = chatRoomStreamSnapshot.data!.data()!;
+                              if (chatRoomStreamData['read']) {
+                                return Text(userFullName, style: const TextStyle(fontWeight: FontWeight.normal));
+                              } else {
+                                return Text(userFullName, style: const TextStyle(fontWeight: FontWeight.bold));
+                              }
+                            }
+                        ),
                         leading: Container(
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
                           child: Image.asset('images/Avatar1.png', height: 50),
                         ),
-                        subtitle: Text(
-                            '${(chatRoomData['latest_message']['senderId'] == _auth.currentUser!.uid) ? 'You' : userData['first_name']}'
-                                ': ${formatPreviewMessage(chatRoomData['latest_message']['message'])} · ${_chatService.formatMsgTimestamp(chatRoomData['latest_message_timestamp'] ?? Timestamp.now())}'
+                        subtitle: StreamBuilder(
+                          stream: _chatService.getChatRoomAsStream(key),
+                          builder: (context, chatRoomStreamSnapshot) {
+                            if (chatRoomStreamSnapshot.connectionState == ConnectionState.waiting) {
+                              return const Text('');
+                            }
+                            if (chatRoomStreamSnapshot.connectionState == ConnectionState.waiting) {
+                              return const Text('Error loading preview');
+                            }
+
+                            Map<String, dynamic>? chatRoomStreamData = chatRoomStreamSnapshot.data!.data()!;
+                            return Text(
+                                style: chatRoomStreamData['read'] ? const TextStyle(fontWeight: FontWeight.normal) : const TextStyle(fontWeight: FontWeight.bold),
+                                '${(chatRoomStreamData['latest_message']['senderId'] == _auth.currentUser!.uid) ? 'You' : userData['first_name']}'
+                                    ': ${formatPreviewMessage(chatRoomStreamData['latest_message']['message'])} · ${_chatService.formatMsgTimestamp(chatRoomStreamData['latest_message_timestamp'] ?? Timestamp.now())}'
+                            );
+                          }
                         ),
                         onLongPress: () {
                           showModalBottomSheet(
@@ -329,7 +362,7 @@ class _ChatPageState extends State<ChatPage> {
                                                   confirmAction: () {
                                                     Navigator.pop(context);
                                                     Navigator.pop(context);
-                                                    _userDataServices.deleteChatRoomKey(_auth.currentUser!.uid, userData['uid']);
+                                                    _userDataServices.deleteConversation(_auth.currentUser!.uid, userData['uid']);
                                                   }
                                               );
                                             }
@@ -360,13 +393,39 @@ class _ChatPageState extends State<ChatPage> {
                                       leading: const Icon(Icons.archive),
                                       title: const Text('Archive'),
                                     ),
-                                    ListTile(
-                                      contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                      leading: const Icon(Icons.check_box),
-                                      title: const Text('Mark as read / unread'),
+                                    StreamBuilder(
+                                        stream: _chatService.getChatRoomAsStream(key),
+                                        builder: (context, chatRoomStreamSnapshot) {
+                                          if (chatRoomStreamSnapshot.connectionState == ConnectionState.waiting) {
+                                            return ListTile(
+                                              contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                                              onTap: () {
+                                              },
+                                              leading: const Icon(Icons.check_box),
+                                              title: const Text('Mark as read / unread'),
+                                            );
+                                          }
+                                          if (chatRoomStreamSnapshot.connectionState == ConnectionState.waiting) {
+                                            return ListTile(
+                                              contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                                              onTap: () {
+                                              },
+                                              leading: const Icon(Icons.check_box),
+                                              title: const Text('Mark as read / unread'),
+                                            );
+                                          }
+
+                                          Map<String, dynamic>? chatRoomStreamData = chatRoomStreamSnapshot.data!.data()!;
+                                          return ListTile(
+                                            contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              chatRoomStreamData['read'] ? _userDataServices.setUnread(key) : _userDataServices.setRead(key);
+                                            },
+                                            leading: chatRoomStreamData['read'] ? const Icon(Icons.mail) : const Icon(Icons.mail_outline_rounded),
+                                            title: chatRoomStreamData['read'] ? const Text('Mark as unread') : const Text('Mark as read'),
+                                          );
+                                        }
                                     ),
                                     ListTile(
                                       contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
@@ -400,13 +459,15 @@ class _ChatPageState extends State<ChatPage> {
                               context,
                               MaterialPageRoute(builder: (context) =>
                                   ChatBox(
-                                      userEmail: userData['email'],
-                                      userId: userData['uid'],
-                                      userFirstName: userData['first_name'],
-                                      userLastName: userData['last_name']
+                                    userEmail: userData['email'],
+                                    userId: userData['uid'],
+                                    userFirstName: userData['first_name'],
+                                    userLastName: userData['last_name'],
+                                    origin: 'chat_page',
                                   )
                               )
                           );
+                          _userDataServices.setRead(key);
                         },
                       )
                   );
@@ -418,9 +479,110 @@ class _ChatPageState extends State<ChatPage> {
     return chats;
   }
 
-  Widget _chatSearchBar() {
+}
+
+class ChatSearchBar extends StatefulWidget {
+  const ChatSearchBar({Key? key}) : super(key: key);
+
+  @override
+  State<ChatSearchBar> createState() => _ChatSearchBarState();
+}
+
+class _ChatSearchBarState extends State<ChatSearchBar> {
+  final TextEditingController _searchController = TextEditingController();
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+  final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
+  bool isEmailAndExists = false;
+  bool isNotEmpty = false;
+  IconData suffixIcon = Icons.search;
+
+  @override void initState() {
+    super.initState();
+    _searchController.addListener(_emptyCheck);
+    _searchController.addListener(_isEmailAndExists);
+  }
+
+  @override void dispose() {
+    _searchController.removeListener(_emptyCheck);
+    _searchController.removeListener(_isEmailAndExists);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _isEmailAndExists() {
+    if (EmailValidator.validate(_searchController.text)) {
+      Future<QuerySnapshot<Map<String, dynamic>>> snapshot = _fireStore.collection('users').where('email', isEqualTo: _searchController.text).get();
+      snapshot.then((value) {
+        if (value.docs.isNotEmpty) {
+          print('goods');
+          setState(() {
+            isEmailAndExists = true;
+          });
+        } else {
+          setState(() {
+            isEmailAndExists = false;
+          });
+        }
+      });
+    }
+    setState(() {
+      isEmailAndExists = false;
+    });
+  }
+
+  void _emptyCheck() {
+    if (_searchController.text.trim().isNotEmpty) {
+      setState(() {
+        isNotEmpty = true;
+        suffixIcon = Icons.clear;
+      });
+    } else {
+      setState(() {
+        isNotEmpty = false;
+        suffixIcon = Icons.search;
+      });
+    }
+  }
+
+  void _clearInput() {
+    _searchController.clear();
+  }
+
+  void _proceedChat() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) {
+              return FutureBuilder(
+                  future: _userDataServices.getUserDataThroughEmail(_searchController.text),
+                  builder: (context, userDataSnapshot) {
+                    if(userDataSnapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (userDataSnapshot.hasError) {
+                      throw Exception('Error occurred');
+                    }
+
+                    Map<String, dynamic>? userData = userDataSnapshot.data!.docs.first.data();
+
+                    return ChatBox(
+                        userEmail: userData['email'],
+                        userId: userData['uid'],
+                        userFirstName: userData['first_name'],
+                        userLastName: userData['last_name'],
+                        origin: 'add_chat'
+                    );
+                  }
+              );
+            }
+        )
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
+      margin: const EdgeInsets.fromLTRB(25, 10, 25, 10),
       child: Row(
         children: [
           Expanded(
@@ -431,8 +593,20 @@ class _ChatPageState extends State<ChatPage> {
               controller: _searchController,
               decoration: InputDecoration(
                   focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
-                  hintText: 'Search',
-                  prefixIcon: Container(padding: const EdgeInsets.fromLTRB(0, 0, 0, 0), child: Icon(Icons.contacts, color: Colors.grey[600],),),
+                  hintText: 'Send Message To:',
+                  suffixIcon: IconButton(icon: Icon(isEmailAndExists ? Icons.send : suffixIcon), color: Colors.grey[600],
+                      onPressed:
+                      isEmailAndExists ? _proceedChat : isNotEmpty ? _clearInput : null
+                  ),
+                  prefixIcon: Container(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: IconButton(
+                          icon: const Icon(Icons.mail_outline_rounded),
+                          color: Colors.grey[600],
+                          onPressed: () {
+
+                          })
+                  ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0)
                   ),
