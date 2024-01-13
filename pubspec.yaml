@@ -41,11 +41,12 @@ dependencies:
   http: ^1.1.0
   cloud_firestore: ^4.13.6
   searchable_listview:  2.9.1
-  intl: ^0.17.0
+  intl: ^0.18.1
   email_validator: ^2.1.16
   provider:
   smooth_page_indicator: ^1.1.0
   flutter_rating_bar: ^4.0.1
+  table_calendar: ^3.0.9
 dev_dependencies:
   flutter_test:
     sdk: flutter

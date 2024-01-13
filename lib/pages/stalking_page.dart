@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:practice_login/nested_tab/nestedtab2.dart';
+import 'package:practice_login/pages/booking.dart';
+import 'package:practice_login/pages/chat/chat_box.dart';
 import 'package:practice_login/services/user_data_services.dart';
-
-import 'chat/chat_box.dart';
 
 class StalkPage extends StatelessWidget {
   String userEmail;
@@ -94,55 +94,49 @@ class StalkPage extends StatelessWidget {
             ),
             actions: [
               Padding(
-                padding: const EdgeInsets.all(1),
-                child: FutureBuilder(
-                  future: _userDataServices.getUserDataThroughEmail(userEmail),
-                  builder: (context, userDataSnapshot) {
-                    if (userDataSnapshot.connectionState == ConnectionState.waiting) {
-                      return const IconButton(
-                        icon: Icon(Icons.messenger),
-                        onPressed: null
-                      );
-                    }
-                    if (userDataSnapshot.connectionState == ConnectionState.waiting) {
-                      return const IconButton(
-                        icon: Icon(Icons.messenger),
-                        onPressed: null
-                      );
-                    }
-
-                    Map<String, dynamic>? userData;
-                    if (userDataSnapshot.hasData) {
-                      userData = userDataSnapshot.data!.docs.first.data();
-                    }
-
-                    return IconButton(
-                        icon: const Icon(Icons.messenger),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) {
-                                    return ChatBox(
-                                        userEmail: userEmail,
-                                        userId: userData!['uid'],
-                                        userFirstName: userData['first_name'],
-                                        userLastName: userData['last_name'],
-                                        origin: 'add_chat'
-                                    );
-                                  }
-                              )
-                          );
+                  padding: const EdgeInsets.all(1),
+                  child: FutureBuilder(
+                      future:
+                          _userDataServices.getUserDataThroughEmail(userEmail),
+                      builder: (context, userDataSnapshot) {
+                        if (userDataSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const IconButton(
+                              icon: Icon(Icons.messenger), onPressed: null);
                         }
-                    );
-                  }
-                )
-              ),
+                        if (userDataSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const IconButton(
+                              icon: Icon(Icons.messenger), onPressed: null);
+                        }
+
+                        Map<String, dynamic>? userData;
+                        if (userDataSnapshot.hasData) {
+                          userData = userDataSnapshot.data!.docs.first.data();
+                        }
+
+                        return IconButton(
+                            icon: const Icon(Icons.messenger),
+                            onPressed: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return ChatBox(
+                                    userEmail: userEmail,
+                                    userId: userData!['uid'],
+                                    userFirstName: userData['first_name'],
+                                    userLastName: userData['last_name'],
+                                    origin: 'add_chat');
+                              }));
+                            });
+                      })),
               Padding(
                 padding: const EdgeInsets.only(right: 5),
                 child: IconButton(
-                  icon: Icon(Icons.book),
-                  onPressed: () {},
+                  icon: const Icon(Icons.book),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => BookPage()));
+                  },
                 ),
               )
             ],
