@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:practice_login/components/end_drawer.dart';
 import 'package:practice_login/services/user_data_services.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class CalendarSchedule extends StatefulWidget {
   const CalendarSchedule({super.key});
@@ -14,6 +15,14 @@ class _CalendarSchedule extends State<CalendarSchedule> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   final UserDataServices _userDataServices =
       UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
+
+  DateTime today = DateTime.now();
+
+  void _onDaySelected(DateTime day, DateTime focusedDay) {
+    setState(() {
+      today = day;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,9 +151,7 @@ class _CalendarSchedule extends State<CalendarSchedule> {
                   decoration: BoxDecoration(
                       color: Colors.pink,
                       borderRadius: BorderRadius.circular(10)),
-                  child: const Center(
-                    child: Text("Calendar Placeholder"),
-                  ),
+                  child: content(),
                 ),
               ),
             )
@@ -152,6 +159,34 @@ class _CalendarSchedule extends State<CalendarSchedule> {
         ),
       ),
       endDrawer: const MyDrawer(),
+    );
+  }
+
+  Widget content() {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        children: [
+          Text('Selected day' + today.toString().split(" ")[0]),
+          Container(
+            child: TableCalendar(
+              headerStyle: const HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+              ),
+              availableGestures: AvailableGestures.all,
+              selectedDayPredicate: (day) => isSameDay(day, today),
+              focusedDay: today,
+              firstDay: DateTime.utc(2010, 10, 16),
+              lastDay: DateTime.utc(2030, 10, 14),
+              onDaySelected: _onDaySelected,
+              calendarStyle: CalendarStyle(
+                  todayTextStyle: TextStyle(color: Colors.black),
+                  weekNumberTextStyle: TextStyle(color: Colors.black)),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
