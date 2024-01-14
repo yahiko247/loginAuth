@@ -13,6 +13,16 @@ class StalkPage extends StatelessWidget {
   final UserDataServices _userDataServices =
       UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
 
+  void navigatorDetails(
+    BuildContext context,
+    String userEmail,
+  ) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => BookPage(userEmail: userEmail)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -134,8 +144,7 @@ class StalkPage extends StatelessWidget {
                 child: IconButton(
                   icon: const Icon(Icons.book),
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => BookPage()));
+                    navigatorDetails(context, userEmail);
                   },
                 ),
               )

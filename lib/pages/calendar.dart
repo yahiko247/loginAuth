@@ -3,21 +3,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:practice_login/components/end_drawer.dart';
 import 'package:practice_login/services/user_data_services.dart';
 
-class CalendarSchedule extends StatefulWidget{
+class CalendarSchedule extends StatefulWidget {
   const CalendarSchedule({super.key});
 
   @override
   State<CalendarSchedule> createState() => _CalendarSchedule();
 }
 
-class _CalendarSchedule extends State<CalendarSchedule>{
-
+class _CalendarSchedule extends State<CalendarSchedule> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   final UserDataServices _userDataServices =
-  UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
+      UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(150.0),
@@ -58,7 +57,7 @@ class _CalendarSchedule extends State<CalendarSchedule>{
                                       }
 
                                       Map<String, dynamic>? userData =
-                                      userDataSnapshot.data!.data()!;
+                                          userDataSnapshot.data!.data()!;
                                       return Text(
                                           '${userData['first_name']} ${userData['last_name']}',
                                           style: const TextStyle(
@@ -74,8 +73,7 @@ class _CalendarSchedule extends State<CalendarSchedule>{
                                   decoration: BoxDecoration(
                                       color: const Color.fromARGB(
                                           255, 209, 207, 207),
-                                      borderRadius:
-                                      BorderRadius.circular(20)),
+                                      borderRadius: BorderRadius.circular(20)),
                                   child: const Padding(
                                     padding: EdgeInsets.only(left: 5, top: 3),
                                     child: Text(
@@ -97,7 +95,7 @@ class _CalendarSchedule extends State<CalendarSchedule>{
           backgroundColor: const Color.fromARGB(255, 124, 210, 231),
         ),
       ),
-      body:Padding(
+      body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
@@ -108,13 +106,11 @@ class _CalendarSchedule extends State<CalendarSchedule>{
                   child: Padding(
                     padding: const EdgeInsets.only(right: 5),
                     child: Container(
-                      height: 25,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                          color: Colors.deepOrange
-                      ),
-                        child: const Center(child: Text("Unavailable"))
-                    ),
+                        height: 25,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            color: Colors.deepOrange),
+                        child: const Center(child: Text("Unavailable"))),
                   ),
                 ),
                 Expanded(
@@ -122,10 +118,8 @@ class _CalendarSchedule extends State<CalendarSchedule>{
                       height: 25,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
-                          color: Colors.green
-                      ),
-                      child: const Center(child: Text("Available"))
-                  ),
+                          color: Colors.green),
+                      child: const Center(child: Text("Available"))),
                 ),
                 Expanded(
                   child: Padding(
@@ -134,10 +128,8 @@ class _CalendarSchedule extends State<CalendarSchedule>{
                         height: 25,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
-                            color: Colors.lightBlueAccent
-                        ),
-                        child: const Center(child: Text("Booked/Reserved"))
-                    ),
+                            color: Colors.lightBlueAccent),
+                        child: const Center(child: Text("Booked/Reserved"))),
                   ),
                 ),
               ],
@@ -148,10 +140,8 @@ class _CalendarSchedule extends State<CalendarSchedule>{
                 padding: const EdgeInsets.only(top: 10),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.pink,
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  
+                      color: Colors.pink,
+                      borderRadius: BorderRadius.circular(10)),
                   child: const Center(
                     child: Text("Calendar Placeholder"),
                   ),
