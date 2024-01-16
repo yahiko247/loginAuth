@@ -14,7 +14,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key}) : super(key: key);
+  const ChatPage({super.key});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -54,7 +54,7 @@ class _ChatPageState extends State<ChatPage> {
       ),
       body: Column(
           children: [
-            ChatSearchBar(),
+            const ChatSearchBar(),
             Expanded(child: _buildChatPage())
           ]
       ),
@@ -483,7 +483,7 @@ class _ChatPageState extends State<ChatPage> {
 }
 
 class ChatSearchBar extends StatefulWidget {
-  const ChatSearchBar({Key? key}) : super(key: key);
+  const ChatSearchBar({super.key});
 
   @override
   State<ChatSearchBar> createState() => _ChatSearchBarState();

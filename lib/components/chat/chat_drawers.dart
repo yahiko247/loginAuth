@@ -2,17 +2,12 @@ import 'package:flutter/material.dart';
 
 // Dependencies
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:practice_login/components/chat/warning_dialog.dart';
-import 'package:practice_login/pages/profile.dart';
 import 'package:practice_login/pages/stalking_page.dart';
 
 // Service(s)
-import 'package:practice_login/services/chat/chat_service.dart';
 
 // Components
-import 'package:practice_login/components/chat/chat_bubble.dart';
-import 'package:practice_login/components/chat/chat_input.dart';
 import 'package:practice_login/services/user_data_services.dart';
 
 import '../../pages/chat/chat_box.dart';
@@ -20,7 +15,7 @@ import '../../pages/chat/chat_box.dart';
 class ChatPageDrawer extends StatelessWidget {
   final String userId;
 
-  ChatPageDrawer({Key? key, required this.userId}) : super(key: key);
+  ChatPageDrawer({super.key, required this.userId});
 
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -141,7 +136,7 @@ class ChatPageDrawer extends StatelessWidget {
 class ArchivedPageDrawer extends StatelessWidget {
   final String userId;
 
-  ArchivedPageDrawer({Key? key, required this.userId}) : super(key: key);
+  ArchivedPageDrawer({super.key, required this.userId});
 
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -275,7 +270,7 @@ class ArchivedPageDrawer extends StatelessWidget {
 class ContactPageDrawer extends StatelessWidget {
   final String userId;
 
-  ContactPageDrawer({Key? key, required this.userId}) : super(key: key);
+  ContactPageDrawer({super.key, required this.userId});
 
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
 

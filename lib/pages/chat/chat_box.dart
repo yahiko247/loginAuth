@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 // Dependencies
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:practice_login/Components/chat/empty_view.dart';
 import 'package:practice_login/components/chat/chat_drawers.dart';
 
 // Service(s)
@@ -12,7 +11,6 @@ import 'package:practice_login/services/chat/chat_service.dart';
 // Components
 import 'package:practice_login/components/chat/chat_bubble.dart';
 import 'package:practice_login/components/chat/chat_input.dart';
-import 'package:practice_login/services/user_data_services.dart';
 
 class ChatBox extends StatefulWidget {
   final String userEmail;
@@ -23,14 +21,14 @@ class ChatBox extends StatefulWidget {
   final String origin;
 
   const ChatBox({
-    Key? key,
+    super.key,
     required this.userEmail,
     required this.userId,
     required this.userFirstName,
     required this.userLastName,
     this.disableInput,
     required this.origin
-  }) : super(key: key);
+  });
 
   @override
   State<ChatBox> createState() => _ChatBoxState();
@@ -44,9 +42,9 @@ class _ChatBoxState extends State<ChatBox> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 124, 210, 231),
+        backgroundColor: const Color.fromARGB(255, 124, 210, 231),
         surfaceTintColor: const Color.fromARGB(255, 124, 210, 231),
-        actions: [],
+        actions: const [],
         title: Container(
           margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           child: Column(
@@ -95,7 +93,7 @@ class _ChatBoxState extends State<ChatBox> {
         }
 
         if (messagesSnapshot.data!.docs.isEmpty) {
-          return Column(
+          return const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

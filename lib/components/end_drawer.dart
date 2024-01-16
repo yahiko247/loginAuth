@@ -61,7 +61,7 @@ class MyDrawer extends StatelessWidget {
               onTap: () {
                 // Add your logic for logging out
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Ratings()));
+                    MaterialPageRoute(builder: (context) => const Ratings()));
               },
             ),
             ListTile(

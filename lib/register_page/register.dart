@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:practice_login/Components/button_register.dart';
-import 'package:practice_login/Components/my_button.dart';
 import 'package:practice_login/Components/my_textfield.dart';
 import 'package:practice_login/Components/square_tile.dart';
-import 'package:practice_login/pages/login_page.dart';
-import 'package:practice_login/services/auth_service.dart';
 import 'package:practice_login/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -162,9 +159,9 @@ class _RegisterFormState extends State<RegisterForm> {
 
                     //Google + apple  sign buttons
                     Container(
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           //google button
                           SquareTile(imagPath: 'images/google.png'),
 

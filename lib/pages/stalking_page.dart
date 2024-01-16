@@ -149,7 +149,7 @@ class StalkPage extends StatelessWidget {
                 ),
               )
             ],
-            backgroundColor: Color.fromARGB(255, 107, 199, 191),
+            backgroundColor: const Color.fromARGB(255, 107, 199, 191),
           ),
         ),
         body: TabBarView(

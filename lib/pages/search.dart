@@ -8,8 +8,8 @@ class SearchPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Search Tab'),
-        backgroundColor: Color.fromARGB(255, 124, 210, 231),
+        title: const Text('Search Tab'),
+        backgroundColor: const Color.fromARGB(255, 124, 210, 231),
       ),
     );
   }

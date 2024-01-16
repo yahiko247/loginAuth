@@ -8,7 +8,7 @@ import 'package:practice_login/pages/search.dart';
 import 'package:practice_login/pages/setting.dart';
 
 class MyButtomNavBar extends StatefulWidget {
-  const MyButtomNavBar({Key? key}) : super(key: key);
+  const MyButtomNavBar({super.key});
 
   @override
   State<MyButtomNavBar> createState() => _MyBottomNavBarState();
@@ -17,12 +17,12 @@ class MyButtomNavBar extends StatefulWidget {
 class _MyBottomNavBarState extends State<MyButtomNavBar> {
   int myCurrentIndex = 0;
   List<Widget> pages = [
-    HomePage2(),
-    FavoritePage(),
-    SearchPage(),
-    SettingPage(),
+    const HomePage2(),
+    const FavoritePage(),
+    const SearchPage(),
+    const SettingPage(),
     ProfilePage(),
-    ChatPage(),
+    const ChatPage(),
   ];
 
   @override
@@ -39,8 +39,8 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
         ),
         child: ClipRRect(
             child: BottomNavigationBar(
-          backgroundColor: Color.fromARGB(255, 13, 14, 13),
-          selectedItemColor: Color.fromARGB(255, 46, 126, 112),
+          backgroundColor: const Color.fromARGB(255, 13, 14, 13),
+          selectedItemColor: const Color.fromARGB(255, 46, 126, 112),
           unselectedItemColor: Colors.black,
           currentIndex: myCurrentIndex,
           onTap: (index) {
@@ -50,7 +50,7 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
             if (index == 5) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ChatPage()),
+                MaterialPageRoute(builder: (context) => const ChatPage()),
               );
             }
           },

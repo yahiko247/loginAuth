@@ -12,7 +12,7 @@ class MessageInput extends StatefulWidget {
   final String userEmail;
   final bool disableInput;
   final bool? returnToChatPage;
-  const MessageInput({Key? key, required this.userId, required this.userEmail, required this.disableInput, this.returnToChatPage}) : super(key: key);
+  const MessageInput({super.key, required this.userId, required this.userEmail, required this.disableInput, this.returnToChatPage});
 
   @override
   State<MessageInput> createState() => _MessageInputState();

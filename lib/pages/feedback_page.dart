@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class Ratings extends StatefulWidget{
-   Ratings({super.key});
+   const Ratings({super.key});
 
   @override
   State<Ratings> createState() => _Ratings();

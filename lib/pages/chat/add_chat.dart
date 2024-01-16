@@ -9,7 +9,7 @@ import 'package:searchable_listview/searchable_listview.dart';
 import 'package:practice_login/Components/chat/empty_view.dart';
 
 class AddChat extends StatefulWidget {
-  const AddChat ({Key? key}) : super(key:key);
+  const AddChat ({super.key});
 
   @override
   State<AddChat> createState() => _AddChatState();
@@ -52,7 +52,7 @@ class _AddChatState extends State<AddChat> {
 
 class ContactList extends StatefulWidget {
   final bool? autoFocus;
-  const ContactList({Key? key, this.autoFocus}) : super(key: key);
+  const ContactList({super.key, this.autoFocus});
 
   @override
   State<ContactList> createState() => _ContactListState();
@@ -181,7 +181,7 @@ class ContactUserItem extends StatelessWidget {
   final ContactUser contact;
   final Color? textColor;
 
-  const ContactUserItem({Key? key, required this.contact, this.textColor}) : super(key: key);
+  const ContactUserItem({super.key, required this.contact, this.textColor});
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +216,7 @@ class ContactUserItem extends StatelessWidget {
 }
 
 class AddContactDialog extends StatefulWidget {
-  const AddContactDialog({Key? key}) : super(key: key);
+  const AddContactDialog({super.key});
   
   @override
   State<AddContactDialog> createState() => _AddContactDialogState();

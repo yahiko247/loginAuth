@@ -9,7 +9,7 @@ import 'package:practice_login/services/user_data_services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ChatArchives extends StatefulWidget {
-  const ChatArchives({Key? key}) : super(key: key);
+  const ChatArchives({super.key});
 
   @override
   State<ChatArchives> createState() => _ChatArchivesState();

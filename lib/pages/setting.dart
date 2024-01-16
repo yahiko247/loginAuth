@@ -8,8 +8,8 @@ class SettingPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Notification'),
-        backgroundColor: Color.fromARGB(255, 124, 210, 231),
+        title: const Text('Notification'),
+        backgroundColor: const Color.fromARGB(255, 124, 210, 231),
       ),
     );
   }

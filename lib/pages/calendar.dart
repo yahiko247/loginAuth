@@ -167,7 +167,7 @@ class _CalendarSchedule extends State<CalendarSchedule> {
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: [
-          Text('Selected day' + today.toString().split(" ")[0]),
+          Text('Selected day${today.toString().split(" ")[0]}'),
           Container(
             child: TableCalendar(
               headerStyle: const HeaderStyle(
@@ -180,7 +180,7 @@ class _CalendarSchedule extends State<CalendarSchedule> {
               firstDay: DateTime.utc(2010, 10, 16),
               lastDay: DateTime.utc(2030, 10, 14),
               onDaySelected: _onDaySelected,
-              calendarStyle: CalendarStyle(
+              calendarStyle: const CalendarStyle(
                   todayTextStyle: TextStyle(color: Colors.black),
                   weekNumberTextStyle: TextStyle(color: Colors.black)),
             ),

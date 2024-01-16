@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 class CreateNewPost extends StatefulWidget {
   final List<PlatformFile>? imagesPicked;
-  const CreateNewPost({Key? key, this.imagesPicked}) : super(key: key);
+  const CreateNewPost({super.key, this.imagesPicked});
 
   @override
   State<CreateNewPost> createState() => _CreateNewPostState();
@@ -20,7 +20,7 @@ class _CreateNewPostState extends State<CreateNewPost> {
   final TextEditingController _newPostController = TextEditingController();
   List<PlatformFile> _filesPicked = [];
   bool _textIsNotEmpty = false;
-  bool _postInProgress = false;
+  final bool _postInProgress = false;
 
   @override
   void initState() {
@@ -309,7 +309,7 @@ class CroppedImage extends StatelessWidget {
   final String imagePath;
   final VoidCallback? onRemove;
 
-  const CroppedImage({Key? key, required this.imagePath, this.onRemove}) : super(key: key);
+  const CroppedImage({super.key, required this.imagePath, this.onRemove});
 
   @override
   Widget build(BuildContext context) {

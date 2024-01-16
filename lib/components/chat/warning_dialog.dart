@@ -9,14 +9,14 @@ class WarningDialog extends StatelessWidget {
   final EdgeInsets? padding;
 
   const WarningDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.message,
     required this.confirmButtonText,
     required this.confirmAction,
     this.textColor,
     this.padding
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

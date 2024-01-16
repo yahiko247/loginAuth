@@ -1,10 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/pages/botto_nav_bar.dart';
-import 'package:practice_login/pages/home_page.dart';
-import 'package:practice_login/pages/homepage.dart';
-import 'package:practice_login/pages/login_page.dart';
 import 'package:practice_login/services/login_register.dart';
 
 class AuthPage extends StatelessWidget {
@@ -18,12 +14,12 @@ class AuthPage extends StatelessWidget {
         builder: (context, snapshot) {
           //user is login
           if (snapshot.hasData) {
-            return MyButtomNavBar();
+            return const MyButtomNavBar();
           }
 
           //user is not log in
           else {
-            return LoginOrRegisterPage();
+            return const LoginOrRegisterPage();
           }
         },
       ),

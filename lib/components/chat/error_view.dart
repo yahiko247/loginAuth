@@ -6,11 +6,11 @@ class ErrorView extends StatelessWidget {
   final Color? textColor;
   final EdgeInsets? padding;
 
-  const ErrorView({Key? key, required this.message, required this.displayIcon, this.textColor, this.padding}) : super(key: key);
+  const ErrorView({super.key, required this.message, required this.displayIcon, this.textColor, this.padding});
 
   @override
   Widget build(BuildContext context) {
-    return Container(padding: padding ?? EdgeInsets.fromLTRB(35, 0, 35, 0), child: Column(
+    return Container(padding: padding ?? const EdgeInsets.fromLTRB(35, 0, 35, 0), child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [

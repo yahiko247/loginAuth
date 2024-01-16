@@ -8,13 +8,13 @@ class ConfirmDialog extends StatelessWidget {
   final EdgeInsets? padding;
 
   const ConfirmDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.message,
     required this.confirmButtonText,
     required this.confirmAction,
     this.padding
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

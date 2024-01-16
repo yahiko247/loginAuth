@@ -8,7 +8,7 @@ class FavoritePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Listed Book'),
+        title: const Text('Listed Book'),
         backgroundColor: const Color.fromARGB(255, 124, 210, 231),
       ),
     );

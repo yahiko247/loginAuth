@@ -1,10 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/Components/my_button.dart';
 import 'package:practice_login/Components/my_textfield.dart';
 import 'package:practice_login/Components/square_tile.dart';
-import 'package:practice_login/register_page/register.dart';
 import 'package:practice_login/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -144,9 +141,9 @@ class _LoginPageState extends State<LoginPage> {
 
                       //Google + apple  sign buttons
                       Container(
-                        child: Row(
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             //google button
                             SquareTile(imagPath: 'images/google.png'),
 
@@ -173,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: SizedBox(
                               child: Container(
                                 padding: const EdgeInsets.all(16),
-                                child: Text(
+                                child: const Text(
                                   'Register Now',
                                   style: TextStyle(color: Colors.blue),
                                 ),
