@@ -97,7 +97,7 @@ class ProfilePage extends StatelessWidget {
             backgroundColor: const Color.fromARGB(255, 124, 210, 231),
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: <Widget>[
             NestedTabBar('first Page'),
             NestedTabBar('secondTab')
