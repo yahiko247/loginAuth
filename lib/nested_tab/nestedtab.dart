@@ -5,7 +5,9 @@ import 'package:practice_login/components/my_post_button.dart';
 import 'package:practice_login/components/my_textfield.dart';
 import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/pages/homepage.dart';
+import 'package:file_picker/file_picker.dart';
 
+import '../pages/post/create_post.dart';
 class NestedTabBar extends StatefulWidget {
   NestedTabBar(this.outerTab, {super.key});
   final currentUser = FirebaseAuth.instance.currentUser!;
@@ -22,6 +24,8 @@ class _NestedTabBar extends State<NestedTabBar> with TickerProviderStateMixin {
   final TextEditingController newPostController = TextEditingController();
   final FirestoreDatabase _firestoreDatabase = FirestoreDatabase();
   late Stream<QuerySnapshot> postsStream;
+  List<PlatformFile>? _pickedFiles;
+
   @override
   void initState() {
     super.initState();
@@ -43,7 +47,39 @@ class _NestedTabBar extends State<NestedTabBar> with TickerProviderStateMixin {
     _tabController.dispose();
     super.dispose();
   }
+  Future<void> addImages() async {
+    try {
+      final files = await FilePicker.platform.pickFiles(
+          allowMultiple: true,
+          type: FileType.custom,
+          allowedExtensions: ['jpg', 'png']
+      );
+      if (files != null && files.files.isNotEmpty) {
+        setState(() {
+          _pickedFiles = files.files;
+        });
+      }
+      else {
+        _pickedFiles = [];
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+    goToCreate();
+  }
 
+  void goToCreate() {
+    List<PlatformFile> imagesPicked = _pickedFiles!;
+    setState(() {
+      _pickedFiles = [];
+    });
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) {
+          return CreateNewPost(imagesPicked: imagesPicked);
+        })
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final currentUserEmail = widget.currentUser.email;
@@ -113,6 +149,7 @@ class _NestedTabBar extends State<NestedTabBar> with TickerProviderStateMixin {
                             String message = post['PostMessage'];
                             String userEmail = post['UserEmail'];
                             Timestamp timestamp = post['TimeStamp'];
+                            List<dynamic> mediaReferences = post['MediaReferences'];
                             Timestamp postTimeStamp =
                                 userPosts[index]['TimeStamp'];
                             String formattedTimestamp = _firestoreDatabase
@@ -131,14 +168,16 @@ class _NestedTabBar extends State<NestedTabBar> with TickerProviderStateMixin {
                                     leading: const CircleAvatar(
                                         radius: 20,
                                         backgroundImage:
-                                            AssetImage('images/Avatar1.png')),
+                                        AssetImage('images/Avatar1.png')),
                                     title: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(userEmail),
+                                        Text(
+                                            '${post['UserFirstName']}'
+                                            '${post['UserLastName']}'
+                                        ),
+
                                         Text(
                                           formattedTimestamp,
                                           style: const TextStyle(fontSize: 10),
@@ -150,16 +189,31 @@ class _NestedTabBar extends State<NestedTabBar> with TickerProviderStateMixin {
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(message),
+                                    if (message.isNotEmpty)
+                                      Text(message, style: const TextStyle(fontSize: 16)),
+                                    if (mediaReferences.isNotEmpty)
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Row(
+                                          children: [
+                                            for(String url in mediaReferences)
+                                              Container(
+                                                height: 300,
+                                                width: 300,
+                                                child: Image.network(url),
+                                              )
+                                          ],
+                                        ),
+                                      ),
                                     const Divider(thickness: 1),
                                     Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 5, bottom: 5),
+                                      padding:
+                                      const EdgeInsets.only(top: 5, bottom: 5),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         mainAxisSize: MainAxisSize.max,
                                         children: [
                                           GestureDetector(
