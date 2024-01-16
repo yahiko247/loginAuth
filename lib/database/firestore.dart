@@ -5,8 +5,7 @@ import 'package:intl/intl.dart';
 class FirestoreDatabase {
   User? user = FirebaseAuth.instance.currentUser;
 
-  final CollectionReference posts = FirebaseFirestore.instance.collection(
-      'Posts');
+  final CollectionReference posts = FirebaseFirestore.instance.collection('Posts');
 
   Future<void> addPost(String message) {
     return posts.add({

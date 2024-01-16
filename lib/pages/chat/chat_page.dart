@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/Components/chat/empty_view.dart';
 import 'package:practice_login/components/chat/warning_dialog.dart';
-import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/pages/chat/add_chat.dart';
 import 'package:practice_login/pages/chat/archived_chats.dart';
 import 'package:practice_login/pages/chat/chat_box.dart';
@@ -12,6 +11,7 @@ import 'package:practice_login/pages/profile.dart';
 import 'package:practice_login/services/chat/chat_service.dart';
 import 'package:practice_login/services/user_data_services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -22,6 +22,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   final ChatService _chatService = ChatService();
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
 
@@ -236,7 +237,7 @@ class _ChatPageState extends State<ChatPage> {
                   } else if (userDataSnapshot.connectionState == ConnectionState.waiting) {
                     return ListTile(
                       contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                      title: const Text('User'),
+                      title: const Text(''),
                       leading: Container(
                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
                         child: Image.asset('images/Avatar1.png', height: 50),

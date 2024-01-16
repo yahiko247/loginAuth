@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_login/Components/my_post_button.dart';
+import 'package:practice_login/components/my_post_button.dart';
 import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/pages/chat/chat_page.dart';
+import 'package:practice_login/pages/post/create_post.dart';
 import 'package:practice_login/pages/profile.dart';
-import 'package:practice_login/Components/my_textfield.dart';
+import 'package:practice_login/components/my_textfield.dart';
 import 'package:practice_login/pages/stalking_page.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:provider/provider.dart';
 
 class HomePage2 extends StatefulWidget {
   const HomePage2({super.key});
@@ -21,25 +25,53 @@ class _HomePage2 extends State<HomePage2> {
   final FirestoreDatabase database = FirestoreDatabase();
   final TextEditingController newPostController = TextEditingController();
   final FirestoreDatabase _firestoreDatabase = FirestoreDatabase();
+  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   late Stream<QuerySnapshot> postsStream;
+  List<PlatformFile>? _pickedFiles;
+
   @override
   void initState() {
     super.initState();
     postsStream = _firestoreDatabase.getPostsStream();
   }
 
-  void postMessage() {
-    if (newPostController.text.isNotEmpty) {
-      String message = newPostController.text;
-      database.addPost(message);
-    }
-
-    newPostController.clear();
-  }
-
   void signUserOut() {
     FirebaseAuth.instance.signOut();
     /* final authService = Provider.of<AuthService>(context, listen: false); */
+  }
+
+  Future<void> addImages() async {
+    try {
+      final files = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'png']
+      );
+      if (files != null && files.files.isNotEmpty) {
+        setState(() {
+          _pickedFiles = files.files;
+        });
+      }
+      else {
+        _pickedFiles = [];
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+    goToCreate();
+  }
+
+  void goToCreate() {
+    List<PlatformFile> imagesPicked = _pickedFiles!;
+    setState(() {
+      _pickedFiles = [];
+    });
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) {
+          return CreateNewPost(imagesPicked: imagesPicked);
+        })
+    );
   }
 
   void NavigatorDetails(
@@ -48,7 +80,8 @@ class _HomePage2 extends State<HomePage2> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => StalkPage(userEmail: userEmail)));
+            builder: (context) => StalkPage(userEmail: userEmail))
+    );
   }
 
   @override
@@ -90,17 +123,30 @@ class _HomePage2 extends State<HomePage2> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 25, right: 25),
+              padding: const EdgeInsets.only(top: 25),
               child: Row(
                 children: [
                   Expanded(
-                    child: MyTextField(
-                      controller: newPostController,
-                      hintText: "Say Something",
-                      obscuretext: false,
-                    ),
+                    child: GestureDetector(
+                      child: MyTextField(
+                        controller: newPostController,
+                        hintText: "Create a post",
+                        obscuretext: false,
+                        disableInput: true
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) {
+                                  return const CreateNewPost();
+                                }
+                            )
+                        );
+                      },
+                    )
                   ),
-                  PostButton(onTap: postMessage)
+                  Container(padding: const EdgeInsets.only(right: 20), child: IconButton(onPressed: addImages, icon: const Icon(Icons.photo, size: 30,)))
                 ],
               ),
             ),
@@ -129,9 +175,8 @@ class _HomePage2 extends State<HomePage2> {
                       itemCount: posts.length,
                       itemBuilder: (context, index) {
                         final post = posts[index];
-
+                        List<dynamic> mediaReferences = post['MediaReferences'];
                         String message = post['PostMessage'];
-                        String userEmail = post['UserEmail'];
                         Timestamp timestamp = post['TimeStamp'];
                         Timestamp postTimeStamp = posts[index]['TimeStamp'];
                         String formattedTimestamp = _firestoreDatabase
@@ -157,9 +202,9 @@ class _HomePage2 extends State<HomePage2> {
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        NavigatorDetails(userEmail);
+                                        NavigatorDetails(post['UserEmail']);
                                       },
-                                      child: Text(userEmail),
+                                      child: Text('${post['UserFirstName']} ${post['UserLastName']}'),
                                     ),
                                     Text(
                                       formattedTimestamp,
@@ -172,7 +217,22 @@ class _HomePage2 extends State<HomePage2> {
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(message),
+                                if (message.isNotEmpty)
+                                  Text(message, style: const TextStyle(fontSize: 16)),
+                                if (mediaReferences.isNotEmpty)
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        for(String url in mediaReferences)
+                                          Container(
+                                            height: 300,
+                                            width: 300,
+                                            child: Image.network(url),
+                                          )
+                                      ],
+                                    ),
+                                  ),
                                 const Divider(thickness: 1),
                                 Padding(
                                   padding:

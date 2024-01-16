@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_login/services/chat/chat_service.dart';
 
 class UserDataServices extends ChangeNotifier {
   final String userID;
@@ -75,7 +74,9 @@ class UserDataServices extends ChangeNotifier {
         await _fireStore.collection('users')
             .doc(_firebaseAuth.currentUser!.uid)
             .set({'contacts': userContactList}, SetOptions(merge: true));
-      } catch (e) {print(e);}
+      } catch (e) {
+        throw Exception(e);
+      }
     }
   }
 
@@ -99,12 +100,16 @@ class UserDataServices extends ChangeNotifier {
           userChatRoomKeys.insert(0, chatRoomID);
           await _fireStore.collection('users').doc(_firebaseAuth.currentUser!.uid).set({'chat_room_keys': userChatRoomKeys}, SetOptions(merge: true));
         }
-      } catch(e) {print(e);}
+      } catch(e) {
+        throw Exception(e);
+      }
     } else {
       try {
         List<dynamic> userChatRoomKeys = [chatRoomID];
         await _fireStore.collection('users').doc(_firebaseAuth.currentUser!.uid).set({'chat_room_keys': userChatRoomKeys}, SetOptions(merge: true));
-      } catch (e) {print(e);}
+      } catch (e) {
+        throw Exception(e);
+      }
     }
 
     if (otherUserDataSnapshot.exists) {

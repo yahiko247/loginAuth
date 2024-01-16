@@ -34,6 +34,7 @@ class _MessageInputState extends State<MessageInput> {
     if (widget.returnToChatPage ?? false) {
       Navigator.pop(context);
       Navigator.pop(context);
+      Navigator.pop(context);
       Navigator.push(
           context,
           MaterialPageRoute(builder: (context) {
@@ -63,8 +64,7 @@ class _MessageInputState extends State<MessageInput> {
     String message = _messageInputController.text;
     _messageInputController.clear();
     if (message.isNotEmpty) {
-      await _chatService.sendMessage(
-          widget.userId, widget.userEmail, message.trim());
+      await _chatService.sendMessage(widget.userId, widget.userEmail, message.trim());
     }
   }
 

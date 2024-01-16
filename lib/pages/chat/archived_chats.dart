@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/Components/chat/empty_view.dart';
 import 'package:practice_login/components/chat/warning_dialog.dart';
-import 'package:practice_login/pages/chat/add_chat.dart';
 import 'package:practice_login/pages/chat/chat_box.dart';
 import 'package:practice_login/services/chat/chat_service.dart';
 import 'package:practice_login/services/user_data_services.dart';
@@ -20,7 +19,6 @@ class _ChatArchivesState extends State<ChatArchives> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final ChatService _chatService = ChatService();
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
-  final TextEditingController _searchController = TextEditingController();
 
   String formatPreviewMessage(String message) {
     String formattedMessage = '';
@@ -192,7 +190,7 @@ class _ChatArchivesState extends State<ChatArchives> {
                       key: UniqueKey(),
                       endActionPane: ActionPane(
                         extentRatio: 0.35,
-                        motion: StretchMotion(),
+                        motion: const StretchMotion(),
                         children: [
                           SlidableAction(
                             onPressed: (context) {
