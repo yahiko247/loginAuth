@@ -31,17 +31,23 @@ class _ForPosts extends State<ForPosts>{
     postsStream = _firestoreDatabase.getPostsStream();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    newPostController.dispose();
+  }
+
   void signUserOut() {
     FirebaseAuth.instance.signOut();
     /* final authService = Provider.of<AuthService>(context, listen: false); */
   }
 
-  Future<void> addImages() async {
+  Future<void> addFiles() async {
     try {
       final files = await FilePicker.platform.pickFiles(
           allowMultiple: true,
           type: FileType.custom,
-          allowedExtensions: ['jpg', 'png']
+          allowedExtensions: ['jpg', 'png', 'mp4']
       );
       if (files != null && files.files.isNotEmpty) {
         setState(() {
@@ -108,7 +114,7 @@ class _ForPosts extends State<ForPosts>{
                       },
                     )
                 ),
-                Container(padding: const EdgeInsets.only(right: 20), child: IconButton(onPressed: addImages, icon: const Icon(Icons.photo, size: 30,)))
+                Container(padding: const EdgeInsets.only(right: 20), child: IconButton(onPressed: addFiles, icon: const Icon(Icons.photo, size: 30,)))
               ],
             ),
           ),

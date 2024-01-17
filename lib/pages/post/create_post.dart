@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:practice_login/components/chat/warning_dialog.dart';
 import 'package:practice_login/components/post/confirm_dialog.dart';
+import 'package:practice_login/components/post/video_preview.dart';
 import 'package:practice_login/services/posts/posts_service.dart';
-import 'package:reorderables/reorderables.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:video_player/video_player.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:path_provider/path_provider.dart';
 
 class CreateNewPost extends StatefulWidget {
   final List<PlatformFile>? imagesPicked;
@@ -20,7 +23,10 @@ class _CreateNewPostState extends State<CreateNewPost> {
   final TextEditingController _newPostController = TextEditingController();
   List<PlatformFile> _filesPicked = [];
   bool _textIsNotEmpty = false;
-  final bool _postInProgress = false;
+  bool _postInProgress = false;
+
+  List<VideoPlayerController> _videoControllers = [];
+  List<Future<void>> _initializeVideoPlayerFutures = [];
 
   @override
   void initState() {
@@ -36,15 +42,18 @@ class _CreateNewPostState extends State<CreateNewPost> {
     super.dispose();
     _newPostController.removeListener(allowPost);
     _newPostController.dispose();
+    for (var controller in _videoControllers) {
+      controller.dispose();
+    }
   }
 
-  void _removeImage(int index) {
+  void _removeFile(int index) {
     setState(() {
       _filesPicked.removeAt(index);
     });
   }
 
-  void _addImages(List<PlatformFile> newImages) async {
+  void _addFiles(List<PlatformFile> newImages) async {
     setState(() {
       _filesPicked.addAll(newImages);
     });
@@ -68,7 +77,7 @@ class _CreateNewPostState extends State<CreateNewPost> {
           builder: (context) {
             return ConfirmDialog(
                 title: 'Confirm Post?',
-                message: 'Adding images to your post will make it more visually appealing.',
+                message: 'Adding images and videos to your post will make it more visually appealing.',
                 confirmButtonText: 'Post',
                 confirmAction: post
             );
@@ -82,9 +91,12 @@ class _CreateNewPostState extends State<CreateNewPost> {
     if (_newPostController.text.isEmpty || _filesPicked.isEmpty) {
       Navigator.pop(context);
     }
+    setState(() {
+      _postInProgress = true;
+    });
     try {
       if (_newPostController.text.isNotEmpty || _filesPicked.isNotEmpty) {
-        showDialog(context: context, builder: (context) => const Center(child: CircularProgressIndicator()));
+        showDialog(barrierDismissible: false, context: context, builder: (context) => const Center(child: CircularProgressIndicator()));
         await _postService.addPost(_newPostController.text, _filesPicked);
       }
     } finally {
@@ -159,7 +171,7 @@ class _CreateNewPostState extends State<CreateNewPost> {
               Container(
                 margin: const EdgeInsets.only(top: 23, left: 20, right: 20),
                 child: TextFormField(
-                  minLines: 2,
+                  minLines: 3,
                   maxLines: 10,
                   controller: _newPostController,
                   decoration: InputDecoration(
@@ -178,43 +190,37 @@ class _CreateNewPostState extends State<CreateNewPost> {
                 ),
               ),
               _filesPicked.isNotEmpty ? Container(
-                padding: const EdgeInsets.only(top: 10, bottom: 5, right: 15, left: 15),
-                child: ReorderableRow(
-                  draggingWidgetOpacity: 0.5,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  onReorder: (int oldIndex, int newIndex) {
-                    setState(() {
-                      PlatformFile col = _filesPicked.removeAt(oldIndex);
-                      _filesPicked.insert(newIndex, col);
-                    });
-                  },
-                  children: List.generate(
-                      _filesPicked.length,
-                          (index){
-                            return CroppedImage(
-                              key: UniqueKey(),
-                              imagePath: _filesPicked[index].path!,
-                              onRemove: () => _removeImage(index),
-                            );
-                      }
-                  )
-                ),
-              ) : const SizedBox(height: 15),
-              /*Container(
-                padding: EdgeInsets.only(top: 20, bottom: 15),
+                padding: const EdgeInsets.only(top: 10, bottom: 5, right: 0, left: 0),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                      children: List.generate(
+                    children: List.generate(
                         _filesPicked.length,
-                            (index) => CroppedImage(
-                          imagePath: _filesPicked[index].path!,
-                          onRemove: () => _removeImage(index),
-                        ),
-                      )
+                            (index) {
+                          if (_filesPicked[index].extension == 'jpg') {
+                            return CroppedImage(
+                              padding: index == 0 ? EdgeInsets.fromLTRB(20, 5, 5, 5)
+                                  : index == _filesPicked.length -1 ? EdgeInsets.fromLTRB(5, 5, 20, 5)
+                                  : EdgeInsets.all(5),
+                              imagePath: _filesPicked[index].path!,
+                              onRemove: () => _removeFile(index),
+                            );
+                          }
+                          if (_filesPicked[index].extension == 'mp4') {
+                            return CroppedVideo(
+                              padding: index == 0 ? EdgeInsets.fromLTRB(20, 5, 5, 5)
+                                  : index == _filesPicked.length -1 ? EdgeInsets.fromLTRB(5, 5, 20, 5)
+                                  : EdgeInsets.all(5),
+                              videoPath: _filesPicked[index].path!,
+                              onRemove: () => _removeFile(index),
+                            );
+                          }
+                          throw Exception('No valid file types(?)');
+                        }
+                    ),
                   ),
-                ),
-              ),*/
+                )
+              ) : const SizedBox(height: 15),
               Container(
                 padding: const EdgeInsets.only(right: 20, left: 20),
                 child: Row(
@@ -238,7 +244,7 @@ class _CreateNewPostState extends State<CreateNewPost> {
                               );
                               if (result != null && result.files.isNotEmpty) {
                                 result.files.removeWhere((file) => _filesPicked.contains(file));
-                                _addImages(result.files);
+                                _addFiles(result.files);
                               }
                             },
                             child: const Icon(Icons.image, size: 25, color: Colors.white)
@@ -275,7 +281,16 @@ class _CreateNewPostState extends State<CreateNewPost> {
                                   color: Colors.red
                               ),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
+                              FilePickerResult? result = await FilePicker.platform.pickFiles(
+                                type: FileType.custom,
+                                allowedExtensions: ['mp4'],
+                                allowMultiple: true,
+                              );
+                              if (result != null && result.files.isNotEmpty) {
+                                result.files.removeWhere((file) => _filesPicked.contains(file));
+                                _addFiles(result.files);
+                              }
                             },
                             child: const Icon(Icons.video_collection, size: 25, color: Colors.white,)
                         ),
@@ -285,12 +300,12 @@ class _CreateNewPostState extends State<CreateNewPost> {
                         style: OutlinedButton.styleFrom(
                             disabledForegroundColor: Colors.grey,
                             side: BorderSide(
-                              color: _textIsNotEmpty || _filesPicked.isNotEmpty ? Colors.green : Colors.grey
+                              color: _postInProgress ? Colors.grey : _textIsNotEmpty || _filesPicked.isNotEmpty ? Colors.green : Colors.grey
                             ),
-                            foregroundColor: _textIsNotEmpty && _filesPicked.isNotEmpty ? Colors.white : Colors.green,
-                            backgroundColor: _textIsNotEmpty && _filesPicked.isNotEmpty ? Colors.green : Colors.white
+                            foregroundColor: _postInProgress ? Colors.grey : _textIsNotEmpty && _filesPicked.isNotEmpty ? Colors.white : Colors.green,
+                            backgroundColor: _postInProgress ? Colors.white : _textIsNotEmpty && _filesPicked.isNotEmpty ? Colors.green : Colors.white
                         ),
-                        onPressed: _textIsNotEmpty || _filesPicked.isNotEmpty ? confirmPost : null,
+                        onPressed: _postInProgress ? null : _textIsNotEmpty || _filesPicked.isNotEmpty ? confirmPost : null,
                         child: const Text('Post', style: TextStyle(fontWeight: FontWeight.bold))
                     )
                   ],
@@ -305,67 +320,191 @@ class _CreateNewPostState extends State<CreateNewPost> {
 
 }
 
-class CroppedImage extends StatelessWidget {
-  final String imagePath;
+class CroppedVideo extends StatefulWidget {
+  final String videoPath;
   final VoidCallback? onRemove;
+  final EdgeInsets padding;
+  const CroppedVideo({super.key, required this.videoPath, required this.onRemove, required this.padding});
 
-  const CroppedImage({super.key, required this.imagePath, this.onRemove});
+  @override
+  State<CroppedVideo> createState() => _CroppedVideoState();
+}
+
+class _CroppedVideoState extends State<CroppedVideo> {
+  String? _thumbnailPath;
+  late VideoPlayerController _vidController;
+
+  @override
+  void initState() {
+    _vidController = VideoPlayerController.file(File(widget.videoPath))
+      ..initialize().then((_) {
+        setState(() {});
+      });
+    generateThumbnail();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _vidController.dispose();
+    super.dispose();
+  }
+
+  Future<void> generateThumbnail() async {
+    final thumbnail = await VideoThumbnail.thumbnailFile(
+      video: widget.videoPath,
+      thumbnailPath: (await getTemporaryDirectory()).path,
+      imageFormat: ImageFormat.WEBP,
+      maxHeight: 300,
+      quality: 100,
+    );
+    setState(() {
+      _thumbnailPath = thumbnail;
+    });
+  }
+
+  void playVideo(BuildContext context, bool autoPlay) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return VideoPreview(vidController: _vidController);
+        }
+    );
+    _vidController.seekTo(const Duration(seconds: 0));
+    setState(() {
+      autoPlay ? _vidController.play() : _vidController.pause();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(5),
+      padding: widget.padding,
       child: GestureDetector(
         onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return Container(
-                  padding: const EdgeInsets.all(25),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: IconButton(
-                            icon: const Icon(Icons.clear, size: 25, color: Colors.white,),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            }
-                        ),
-                      ),
-                      Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.file(
-                              File(imagePath)
-                          ),
-                        )
-                      ),
-                      const SizedBox(height: 13),
-                      if (onRemove != null)
-                        Align(
-                          alignment: Alignment.center,
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              side: const BorderSide(
-                                  color: Colors.white
-                              ),
+          playVideo(context, false);
+        },
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                    height: 300,
+                    width: 250,
+                    decoration: _thumbnailPath != null ? BoxDecoration(
+                        image: DecorationImage(
+                            image: FileImage(
+                              File(_thumbnailPath!),
                             ),
-                            onPressed: () {
-                                onRemove!();
-                                Navigator.pop(context);
-                                },
-                            child: const Text('Remove', style: TextStyle(fontWeight: FontWeight.bold)),
+                            fit: BoxFit.cover
+                        )
+                    ) : const BoxDecoration(color: Color.fromARGB(100, 150, 150, 150)),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.topLeft,
+                            child: IconButton(
+                                icon: const Icon(Icons.clear, size: 25, color: Colors.white,),
+                                onPressed: () {
+                                  widget.onRemove!();
+                                }
+                            ),
                           ),
                         ),
-                    ],
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: IconButton(
+                              icon: const Icon(Icons.zoom_out_map, size: 25, color: Colors.white,),
+                              onPressed: () {
+                                playVideo(context, false);
+                              }
+                          ),
+                        ),
+                      ],
+                    )
+                )
+            ),
+            IconButton(
+                icon: const Icon(Icons.play_arrow, size: 40, color: Colors.white,),
+                onPressed: () {
+                  playVideo(context, true);
+                }
+            ),
+          ],
+        )
+      ),
+    );
+  }
+}
+
+class CroppedImage extends StatelessWidget {
+  final String imagePath;
+  final VoidCallback? onRemove;
+  final EdgeInsets padding;
+
+  const CroppedImage({super.key, required this.imagePath, required this.padding, this.onRemove});
+
+  void expandImage(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Container(
+            padding: const EdgeInsets.all(25),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                      icon: const Icon(Icons.clear, size: 25, color: Colors.white,),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }
                   ),
-                );
-              }
+                ),
+                Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                          File(imagePath)
+                      ),
+                    )
+                ),
+                const SizedBox(height: 13),
+                if (onRemove != null)
+                  Align(
+                    alignment: Alignment.center,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: const BorderSide(
+                            color: Colors.white
+                        ),
+                      ),
+                      onPressed: () {
+                        onRemove!();
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Remove', style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+              ],
+            ),
           );
+        }
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: padding,
+      child: GestureDetector(
+        onTap: () {
+          expandImage(context);
         },
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
@@ -380,21 +519,30 @@ class CroppedImage extends StatelessWidget {
                   fit: BoxFit.cover
               )
             ),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  IconButton(
-                      icon: const Icon(Icons.clear, size: 25, color: Colors.white,),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: IconButton(
+                        icon: const Icon(Icons.clear, size: 25, color: Colors.white,),
+                        onPressed: () {
+                          onRemove!();
+                        }
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: IconButton(
+                      icon: const Icon(Icons.zoom_out_map, size: 25, color: Colors.white,),
                       onPressed: () {
-                        onRemove!();
+                        expandImage(context);
                       }
                   ),
-                ],
-              ),
-            ),
+                ),
+              ],
+            )
           )
         ),
       ),

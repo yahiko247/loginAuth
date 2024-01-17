@@ -25,7 +25,8 @@ class PostService extends ChangeNotifier {
       for (int i = 0; i < files.length; i++) {
         try {
           Reference forUploadRef = storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}');
-          UploadTask uploadTask = storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}').putFile(File(files[i].path!));
+          SettableMetadata metadata = SettableMetadata(contentType: files[i].extension);
+          UploadTask uploadTask = storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}').putFile(File(files[i].path!), );
 
           uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
             _uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
