@@ -1,19 +1,21 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:practice_login/Components/button_register.dart';
 import 'package:practice_login/Components/my_textfield.dart';
 import 'package:practice_login/Components/square_tile.dart';
 import 'package:practice_login/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-class RegisterForm extends StatefulWidget {
-  final void Function()? onTap;
-  const RegisterForm({super.key, required this.onTap});
+
+class FreelancerRegisterForm extends StatefulWidget {
+  //final void Function()? onTap;
+  const FreelancerRegisterForm({super.key/*, required this.onTap*/});
 
   @override
-  State<RegisterForm> createState() => _RegisterFormState();
+  State<FreelancerRegisterForm> createState() => _FreelancerRegisterFormState();
 }
+
 class Item {
   String id;
   String name;
@@ -21,27 +23,26 @@ class Item {
   Item(this.id, this.name);
 }
 
-class _RegisterFormState extends State<RegisterForm> {
+class _FreelancerRegisterFormState extends State<FreelancerRegisterForm> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   var firstNameController = TextEditingController();
   var lastNameController = TextEditingController();
 
-
   String response = "Null";
   List<Item> data = [];
 
   createItem() async {
     var dataStr = jsonEncode({
-      "command": "add_clients",
+      "command": "add_freelancer",
       "user_id": FirebaseAuth.instance.currentUser!.uid,
       "firstname": firstNameController.text,
       "lastname" : lastNameController.text,
       "email": emailController.text,
 
     });
-    var url = 'http://192.168.1.2:80/userreg.php?data=$dataStr';
+    var url = 'http://192.168.1.2:80/freelancerreg.php?data=$dataStr';
     var result = await http.get(Uri.parse(url));
     setState(() {
       response = result.body;
@@ -52,7 +53,6 @@ class _RegisterFormState extends State<RegisterForm> {
       confirmPasswordController.clear();
     });
   }
-
  void RegisterUser() async {
     if (passwordController.text != confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -67,7 +67,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
     try {
       await authService.signUp(emailController.text, passwordController.text,
-          firstNameController.text, myLastName, false);
+          firstNameController.text, myLastName,true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -101,7 +101,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
                     //wellcomeback
                     Text(
-                      'Sign up for your account now.',
+                      'Sign up as a freelancer now.',
                       style: TextStyle(
                         color: Colors.grey[700],
                         fontSize: 16,
@@ -173,7 +173,7 @@ class _RegisterFormState extends State<RegisterForm> {
                           ),
                           Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            const EdgeInsets.symmetric(horizontal: 10.0),
                             child: Text(
                               'Or continue with',
                               style: TextStyle(color: Colors.grey[700]),
@@ -218,7 +218,11 @@ class _RegisterFormState extends State<RegisterForm> {
                         ),
                         const SizedBox(width: 4),
                         GestureDetector(
-                          onTap: widget.onTap,
+                          onTap:(){
+                            //widget.onTap;
+                          },
+
+
                           child: SizedBox(
                             child: Container(
                                 padding: const EdgeInsets.all(16),

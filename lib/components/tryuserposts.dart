@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/pages/post/create_post.dart';
 import 'package:practice_login/components/my_textfield.dart';

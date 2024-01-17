@@ -3,9 +3,11 @@ import 'package:practice_login/pages/calendar.dart';
 import 'package:practice_login/pages/chat/chat_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:practice_login/pages/reviews_page.dart';
+import 'package:practice_login/register_page/freelancer_registration.dart';
 import '../pages/feedback_page.dart';
 
 class MyDrawer extends StatelessWidget {
+
   const MyDrawer({super.key});
 
   void signUserOut() {
@@ -82,6 +84,16 @@ class MyDrawer extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const CalendarSchedule()));
+              },
+            ),
+            ListTile(
+              title: const Text('Debug/Freelance Reg'),
+              onTap: () {
+                // Add your logic for logging out
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FreelancerRegisterForm()));
               },
             ),
           ],

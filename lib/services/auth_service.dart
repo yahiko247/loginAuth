@@ -21,7 +21,7 @@ class AuthService extends ChangeNotifier {
   }
 
   // Sign Up
-  Future<UserCredential> signUp(String email, password, firstName, String? lastName) async {
+  Future<UserCredential> signUp(String email, password, firstName, String? lastName, bool? freelancer) async {
     try {
       UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email,
@@ -34,7 +34,8 @@ class AuthService extends ChangeNotifier {
         'chat_room_keys' : [],
         'archived_chat_rooms' : [],
         'first_name' : firstName,
-        'last_name' : lastName
+        'last_name' : lastName,
+        'freelancer': freelancer?? false
       });
       return userCredential;
     } on FirebaseAuthException catch(e) {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:practice_login/Components/my_button.dart';
 import 'package:practice_login/Components/my_textfield.dart';
 import 'package:practice_login/Components/square_tile.dart';
+import 'package:practice_login/register_page/freelancer_registration.dart';
+import 'package:practice_login/register_page/register.dart';
 import 'package:practice_login/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -166,7 +168,45 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(width: 4),
                           GestureDetector(
-                            onTap: widget.onTap,
+                            onTap: (){
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Center(child: Text('Register as Freelancer?',style: TextStyle(fontSize: 20),)),
+                                    content: const Text(
+                                      "Ybambe,Wakanda Forebahhhh",textAlign: TextAlign.center,
+                                    ),
+                                    actions: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          TextButton(
+                                              onPressed: (){
+                                                Navigator.pop(context);
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(builder: (context)=> const FreelancerRegisterForm()
+                                                    )
+                                                );
+                                              },
+                                              child: const Text("Yes")
+                                          ),
+                                          TextButton(
+                                              onPressed: (){
+                                                Navigator.pop(context);
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(builder: (context)=> const RegisterForm(onTap: null)
+                                                    )
+                                                );
+                                              },
+                                              child: const Text("No")),
+                                        ],
+                                      )
+                                    ],
+                                  )
+                              );
+                            },
+
+                            //widget.onTap,
                             child: SizedBox(
                               child: Container(
                                 padding: const EdgeInsets.all(16),
