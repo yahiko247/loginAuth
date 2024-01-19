@@ -7,18 +7,10 @@ class FirestoreDatabase {
 
   final CollectionReference posts = FirebaseFirestore.instance.collection('Posts');
 
-  Future<void> addPost(String message) {
-    return posts.add({
-      'UserEmail': user!.email,
-      'PostMessage': message,
-      'TimeStamp': Timestamp.now(),
-    });
-  }
-
   Stream<QuerySnapshot> getPostsStream() {
     final postsStream = FirebaseFirestore.instance
-        .collection('Posts')
-        .orderBy('TimeStamp', descending: true,)
+        .collection('posts')
+        .orderBy('timestamp', descending: true,)
         .snapshots();
 
     return postsStream;

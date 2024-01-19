@@ -571,7 +571,7 @@ class _ChatSearchBarState extends State<ChatSearchBar> {
                         userId: userData['uid'],
                         userFirstName: userData['first_name'],
                         userLastName: userData['last_name'],
-                        origin: 'add_chat'
+                        origin: 'chat_page'
                     );
                   }
               );

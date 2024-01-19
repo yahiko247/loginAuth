@@ -9,35 +9,38 @@ import 'dart:io';
 
 class PostService extends ChangeNotifier {
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
-  final CollectionReference posts = FirebaseFirestore.instance.collection('Posts');
+  final CollectionReference posts = FirebaseFirestore.instance.collection('posts');
   final storageRef = FirebaseStorage.instance.ref();
   final timeStamp = FieldValue.serverTimestamp();
   double _uploadProgress = 0.0;
   double get uploadProgress => _uploadProgress;
 
-  Future<List<dynamic>> uploadFiles(List<PlatformFile> files) async {
+  Future<List<Map<String, dynamic>>> uploadFiles(List<PlatformFile> files) async {
     String timeStamp = DateTime.now().toString();
     final userId = FirebaseAuth.instance.currentUser!.uid;
-    List<dynamic> fileRefs = [];
+    List<Map<String, dynamic>> fileRefs = [];
 
 
     if (files.isNotEmpty) {
       for (int i = 0; i < files.length; i++) {
         try {
-          Reference forUploadRef = storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}');
           SettableMetadata metadata = SettableMetadata(contentType: files[i].extension);
-          UploadTask uploadTask = storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}').putFile(File(files[i].path!), );
+          UploadTask uploadTask = storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}').putFile(File(files[i].path!), metadata);
 
           uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
             _uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 
             notifyListeners();
-
-            print('Upload Progress: $_uploadProgress%');
           });
 
           await uploadTask;
-          fileRefs.add(await storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}').getDownloadURL());
+          Map<String,dynamic> fileRefWithMetaData = {};
+          fileRefWithMetaData['media_reference'] = await storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}').getDownloadURL();
+          FullMetadata metaData = await storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}').getMetadata();
+          fileRefWithMetaData['media_type'] = metaData.contentType;
+          fileRefWithMetaData['media_title'] = metaData.name;
+          fileRefWithMetaData['media_size'] = metaData.size;
+          fileRefs.add(fileRefWithMetaData);
         } catch (e) {
           throw Exception(e);
         }
@@ -47,7 +50,7 @@ class PostService extends ChangeNotifier {
   }
 
   Future<void> addPost(String message, List<PlatformFile>? postFiles) async {
-    List<dynamic>? fileRefs;
+    List<Map<String, dynamic>>? fileRefs;
 
     if (postFiles != null) {
       fileRefs = await uploadFiles(postFiles);
@@ -59,13 +62,13 @@ class PostService extends ChangeNotifier {
       if (userData!.isNotEmpty) {
         try {
           await posts.add({
-            'UserEmail': userData['email'],
-            'UserId' : userData['uid'],
-            'UserFirstName' : userData['first_name'],
-            'UserLastName' : userData['last_name'],
-            'PostMessage': message,
-            'TimeStamp': Timestamp.now(),
-            'MediaReferences': fileRefs ?? []
+            'user_email': userData['email'],
+            'user_id' : userData['uid'],
+            'first_name' : userData['first_name'],
+            'last_name' : userData['last_name'],
+            'post_message': message,
+            'timestamp': Timestamp.now(),
+            'media': fileRefs ?? []
           });
         } catch (e) {
           throw Exception(e);
@@ -76,8 +79,8 @@ class PostService extends ChangeNotifier {
 
   Stream<QuerySnapshot> getPostsStream() {
     final postsStream = FirebaseFirestore.instance
-        .collection('Posts')
-        .orderBy('TimeStamp', descending: true,)
+        .collection('posts')
+        .orderBy('timestamp', descending: true)
         .snapshots();
 
     return postsStream;

@@ -18,23 +18,12 @@ class _NestedTabBar extends State<NestedTabBar> with TickerProviderStateMixin {
   final FirestoreDatabase database = FirestoreDatabase();
   final TextEditingController newPostController = TextEditingController();
   final FirestoreDatabase _firestoreDatabase = FirestoreDatabase();
-  late Stream<QuerySnapshot> postsStream;
   List<PlatformFile>? _pickedFiles;
 
   @override
   void initState() {
     super.initState();
-    postsStream = _firestoreDatabase.getPostsStream();
     _tabController = TabController(length: 2, vsync: this);
-  }
-
-  void postMessage() {
-    if (newPostController.text.isNotEmpty) {
-      String message = newPostController.text;
-      database.addPost(message);
-    }
-
-    newPostController.clear();
   }
 
   @override
@@ -61,12 +50,12 @@ class _NestedTabBar extends State<NestedTabBar> with TickerProviderStateMixin {
               child: Text('A B O U T    M E'),
             ),
             Card(
-              child:ForUserPosts(),
-                ),
-              ]
-            )
-        )
-      ]
+              child: ForUserPosts(),
+            ),
+          ]
+          )
+      )
+    ]
     );
   }
 }

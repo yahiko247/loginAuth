@@ -84,22 +84,6 @@ class _VideoPreviewState extends State<VideoPreview> {
                         )
                             : Container(),
                       ),
-                      /*Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: IconButton(
-                                      icon: const Icon(Icons.clear, size: 25, color: Colors.white,),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      }
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),*/
                       Container(
                         padding: EdgeInsets.only(bottom: 13),
                         child: Row(
