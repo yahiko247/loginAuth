@@ -5,10 +5,11 @@ import 'package:practice_login/components/post/post.dart';
 import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/pages/post/create_post.dart';
 import 'package:practice_login/components/my_textfield.dart';
-import 'package:practice_login/pages/stalking_page.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:practice_login/services/posts/posts_service.dart';
+
+import '../pages/userstalkingpage.dart';
 
 
 class ForPosts extends StatefulWidget{
@@ -83,7 +84,7 @@ class _ForPosts extends State<ForPosts>{
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => StalkPage(userEmail: userEmail))
+            builder: (context) => UserStalkPage(userEmail: userEmail))
     );
   }
 
@@ -142,8 +143,8 @@ class _ForPosts extends State<ForPosts>{
                 }
 
                 return Container(
-                  padding: EdgeInsets.only(top: 5),
-                  color: Color.fromARGB(15, 0, 0, 0),
+                  padding: const EdgeInsets.only(top: 5),
+                  color: const Color.fromARGB(15, 0, 0, 0),
                   child: ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),

@@ -1,26 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import 'package:practice_login/nested_tab/nestedtab2.dart';
-import 'package:practice_login/pages/booking.dart';
-import 'package:practice_login/pages/chat/chat_box.dart';
+import 'package:practice_login/nested_tab/nestedtab.dart';
+import 'package:practice_login/components/end_drawer.dart';
 import 'package:practice_login/services/user_data_services.dart';
 
-class StalkPage extends StatelessWidget {
-  String userEmail;
-  StalkPage({super.key, required this.userEmail});
+class UserProfilePage extends StatelessWidget {
+  UserProfilePage({super.key});
   final currentUser = FirebaseAuth.instance.currentUser!;
   final UserDataServices _userDataServices =
-      UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
+  UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
 
-  void navigatorDetails(
-    BuildContext context,
-    String userEmail,
-  ) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => BookPage(userEmail: userEmail)));
+  void signUserOut() {
+    FirebaseAuth.instance.signOut();
   }
 
   @override
@@ -67,8 +58,9 @@ class StalkPage extends StatelessWidget {
                                         }
 
                                         Map<String, dynamic>? userData =
-                                            userDataSnapshot.data!.data()!;
-                                        return Text(userEmail,
+                                        userDataSnapshot.data!.data()!;
+                                        return Text(
+                                            '${userData['first_name']} ${userData['last_name']}',
                                             style: const TextStyle(
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.bold));
@@ -83,11 +75,11 @@ class StalkPage extends StatelessWidget {
                                         color: const Color.fromARGB(
                                             255, 209, 207, 207),
                                         borderRadius:
-                                            BorderRadius.circular(20)),
+                                        BorderRadius.circular(20)),
                                     child: const Padding(
                                       padding: EdgeInsets.only(left: 5, top: 3),
                                       child: Text(
-                                        'Gold Member',
+                                        'Clients Gold Member',
                                         style: TextStyle(
                                             color: Colors.black,
                                             fontWeight: FontWeight.normal,
@@ -102,65 +94,16 @@ class StalkPage extends StatelessWidget {
                     )),
               ],
             ),
-            actions: [
-              Padding(
-                  padding: const EdgeInsets.all(1),
-                  child: FutureBuilder(
-                      future:
-                          _userDataServices.getUserDataThroughEmail(userEmail),
-                      builder: (context, userDataSnapshot) {
-                        if (userDataSnapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const IconButton(
-                              icon: Icon(Icons.messenger), onPressed: null);
-                        }
-                        if (userDataSnapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const IconButton(
-                              icon: Icon(Icons.messenger), onPressed: null);
-                        }
-
-                        Map<String, dynamic>? userData;
-                        if (userDataSnapshot.hasData) {
-                          userData = userDataSnapshot.data!.docs.first.data();
-                        }
-
-                        return IconButton(
-                            icon: const Icon(Icons.messenger),
-                            onPressed: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return ChatBox(
-                                    userEmail: userEmail,
-                                    userId: userData!['uid'],
-                                    userFirstName: userData['first_name'],
-                                    userLastName: userData['last_name'],
-                                    origin: 'add_chat');
-                              }));
-                            });
-                      })),
-              Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: IconButton(
-                  icon: const Icon(Icons.book),
-                  onPressed: () {
-                    navigatorDetails(context, userEmail);
-                  },
-                ),
-              )
-            ],
-            backgroundColor: const Color.fromARGB(255, 107, 199, 191),
+            backgroundColor: const Color.fromARGB(255, 124, 210, 231),
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: <Widget>[
-            NestedTabBar2('first', userEmail: userEmail),
-            NestedTabBar2(
-              'second tab',
-              userEmail: userEmail,
-            )
+            NestedTabBar('first Page'),
+            NestedTabBar('secondTab')
           ],
         ),
+        endDrawer: const MyDrawer(),
       ),
     );
   }

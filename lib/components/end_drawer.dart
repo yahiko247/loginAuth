@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:practice_login/pages/account_settings.dart';
 import 'package:practice_login/pages/calendar.dart';
 import 'package:practice_login/pages/chat/chat_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -34,20 +35,14 @@ class MyDrawer extends StatelessWidget {
               title: Text('Dark Mode'),
               contentPadding: EdgeInsets.only(left: 70),
             ),
-            const ListTile(
-              title: Text('Freelancer Mode'),
-              contentPadding: EdgeInsets.only(left: 70),
-            ),
-            const ListTile(
-              title: Text('Account Settings'),
-              contentPadding: EdgeInsets.only(left: 70),
-            ),
             ListTile(
-              title: const Text('Chats'),
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const ChatPage()));
-              },
+              title: GestureDetector(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> const AccountSettings()
+                      )
+                    );
+                  },
+                  child: const Text('Account Settings')),
               contentPadding: const EdgeInsets.only(left: 70),
             ),
             ListTile(
@@ -74,16 +69,6 @@ class MyDrawer extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const ReviewsPage()));
-              },
-            ),
-            ListTile(
-              title: const Text('Debug/Calendar Page'),
-              onTap: () {
-                // Add your logic for logging out
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CalendarSchedule()));
               },
             ),
             ListTile(

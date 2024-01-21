@@ -48,8 +48,7 @@ class _BookPage extends State<BookPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             FutureBuilder(
-                              future: _userDataServices
-                                  .getUserDataAsFuture(currentUser.uid),
+                              future: _userDataServices.getUserDataThroughEmail(userEmail),
                               builder: (context, userDataSnapshot) {
                                 if (userDataSnapshot.connectionState ==
                                     ConnectionState.waiting) {
@@ -72,9 +71,8 @@ class _BookPage extends State<BookPage> {
                                 }
 
                                 Map<String, dynamic>? userData =
-                                    userDataSnapshot.data!.data()!;
-                                return Text(
-                                  userEmail,
+                                userDataSnapshot.data!.docs.first.data();
+                                return Text(userData['first_name'] +' ' + userData['last_name'],
                                   style: const TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
@@ -113,7 +111,7 @@ class _BookPage extends State<BookPage> {
               ),
             ],
           ),
-          backgroundColor: const Color.fromARGB(255, 107, 199, 191),
+          backgroundColor: const Color.fromARGB(255, 124, 210, 231),
         ),
       ),
       body: Padding(

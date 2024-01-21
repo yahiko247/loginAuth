@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:practice_login/components/post/image.dart';
 import 'package:practice_login/components/post/video.dart';
 import 'package:practice_login/database/firestore.dart';
-import 'package:practice_login/pages/stalking_page.dart';
+import 'package:practice_login/pages/freelancerstalkingpage.dart';
+import 'package:practice_login/pages/profile.dart';
+import 'package:practice_login/pages/userstalkingpage.dart';
 
 class Post extends StatefulWidget {
   final QueryDocumentSnapshot<Object?> postData;
@@ -35,16 +38,6 @@ class _PostState extends State<Post> {
     _mediaController.dispose();
   }
 
-  void navigatorDetails(
-      String userEmail,
-      ) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => StalkPage(userEmail: userEmail))
-    );
-  }
-
   String formatPreviewMessage(String message) {
     String formattedMessage = '';
     if (message.length > 100) {
@@ -55,6 +48,48 @@ class _PostState extends State<Post> {
     return formattedMessage;
   }
 
+  void userNavigator(String userEmail,) {
+    Navigator.push(context,
+        MaterialPageRoute(
+            builder: (context) => UserStalkPage(userEmail: userEmail)
+        )
+    );
+  }
+
+  void freelancerNavigator(String userEmail,) {
+    Navigator.push(context,
+        MaterialPageRoute(
+            builder: (context) => FreelancerStalkPage(userEmail: userEmail)
+        )
+    );
+  }
+
+  void userProfileNavigator() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ProfilePage()
+        )
+    );
+  }
+  Future<void> freelancerIdentifier2(String email, BuildContext context) async {
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_postData['user_id'])
+        .get();
+    Map <String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
+
+    if(_postData['user_id']==FirebaseAuth.instance.currentUser!.uid) {
+      userProfileNavigator();
+    }else if (userData!.containsKey('freelancer')) {
+        bool? isFreelancer = snapshot['freelancer'];
+        if (isFreelancer == true) {
+          freelancerNavigator(_postData['user_email']);
+        } else {
+          userNavigator(_postData['user_email']);
+        }
+      } else {
+        userNavigator(_postData['user_email']);
+      }
+}
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -66,13 +101,13 @@ class _PostState extends State<Post> {
         title: Container(
           padding: EdgeInsets.symmetric(horizontal: width - (width * (97 / 100))),
           child: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 color: Colors.white,
               borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
             ),
             child: ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              trailing: IconButton(icon: Icon(Icons.more_horiz), onPressed: () {
+              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              trailing: IconButton(icon: const Icon(Icons.more_horiz), onPressed: () {
               },),
               leading: const CircleAvatar(
                   radius: 20,
@@ -84,7 +119,7 @@ class _PostState extends State<Post> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      navigatorDetails(_postData['user_email']);
+                      freelancerIdentifier2(_postData['user_email'],context);
                     },
                     child: Text('${_postData['first_name']} ${_postData['last_name']}'),
                   ),
@@ -105,7 +140,7 @@ class _PostState extends State<Post> {
                   padding: EdgeInsets.symmetric(horizontal: width - (width * (97 / 100))),
                   width: width,
                   child: Container(
-                    padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                    padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
                     color: Colors.white,
                     child: GestureDetector(
                       onTap: _postData['post_message'].length < 100 ? null : () {
@@ -114,15 +149,15 @@ class _PostState extends State<Post> {
                             builder: (context) {
                               return Center(
                                 child: Padding(
-                                  padding: EdgeInsets.all(25),
+                                  padding: const EdgeInsets.all(25),
                                   child: Container(
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
 
                                         color: Colors.white,
                                       borderRadius: BorderRadius.all(Radius.circular(15))
                                     ),
-                                    padding: EdgeInsets.all(25),
-                                    child: Text(_postData['post_message'], style: TextStyle(fontSize: 16)),
+                                    padding: const EdgeInsets.all(25),
+                                    child: Text(_postData['post_message'], style: const TextStyle(fontSize: 16)),
                                   ),
                                 )
                               );
@@ -144,7 +179,7 @@ class _PostState extends State<Post> {
               Stack(
                 children: [
                   Container(
-                    constraints: BoxConstraints(
+                    constraints: const BoxConstraints(
                         maxHeight: 450,
                         minHeight: 300
                     ),
@@ -180,14 +215,14 @@ class _PostState extends State<Post> {
                                 if (details.primaryVelocity! > 0) {
                                   if (_currentMedia > 0) {
                                     _mediaController.previousPage(
-                                      duration: Duration(milliseconds: 200),
+                                      duration: const Duration(milliseconds: 200),
                                       curve: Curves.ease,
                                     );
                                   }
                                 } else if (details.primaryVelocity! < 0) {
                                   if (_currentMedia < _postData['media'].length - 1) {
                                     _mediaController.nextPage(
-                                      duration: Duration(milliseconds: 200),
+                                      duration: const Duration(milliseconds: 200),
                                       curve: Curves.ease,
                                     );
                                   }
@@ -210,11 +245,11 @@ class _PostState extends State<Post> {
                     child: const Divider(height: 1),
                   ),
                   Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10))
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 13, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -295,14 +330,14 @@ class _ZoomMediaState extends State<ZoomMedia> {
                   // Swiped to the right
                   if (_zoomedCurrentMedia > 0) {
                     _zoomedMediaController.previousPage(
-                      duration: Duration(milliseconds: 250),
+                      duration: const Duration(milliseconds: 250),
                       curve: Curves.easeInOut,
                     );
                   }
                 } else if (details.primaryVelocity! < 0) {
                   if (_zoomedCurrentMedia < _postData['media'].length - 1) {
                     _zoomedMediaController.nextPage(
-                      duration: Duration(milliseconds: 250),
+                      duration: const Duration(milliseconds: 250),
                       curve: Curves.easeInOut,
                     );
                   }

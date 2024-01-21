@@ -1,9 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-// Dependencies
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:practice_login/components/chat/warning_dialog.dart';
-import 'package:practice_login/pages/stalking_page.dart';
+
 
 // Service(s)
 
@@ -11,15 +10,68 @@ import 'package:practice_login/pages/stalking_page.dart';
 import 'package:practice_login/services/user_data_services.dart';
 
 import '../../pages/chat/chat_box.dart';
+import '../../pages/freelancerstalkingpage.dart';
+import '../../pages/profile.dart';
+import '../../pages/userstalkingpage.dart';
 
-class ChatPageDrawer extends StatelessWidget {
+class ChatPageDrawer extends StatefulWidget{
   final String userId;
+  const ChatPageDrawer({super.key,required this.userId});
 
-  ChatPageDrawer({super.key, required this.userId});
+  @override
+  State<ChatPageDrawer> createState() => _ChatPageDrawer(userId: userId);
+}
+
+class _ChatPageDrawer extends State<ChatPageDrawer> {
+  final String userId;
+  _ChatPageDrawer({required this.userId});
 
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  void userNavigator(String userEmail,) {
+    Navigator.push(context,
+        MaterialPageRoute(
+            builder: (context) => UserStalkPage(userEmail: userEmail)
+        )
+    );
+  }
+
+  void freelancerNavigator(String userEmail,) {
+    Navigator.push(context,
+        MaterialPageRoute(
+            builder: (context) => FreelancerStalkPage(userEmail: userEmail)
+        )
+    );
+  }
+
+  void userProfileNavigator() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ProfilePage()
+        )
+    );
+  }
+/*
+  Future<void> freelancerIdentifier2(String email, BuildContext context) async {
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_postData['user_id'])
+        .get();
+    Map <String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
+
+    if(_postData['user_id']==FirebaseAuth.instance.currentUser!.uid) {
+      userProfileNavigator();
+    }else if (userData!.containsKey('freelancer')) {
+      bool? isFreelancer = snapshot['freelancer'];
+      if (isFreelancer == true) {
+        freelancerNavigator(_postData['user_email']);
+      } else {
+        userNavigator(_postData['user_email']);
+      }
+    } else {
+      userNavigator(_postData['user_email']);
+    }
+  }*/
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -57,7 +109,7 @@ class ChatPageDrawer extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) {return StalkPage(userEmail: userData['email']);})
+                        MaterialPageRoute(builder: (context) {return UserStalkPage(userEmail: userData['email']);})
                     );
                   },
                   contentPadding: const EdgeInsets.only(left: 30, right: 20),
@@ -178,7 +230,7 @@ class ArchivedPageDrawer extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) {return StalkPage(userEmail: userData['email']);})
+                        MaterialPageRoute(builder: (context) {return UserStalkPage(userEmail: userData['email']);})
                     );
                   },
                   contentPadding: const EdgeInsets.only(left: 30, right: 20),
@@ -311,7 +363,7 @@ class ContactPageDrawer extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) {return StalkPage(userEmail: userData['email']);})
+                        MaterialPageRoute(builder: (context) {return UserStalkPage(userEmail: userData['email']);})
                     );
                   },
                   contentPadding: const EdgeInsets.only(left: 30, right: 20),
