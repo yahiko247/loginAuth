@@ -18,7 +18,6 @@ class ProfileCondition extends StatefulWidget {
 
 class _ProfileCondition extends State<ProfileCondition> {
 
-
    void freelancerProfilePage(){
      Navigator.push(context, MaterialPageRoute(builder: (context) =>  const FreelancerProfilePage()
         )
@@ -65,6 +64,61 @@ class _ProfileCondition extends State<ProfileCondition> {
        },
      );
    }
+}
+class AccountSettingsCondition extends StatefulWidget {
+  const AccountSettingsCondition({super.key});
+
+  @override
+  State<AccountSettingsCondition> createState() => _AccountSettingsCondition();
+}
+class _AccountSettingsCondition extends State<AccountSettingsCondition>{
+
+    void freelancerAccountSettings(){
+    Navigator.push(context, MaterialPageRoute(builder: (context) =>  const FreelancerProfilePage()
+    )
+    );
+  }
+
+  void userProfilePage(){
+    Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfilePage()
+    )
+    );
+  }
+
+  Future<void> freelancerIdentifier(BuildContext context) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      bool isFreelancer = snapshot['freelancer'] ?? false;
+
+      if (isFreelancer) {
+        freelancerAccountSettings();
+      } else {
+        userProfilePage();
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<void>(
+      future: freelancerIdentifier(context),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return ErrorWidget('An error occurred.');
+          } else {
+            return const OnBoard();
+          }
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
 }
 
 

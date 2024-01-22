@@ -2,17 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:practice_login/components/chat/warning_dialog.dart';
-
-
-// Service(s)
-
-// Components
 import 'package:practice_login/services/user_data_services.dart';
-
 import '../../pages/chat/chat_box.dart';
 import '../../pages/freelancerstalkingpage.dart';
 import '../../pages/profile.dart';
 import '../../pages/userstalkingpage.dart';
+// Service(s)
+// Components
+
 
 class ChatPageDrawer extends StatefulWidget{
   final String userId;
@@ -51,27 +48,27 @@ class _ChatPageDrawer extends State<ChatPageDrawer> {
         )
     );
   }
-/*
-  Future<void> freelancerIdentifier2(String email, BuildContext context) async {
+
+  Future<void> freelancerIdentifierChat(String email, BuildContext context,String uid) async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('users')
-        .doc(_postData['user_id'])
+        .doc(uid)
         .get();
     Map <String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
 
-    if(_postData['user_id']==FirebaseAuth.instance.currentUser!.uid) {
+    if(uid==FirebaseAuth.instance.currentUser!.uid) {
       userProfileNavigator();
     }else if (userData!.containsKey('freelancer')) {
       bool? isFreelancer = snapshot['freelancer'];
       if (isFreelancer == true) {
-        freelancerNavigator(_postData['user_email']);
+        freelancerNavigator(email);
       } else {
-        userNavigator(_postData['user_email']);
+        userNavigator(email);
       }
     } else {
-      userNavigator(_postData['user_email']);
+      userNavigator(email);
     }
-  }*/
+  }
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -107,10 +104,7 @@ class _ChatPageDrawer extends State<ChatPageDrawer> {
                   title: Text('${userData['first_name']} ${userData['last_name']}'),
                   subtitle: Text('${userData['email']}'),
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {return UserStalkPage(userEmail: userData['email']);})
-                    );
+                   freelancerIdentifierChat(userData['email'],context,userData['uid']);
                   },
                   contentPadding: const EdgeInsets.only(left: 30, right: 20),
                 );
@@ -185,13 +179,63 @@ class _ChatPageDrawer extends State<ChatPageDrawer> {
   }
 }
 
-class ArchivedPageDrawer extends StatelessWidget {
+class ArchivedPageDrawer extends StatefulWidget {
   final String userId;
 
   ArchivedPageDrawer({super.key, required this.userId});
 
+  @override
+  State<ArchivedPageDrawer> createState() => _ArchivedPageDrawerState();
+}
+
+class _ArchivedPageDrawerState extends State<ArchivedPageDrawer> {
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  void userNavigator(String userEmail,) {
+    Navigator.push(context,
+        MaterialPageRoute(
+            builder: (context) => UserStalkPage(userEmail: userEmail)
+        )
+    );
+  }
+
+  void freelancerNavigator(String userEmail,) {
+    Navigator.push(context,
+        MaterialPageRoute(
+            builder: (context) => FreelancerStalkPage(userEmail: userEmail)
+        )
+    );
+  }
+
+  void userProfileNavigator() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ProfilePage()
+        )
+    );
+  }
+
+  Future<void> freelancerIdentifierChat(String email, BuildContext context,String uid) async {
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
+    Map <String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
+
+    if(uid==FirebaseAuth.instance.currentUser!.uid) {
+      userProfileNavigator();
+    }else if (userData!.containsKey('freelancer')) {
+      bool? isFreelancer = snapshot['freelancer'];
+      if (isFreelancer == true) {
+        freelancerNavigator(email);
+      } else {
+        userNavigator(email);
+      }
+    } else {
+      userNavigator(email);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +244,7 @@ class ArchivedPageDrawer extends StatelessWidget {
       child: ListView(
         children: [
           FutureBuilder(
-              future: _userDataServices.getUserDataAsFuture(userId),
+              future: _userDataServices.getUserDataAsFuture(widget.userId),
               builder: (BuildContext context, userDataSnapshot) {
                 if (userDataSnapshot.connectionState == ConnectionState.waiting) {
                   return ListTile(
@@ -228,10 +272,7 @@ class ArchivedPageDrawer extends StatelessWidget {
                   title: Text('${userData['first_name']} ${userData['last_name']}'),
                   subtitle: Text('${userData['email']}'),
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {return UserStalkPage(userEmail: userData['email']);})
-                    );
+                    freelancerIdentifierChat(userData['email'],context,userData['uid']);
                   },
                   contentPadding: const EdgeInsets.only(left: 30, right: 20),
                 );
@@ -253,12 +294,12 @@ class ArchivedPageDrawer extends StatelessWidget {
                           Navigator.pop(context);
                           Navigator.pop(context);
                           Navigator.pop(context);
-                          _userDataServices.restoreFromArchive(_auth.currentUser!.uid, userId);
+                          _userDataServices.restoreFromArchive(_auth.currentUser!.uid, widget.userId);
                           Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) =>
                                   FutureBuilder(
-                                      future: _userDataServices.getUserDataAsFuture(userId),
+                                      future: _userDataServices.getUserDataAsFuture(widget.userId),
                                       builder: (context, userSnapShot) {
                                         if (userSnapShot.connectionState == ConnectionState.waiting) {
                                           return const Center(child: CircularProgressIndicator());
@@ -296,7 +337,7 @@ class ArchivedPageDrawer extends StatelessWidget {
                         confirmAction: () {
                           Navigator.pop(context);
                           Navigator.pop(context);
-                          _userDataServices.deleteConversation(_auth.currentUser!.uid, userId);
+                          _userDataServices.deleteConversation(_auth.currentUser!.uid, widget.userId);
                         }
                     );
                   }
@@ -319,12 +360,63 @@ class ArchivedPageDrawer extends StatelessWidget {
   }
 }
 
-class ContactPageDrawer extends StatelessWidget {
+
+class ContactPageDrawer extends StatefulWidget {
   final String userId;
 
-  ContactPageDrawer({super.key, required this.userId});
+  const ContactPageDrawer({super.key, required this.userId});
 
+  @override
+  State<ContactPageDrawer> createState() => _ContactPageDrawerState();
+}
+
+class _ContactPageDrawerState extends State<ContactPageDrawer> {
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
+
+
+  void userNavigator(String userEmail,) {
+    Navigator.push(context,
+        MaterialPageRoute(
+            builder: (context) => UserStalkPage(userEmail: userEmail)
+        )
+    );
+  }
+
+  void freelancerNavigator(String userEmail,) {
+    Navigator.push(context,
+        MaterialPageRoute(
+            builder: (context) => FreelancerStalkPage(userEmail: userEmail)
+        )
+    );
+  }
+
+  void userProfileNavigator() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ProfilePage()
+        )
+    );
+  }
+
+  Future<void> freelancerIdentifierChat(String email, BuildContext context,String uid) async {
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
+    Map <String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
+
+    if(uid == FirebaseAuth.instance.currentUser!.uid) {
+      userProfileNavigator();
+    }else if (userData!.containsKey('freelancer')) {
+      bool? isFreelancer = snapshot['freelancer'];
+      if (isFreelancer == true) {
+        freelancerNavigator(email);
+      } else {
+        userNavigator(email);
+      }
+    } else {
+      userNavigator(email);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -333,7 +425,7 @@ class ContactPageDrawer extends StatelessWidget {
       child: ListView(
         children: [
           FutureBuilder(
-              future: _userDataServices.getUserDataAsFuture(userId),
+              future: _userDataServices.getUserDataAsFuture(widget.userId),
               builder: (BuildContext context, userDataSnapshot) {
                 if (userDataSnapshot.connectionState == ConnectionState.waiting) {
                   return ListTile(
@@ -361,10 +453,7 @@ class ContactPageDrawer extends StatelessWidget {
                   title: Text('${userData['first_name']} ${userData['last_name']}'),
                   subtitle: Text('${userData['email']}'),
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {return UserStalkPage(userEmail: userData['email']);})
-                    );
+                    freelancerIdentifierChat(userData['email'],context,userData['uid']);
                   },
                   contentPadding: const EdgeInsets.only(left: 30, right: 20),
                 );

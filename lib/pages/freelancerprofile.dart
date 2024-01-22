@@ -86,7 +86,7 @@ class _FreelancerProfilePage extends State<FreelancerProfilePage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
-                                    data.isNotEmpty ? data[0]?.category_name ?? 'Category' : 'Category',
+                                    data.isNotEmpty ? data[0].category_name : 'Category',
                                   ),
                                 ],
                               ),

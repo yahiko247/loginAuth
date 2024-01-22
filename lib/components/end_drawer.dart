@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:practice_login/components/if_elseprofilecondition.dart';
 import 'package:practice_login/pages/account_settings.dart';
 import 'package:practice_login/pages/calendar.dart';
 import 'package:practice_login/pages/chat/chat_page.dart';
@@ -38,7 +39,7 @@ class MyDrawer extends StatelessWidget {
             ListTile(
               title: GestureDetector(
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> const AccountSettings()
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> const FreelancerAccountSettings()
                       )
                     );
                   },

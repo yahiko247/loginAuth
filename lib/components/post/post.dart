@@ -242,7 +242,7 @@ class _PostState extends State<Post> {
                   Container(
                     color: Colors.white,
                     padding: EdgeInsets.only(top: 10, left: width - (width * (97 / 100)), right: width - (width * (98 / 100))),
-                    child: const Divider(height: 1),
+                    child: const Divider(height:1),
                   ),
                   Container(
                     decoration: const BoxDecoration(
