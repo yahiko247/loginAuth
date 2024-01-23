@@ -16,9 +16,9 @@ class _ImagePostState extends State<ImagePost> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
+      color: Color.fromRGBO(190, 190, 190, 1),
       child: GestureDetector(
-        onTap: () {
-        },
+        onTap: () {},
         child: ClipRRect(
             child: Container(
                 child: !widget.zoomed ?
@@ -27,15 +27,20 @@ class _ImagePostState extends State<ImagePost> {
                   fit: widget.zoomed ? BoxFit.contain : BoxFit.cover,
                   width: width,
                   height: height,
+                  errorBuilder: (context, url, error) => const Center(child: CircularProgressIndicator(color: Color.fromARGB(100, 0, 0, 0))),
                 ) :
                 Container(
+                  color: Colors.red,
+                  constraints: BoxConstraints(
+                    maxHeight: height - (height * (95 / 100))
+                  ),
                   child: PhotoView(
                       enablePanAlways: true,
                       backgroundDecoration: const BoxDecoration(
                         color: Colors.transparent
                       ),
-                      minScale: PhotoViewComputedScale.contained,
                       maxScale: 1.3,
+                      minScale: PhotoViewComputedScale.contained,
                       imageProvider: NetworkImage(widget.imgUrl)
                   ),
                 )

@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:practice_login/components/chat/warning_dialog.dart';
 import 'package:practice_login/components/create_post/confirm_dialog.dart';
 import 'package:practice_login/components/create_post/video_preview.dart';
+import 'package:practice_login/pages/botto_nav_bar.dart';
 import 'package:practice_login/pages/homepage.dart';
 import 'package:practice_login/services/posts/posts_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,9 +13,10 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CreateNewPost extends StatefulWidget {
+  final int? returnIndex;
   final List<PlatformFile>? imagesPicked;
   final VoidCallback? refresh;
-  const CreateNewPost({super.key, this.imagesPicked, this.refresh});
+  const CreateNewPost({super.key, this.imagesPicked, this.refresh, this.returnIndex});
 
   @override
   State<CreateNewPost> createState() => _CreateNewPostState();
@@ -105,7 +107,7 @@ class _CreateNewPostState extends State<CreateNewPost> {
   void toHomePage() {
     Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage2())
+        MaterialPageRoute(builder: (context) => MyButtomNavBar(pageIndex: widget.returnIndex ?? 0))
     );
   }
 

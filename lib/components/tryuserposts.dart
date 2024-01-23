@@ -94,7 +94,7 @@ class _ForUserPosts extends State<ForUserPosts> with TickerProviderStateMixin{
                             context,
                             MaterialPageRoute(
                                 builder: (context) {
-                                  return const CreateNewPost();
+                                  return const CreateNewPost(returnIndex: 4);
                                 }
                             )
                         );

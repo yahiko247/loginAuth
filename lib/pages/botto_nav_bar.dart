@@ -8,7 +8,8 @@ import 'package:practice_login/pages/search.dart';
 import 'package:practice_login/pages/setting.dart';
 
 class MyButtomNavBar extends StatefulWidget {
-  const MyButtomNavBar({super.key});
+  final int? pageIndex;
+  const MyButtomNavBar({super.key, this.pageIndex});
 
   @override
   State<MyButtomNavBar> createState() => _MyBottomNavBarState();
@@ -26,6 +27,12 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    myCurrentIndex = widget.pageIndex ?? 0;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: Container(
@@ -34,7 +41,8 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
             BoxShadow(
                 color: Colors.black.withOpacity(0.5),
                 blurRadius: 25,
-                offset: const Offset(8, 20)),
+                offset: const Offset(8, 20)
+            ),
           ],
         ),
         child: ClipRRect(

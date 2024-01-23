@@ -87,7 +87,7 @@ class _VideoState extends State<Video> {
             children: [
               ClipRRect(
                   child: Container(
-                    constraints: BoxConstraints(
+                    constraints: const BoxConstraints(
                       minHeight: 300,
                         maxHeight: 450
                     ),
@@ -98,7 +98,7 @@ class _VideoState extends State<Video> {
                             ),
                             fit: BoxFit.cover
                         )
-                    ) : const BoxDecoration(color: Color.fromARGB(100, 150, 150, 150)),
+                    ) : const BoxDecoration(color: Color.fromRGBO(190, 190, 190, 1)),
                     child: Align(
                         alignment: Alignment.center,
                         child: Container(
@@ -117,18 +117,6 @@ class _VideoState extends State<Video> {
                     ),
                   )
               ),
-              /*if (widget.showMoreIcon)
-                Container(
-                  padding: EdgeInsets.only(bottom: height - ((height * 76) / 100), right: 10),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      onPressed: () {
-                      },
-                      icon: const Icon(Icons.open_in_new, size: 25, color: Colors.white),
-                    ),
-                  ),
-                )*/
             ],
           )
       ),

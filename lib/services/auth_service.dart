@@ -35,7 +35,7 @@ class AuthService extends ChangeNotifier {
         'archived_chat_rooms' : [],
         'first_name' : firstName,
         'last_name' : lastName,
-        'freelancer': freelancer?? false
+        'freelancer': freelancer ?? false
       });
       return userCredential;
     } on FirebaseAuthException catch(e) {

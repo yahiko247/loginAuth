@@ -106,7 +106,7 @@ class _ForPosts extends State<ForPosts>{
                           disableInput: true
                       ),
                       onTap: () {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) {
@@ -143,15 +143,15 @@ class _ForPosts extends State<ForPosts>{
                 }
 
                 return Container(
-                  padding: const EdgeInsets.only(top: 5),
-                  color: const Color.fromARGB(15, 0, 0, 0),
-                  child: ListView.builder(
+                    padding: const EdgeInsets.only(top: 5),
+                    color: const Color.fromARGB(15, 0, 0, 0),
+                    child: ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: posts.length,
                       itemBuilder: (context, index) {
                         return Post(postData: posts[index]);
-                      }),
+                      })
                 );
               })
         ],

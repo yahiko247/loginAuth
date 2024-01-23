@@ -7,6 +7,7 @@ import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/pages/freelancerstalkingpage.dart';
 import 'package:practice_login/pages/profile.dart';
 import 'package:practice_login/pages/userstalkingpage.dart';
+import 'package:practice_login/services/user_data_services.dart';
 
 class Post extends StatefulWidget {
   final QueryDocumentSnapshot<Object?> postData;
@@ -18,8 +19,8 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
   final FirestoreDatabase _firestoreDatabase = FirestoreDatabase();
+  final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
   late QueryDocumentSnapshot<Object?> _postData;
-
   late PageController _mediaController;
   late PageController _zoomedMediaController;
   int _zoomedCurrentMedia = 0;
@@ -40,12 +41,12 @@ class _PostState extends State<Post> {
 
   String formatPreviewMessage(String message) {
     String formattedMessage = '';
-    if (message.length > 100) {
-      formattedMessage = '${message.substring(0, 100)}...';
+    if (message.length > 125) {
+      formattedMessage = '${message.substring(0, 125).trim()}...';
     } else {
       formattedMessage = message;
     }
-    return formattedMessage;
+    return formattedMessage.trim();
   }
 
   void userNavigator(String userEmail,) {
@@ -70,6 +71,7 @@ class _PostState extends State<Post> {
         )
     );
   }
+
   Future<void> freelancerIdentifier2(String email, BuildContext context) async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -89,25 +91,48 @@ class _PostState extends State<Post> {
       } else {
         userNavigator(_postData['user_email']);
       }
-}
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    return Container(
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        isThreeLine: true,
-        title: Container(
-          padding: EdgeInsets.symmetric(horizontal: width - (width * (97 / 100))),
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      isThreeLine: true,
+      title: Container(
+          padding: EdgeInsets.symmetric(horizontal: width - (width * (96 / 100))),
           child: Container(
             decoration: const BoxDecoration(
-                color: Colors.white,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+              color: Colors.white,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(7), topRight: Radius.circular(7)),
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
               trailing: IconButton(icon: const Icon(Icons.more_horiz), onPressed: () {
+                if (_postData['user_id'] == FirebaseAuth.instance.currentUser!.uid) {
+                  showModalBottomSheet(
+                      showDragHandle: true,
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          color: Colors.white,
+                          height: 300,
+                        );
+                      }
+                  );
+                } else {
+                  showModalBottomSheet(
+                      showDragHandle: true,
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          color: Colors.red,
+                          height: 300,
+                        );
+                      }
+                  );
+                } throw Exception ('Unkown error');
               },),
               leading: const CircleAvatar(
                   radius: 20,
@@ -125,162 +150,210 @@ class _PostState extends State<Post> {
                   ),
                   Text(
                     _firestoreDatabase.formatPostTimeStamp(_postData['timestamp']),
-                    style: const TextStyle(fontSize: 10),
+                    style: const TextStyle(fontSize: 11),
                   )
                 ],
               ),
             ),
           )
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (_postData['post_message'].isNotEmpty)
-              Container(
-                  padding: EdgeInsets.symmetric(horizontal: width - (width * (97 / 100))),
-                  width: width,
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                    color: Colors.white,
-                    child: GestureDetector(
-                      onTap: _postData['post_message'].length < 100 ? null : () {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return Center(
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_postData['post_message'].isNotEmpty)
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: width - (width * (96 / 100))),
+                width: width,
+                child: Container(
+                  padding: EdgeInsets.only(left: 15, right: 15, bottom: _postData['media'].isNotEmpty ? 10 : 0),
+                  color: Colors.white,
+                  child: GestureDetector(
+                    onTap: _postData['post_message'].length < 100 ? null : () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Center(
                                 child: Padding(
                                   padding: const EdgeInsets.all(25),
                                   child: Container(
                                     decoration: const BoxDecoration(
-
                                         color: Colors.white,
-                                      borderRadius: BorderRadius.all(Radius.circular(15))
+                                        borderRadius: BorderRadius.all(Radius.circular(15))
                                     ),
                                     padding: const EdgeInsets.all(25),
                                     child: Text(_postData['post_message'], style: const TextStyle(fontSize: 16)),
                                   ),
                                 )
-                              );
-                            }
-                        );
-                      },
-                      child: Text(
-                          formatPreviewMessage(_postData['post_message']),
-                          style: const TextStyle(fontSize: 16)
+                            );
+                          }
+                      );
+                    },
+                    child: RichText(
+                        text: TextSpan(
+                          text: formatPreviewMessage(_postData['post_message']),
+                          style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black
+                          ),
+                          children: [
+                            if (_postData['post_message'].length > 100)
+                              TextSpan(
+                              text: '\n\nSee full post',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            )
+                          ]
+                        )
+                    ),
+                  ),
+                )
+            ),
+          if (_postData['media'].isNotEmpty)
+            Stack(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      color: Colors.white,
+                      constraints: const BoxConstraints(
+                          maxHeight: 450,
+                          minHeight: 300
                       ),
+                      width: width * (92 / 100),
                     ),
-                  )
-              ),
-              /*Container(
-                padding: EdgeInsets.only(left: width - (width * (96.5 / 100)), right: width - (width * (96.5 / 100))),
-                child:
-              ),*/
-            if (_postData['media'].isNotEmpty)
-              Stack(
-                children: [
-                  Container(
-                    constraints: const BoxConstraints(
-                        maxHeight: 450,
-                        minHeight: 300
-                    ),
-                    alignment: Alignment.center,
-                    child: PageView.builder(
-                        scrollDirection: Axis.horizontal,
-                        controller: _mediaController,
-                        itemCount: _postData['media'].length,
-                        onPageChanged: (index) {
-                          setState(() {
-                            _currentMedia = index;
-                          });
-                        },
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                              onDoubleTap: _postData['media'][index]['media_type'] == 'mp4' ? null : () {
-                                setState(() {
-                                  _zoomedCurrentMedia = _currentMedia;
-                                  _zoomedMediaController = PageController(initialPage: _currentMedia);
-                                });
+                  ],
+                ),
+                Container(
+                  constraints: const BoxConstraints(
+                      maxHeight: 450,
+                      minHeight: 300
+                  ),
+                  alignment: Alignment.center,
+                  child: Stack(
+                    children: [
+                      PageView.builder(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          controller: _mediaController,
+                          itemCount: _postData['media'].length,
+                          onPageChanged: (index) {
+                            setState(() {
+                              _currentMedia = index;
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                                onTap: _postData['media'][index]['media_type'] == 'mp4' ? null : () {
+                                  setState(() {
+                                    _zoomedCurrentMedia = _currentMedia;
+                                    _zoomedMediaController = PageController(initialPage: _currentMedia);
+                                  });
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return ZoomMedia(
+                                            zoomedCurrentMedia: _zoomedCurrentMedia,
+                                            zoomedMediaController: _zoomedMediaController,
+                                            media: _postData
+                                        );
+                                      }
+                                  );
+                                },
+                                child: Media(media: _postData['media'][index])
+                            );
+                          }
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10, top: 5),
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                              onPressed: () {
                                 showDialog(
                                     context: context,
                                     builder: (context) {
-                                      return ZoomMedia(
-                                          zoomedCurrentMedia: _zoomedCurrentMedia,
-                                          zoomedMediaController: _zoomedMediaController,
-                                          media: _postData
-                                      );
+                                      return const Dialog();
                                     }
                                 );
                               },
-                              onHorizontalDragEnd: (details) {
-                                if (details.primaryVelocity! > 0) {
-                                  if (_currentMedia > 0) {
-                                    _mediaController.previousPage(
-                                      duration: const Duration(milliseconds: 200),
-                                      curve: Curves.ease,
+                              icon: const Icon(Icons.open_in_new, color: Colors.white)
+                          ),
+                        ),
+                      ),
+                      if (_postData['media'].length > 1)
+                        AnimatedOpacity(
+                          opacity: _currentMedia == _postData['media'].length - 1 ? 0 : 1,
+                          duration: const Duration(milliseconds: 200),
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 13, bottom: 5),
+                            child: Align(
+                              alignment: Alignment.bottomRight,
+                              child: IconButton(
+                                  onPressed: _currentMedia == _postData['media'].length - 1 ? null : () {
+                                    _mediaController.animateToPage(
+                                        _postData['media'].length - 1,
+                                        duration: const Duration(milliseconds: 650),
+                                        curve: Curves.linearToEaseOut
                                     );
-                                  }
-                                } else if (details.primaryVelocity! < 0) {
-                                  if (_currentMedia < _postData['media'].length - 1) {
-                                    _mediaController.nextPage(
-                                      duration: const Duration(milliseconds: 200),
-                                      curve: Curves.ease,
-                                    );
-                                  }
-                                }
-                              },
-                              child: Media(media: _postData['media'][index])
-                          );
-                        }
-                    ),
-                  ),
-                ],
-              ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: width - (width * (97 / 100))),
-              child: Column(
-                children: [
-                  Container(
-                    color: Colors.white,
-                    padding: EdgeInsets.only(top: 10, left: width - (width * (97 / 100)), right: width - (width * (98 / 100))),
-                    child: const Divider(height:1),
-                  ),
-                  Container(
-                    decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10))
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            print("Tapped Like");
-                          },
-                          child: const Padding(padding: EdgeInsets.symmetric(horizontal: 15), child: Text("Like"),),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            print("Tapped Comment");
-                          },
-                          child: const Padding(padding: EdgeInsets.symmetric(horizontal: 15), child: Text("Comment"),),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            print("Tapped Share");
-                          },
-                          child: const Padding(padding: EdgeInsets.symmetric(horizontal: 15), child: Text("Share"),),
-                        ),
-                      ],
-                    ),
+                                  },
+                                  icon: const Icon(Icons.arrow_right_alt_sharp, color: Colors.white, size: 30)
+                              ),
+                            ),
+                          ),
+                        )
+                    ],
                   )
-                ],
-              ),
-            )
-          ],
-        ),
+                )
+              ],
+            ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: width - (width * (96 / 100))),
+            child: Column(
+              children: [
+                Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.only(top: 10, left: width - (width * (96 / 100)), right: width - (width * (98 / 100))),
+                  child: const Divider(height:1),
+                ),
+                Container(
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(bottomRight: Radius.circular(7), bottomLeft: Radius.circular(7))
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          print("Tapped Like");
+                        },
+                        child: const Padding(padding: EdgeInsets.symmetric(horizontal: 15), child: Text("Like"),),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          print("Tapped Comment");
+                        },
+                        child: const Padding(padding: EdgeInsets.symmetric(horizontal: 15), child: Text("Comment"),),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          print("Tapped Share");
+                        },
+                        child: const Padding(padding: EdgeInsets.symmetric(horizontal: 15), child: Text("Share"),),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -312,7 +385,7 @@ class _ZoomMediaState extends State<ZoomMedia> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    return Container(
+    return SizedBox(
       width: width,
       child: PageView.builder(
           scrollDirection: Axis.horizontal,
@@ -325,24 +398,6 @@ class _ZoomMediaState extends State<ZoomMedia> {
           },
           itemBuilder: (context, index) {
             return GestureDetector(
-              onHorizontalDragEnd: (details) {
-                if (details.primaryVelocity! > 0) {
-                  // Swiped to the right
-                  if (_zoomedCurrentMedia > 0) {
-                    _zoomedMediaController.previousPage(
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeInOut,
-                    );
-                  }
-                } else if (details.primaryVelocity! < 0) {
-                  if (_zoomedCurrentMedia < _postData['media'].length - 1) {
-                    _zoomedMediaController.nextPage(
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeInOut,
-                    );
-                  }
-                }
-              },
               child: Media(media: _postData['media'][index], zoomed: true),
             );
           }
@@ -372,9 +427,21 @@ class _MediaState extends State<Media> {
   @override
   Widget build(BuildContext context) {
     if (_media['media_type'] == 'jpg' || _media['media_type'] == 'png') {
-      return ImagePost(imgUrl: _media['media_reference'], zoomed: widget.zoomed ?? false);
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(7),
+          child: ImagePost(imgUrl: _media['media_reference'], zoomed: widget.zoomed ?? false),
+        ),
+      );
     } else {
-      return Video(videoPath: _media['media_reference'], zoomed: true);
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(7),
+          child: Video(videoPath: _media['media_reference'], zoomed: true),
+        ),
+      );
     }
 
 
