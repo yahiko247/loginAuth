@@ -5,6 +5,8 @@ import 'package:practice_login/pages/booking.dart';
 import 'package:practice_login/pages/chat/chat_box.dart';
 import 'package:practice_login/services/user_data_services.dart';
 
+import '../components/end_drawer.dart';
+
 class UserStalkPage extends StatelessWidget {
   String userEmail;
   UserStalkPage({super.key, required this.userEmail});
@@ -102,7 +104,7 @@ class UserStalkPage extends StatelessWidget {
             ),
             actions: [
               Padding(
-                  padding: const EdgeInsets.all(1),
+                  padding: const EdgeInsets.only(right: 5),
                   child: FutureBuilder(
                       future:
                       _userDataServices.getUserDataThroughEmail(userEmail),
@@ -124,7 +126,7 @@ class UserStalkPage extends StatelessWidget {
                         }
 
                         return IconButton(
-                            icon: const Icon(Icons.messenger),
+                            icon: const Icon(Icons.message),
                             onPressed: () {
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
@@ -137,15 +139,13 @@ class UserStalkPage extends StatelessWidget {
                                   }));
                             });
                       })),
-              Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: IconButton(
-                  icon: const Icon(Icons.book),
-                  onPressed: () {
-                    navigatorDetails(context, userEmail);
-                  },
-                ),
-              )
+              Builder(builder: (context){
+                return IconButton(
+                    onPressed: (){
+                      Scaffold.of(context).openEndDrawer();
+                    },
+                    icon: const Icon(Icons.menu,size: 25,));
+              }),
             ],
             backgroundColor: const Color.fromARGB(255, 124, 210, 231),
           ),
@@ -159,6 +159,7 @@ class UserStalkPage extends StatelessWidget {
             )
           ],
         ),
+        endDrawer: const MyDrawer(),
       ),
     );
   }

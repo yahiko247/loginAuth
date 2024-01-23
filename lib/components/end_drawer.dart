@@ -25,7 +25,7 @@ class MyDrawer extends StatelessWidget {
           children: [
             const DrawerHeader(
               decoration:
-                  BoxDecoration(color: Color.fromARGB(225, 124, 210, 213)),
+                  BoxDecoration(color: Color.fromARGB(255, 124, 210, 231)),
               child: Text('A B O U T'),
             ),
             const ListTile(
@@ -70,16 +70,6 @@ class MyDrawer extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const ReviewsPage()));
-              },
-            ),
-            ListTile(
-              title: const Text('Debug/Freelance Reg'),
-              onTap: () {
-                // Add your logic for logging out
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FreelancerRegisterForm()));
               },
             ),
           ],
