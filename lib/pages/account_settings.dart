@@ -6,9 +6,13 @@ import 'package:http/http.dart' as http;
 import '../services/user_data_services.dart';
 
 class Item {
-
   String category_name;
   Item(this.category_name);
+}
+class Item2 {
+  String categoryName;
+  String categoryID;
+  Item2(this.categoryName,this.categoryID);
 }
 
 class FreelancerAccountSettings extends StatefulWidget{
@@ -24,18 +28,42 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
   final UserDataServices _userDataServices =
   UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
 
-
   @override
   void initState() {
     super.initState();
     refreshData();
     getDesc();
+    refreshData2();
   }
 
   String categoryResponse = "Null";
   List<Item> categoryData = [];
   String descResponse = "Null";
   List<Item> descData = [];
+
+  String allCatResponse = "Null";
+  List<Item2> allCategoryData= [];
+
+  String updateResponse = "Null";
+  String selectedCategoryID = "";
+
+  refreshData2() async {
+    var dataStr = jsonEncode({
+      "command": "get_allcategories",
+    });
+    var url = "http://192.168.1.2:80/categories.php?data=$dataStr";
+    var result = await http.get(Uri.parse(url));
+    setState(() {
+      allCategoryData.clear();
+      var jsonItems = jsonDecode(result.body) as List<dynamic>;
+      for (var item in jsonItems) {
+        allCategoryData.add(Item2(
+          item['category_name'] as String,
+          item['category_id'] as String,
+        ));
+      }
+    });
+  }
   refreshData() async {
     var dataStr = jsonEncode({
       "command": "get_categories",
@@ -51,6 +79,20 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
           item['category_name'] as String,
         ));
       }
+    });
+  }
+  updateItem(String categoryID) async {
+    var dataStr = jsonEncode({
+      "command": "update",
+      "category_id": categoryID,
+      "user_id": FirebaseAuth.instance.currentUser!.uid,
+    });
+    var url = 'http://192.168.1.2:80/categories.php?data=$dataStr';
+    var result = await http.get(Uri.parse(url));
+
+    setState(() {
+      updateResponse = result.body;
+      refreshData();
     });
   }
   getDesc() async {
@@ -184,7 +226,63 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
                   ),
                    trailing: IconButton(
                        onPressed: (){
+                         showDialog(context: context,
+                             builder: (context) => AlertDialog(
+                               title: const Text("Update"),
+                               content: SizedBox(
+                                 width: double.maxFinite,
+                                 height: 200,
+                                 child: ListView.builder(itemCount:allCategoryData.length,
+                                     itemBuilder:(context, index)  {
+                                       return ListTile(
+                                         title: TextButton(
+                                           onPressed: (){
+                                             setState(() {
+                                               selectedCategoryID = allCategoryData[index].categoryID;
+                                             });
+                                           },
+                                             child: Row(
+                                               children: [
+                                                 Text(allCategoryData[index].categoryID),
+                                                 Text(allCategoryData[index].categoryName),
 
+                                               ],
+                                             )),
+                                       );
+                                     }
+                                 ),
+                               ),
+                               actions:  [
+                                 ElevatedButton(
+                                   onPressed: (){
+                                     showDialog(
+                                         context: context,
+                                         builder: (context) => AlertDialog(
+                                           content: const Text("Are you sure you want to change category?"),
+                                           actions: [
+                                             TextButton(
+                                                 onPressed: (){
+                                                   updateItem(selectedCategoryID);
+                                                   Navigator.of(context).pop();
+                                                 },
+                                                 child: const Text("Yes")
+                                             ),
+                                             TextButton(
+                                                 onPressed: (){
+                                                   Navigator.of(context).pop();
+                                                 },
+                                                 child: const Text("No")
+                                             ),
+                                           ],
+                                         )
+                                     );
+
+                                   },
+                                     child: const Text("Update")
+                                 ),
+                               ],
+                             ),
+                         );
                        },
                        icon: const Icon(Icons.edit))
               ),
@@ -225,3 +323,4 @@ class LineDivider extends StatelessWidget{
     );
   }
 }
+

@@ -188,7 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                                                     )
                                                 );
                                               },
-                                              child: const Text("Yes")
+                                              child: const Text("Freelancer")
                                           ),
                                           TextButton(
                                               onPressed: (){
@@ -198,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                                                     )
                                                 );
                                               },
-                                              child: const Text("No")),
+                                              child: const Text("Client")),
                                         ],
                                       )
                                     ],
