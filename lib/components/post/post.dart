@@ -5,6 +5,7 @@ import 'package:practice_login/components/post/image.dart';
 import 'package:practice_login/components/post/video.dart';
 import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/pages/freelancerstalkingpage.dart';
+import 'package:practice_login/pages/post/post.dart';
 import 'package:practice_login/pages/profile.dart';
 import 'package:practice_login/pages/userstalkingpage.dart';
 import 'package:practice_login/services/user_data_services.dart';
@@ -132,7 +133,8 @@ class _PostState extends State<Post> {
                         );
                       }
                   );
-                } throw Exception ('Unkown error');
+                }
+                return;
               },),
               leading: const CircleAvatar(
                   radius: 20,
@@ -160,32 +162,48 @@ class _PostState extends State<Post> {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if ((_postData.data() as Map<String, dynamic>).containsKey('post_title'))
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: width - (width * (96 / 100))),
+              width: width,
+              child: Container(
+                padding: EdgeInsets.only(left: 15, right: 15, bottom: _postData['post_message'].isNotEmpty ? 7 : _postData['media'].isNotEmpty ? 8: 0),
+                color: Colors.white,
+                child: Text(_postData['post_title'], style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
+              ),
+            ),
           if (_postData['post_message'].isNotEmpty)
             Container(
                 padding: EdgeInsets.symmetric(horizontal: width - (width * (96 / 100))),
                 width: width,
                 child: Container(
-                  padding: EdgeInsets.only(left: 15, right: 15, bottom: _postData['media'].isNotEmpty ? 10 : 0),
                   color: Colors.white,
+                  padding: EdgeInsets.only(left: 15, right: 15, bottom: _postData['media'].isNotEmpty ? 10 : 0),
                   child: GestureDetector(
                     onTap: _postData['post_message'].length < 100 ? null : () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(25),
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.all(Radius.circular(15))
-                                    ),
-                                    padding: const EdgeInsets.all(25),
-                                    child: Text(_postData['post_message'], style: const TextStyle(fontSize: 16)),
-                                  ),
-                                )
-                            );
-                          }
+                      Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                              pageBuilder: (context, animation, secondaryAnimation) {
+                                return FullPost(
+                                    postId: _postData.id,
+                                    postTitle: (_postData.data() as Map<String, dynamic>).containsKey('post_title')
+                                        ? _postData['post_title']
+                                        : '${_postData['first_name']} ${_postData['last_name']}\' Post'
+                                );
+                              },
+                            transitionDuration: Duration(milliseconds: 350),
+                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                              const begin = Offset(0.0, 1.0);
+                              const end = Offset.zero;
+                              const curve = Curves.linearToEaseOut;
+
+                              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
+
+                              return SlideTransition(position: offsetAnimation, child: child);
+                            },
+                          )
                       );
                     },
                     child: RichText(
@@ -198,12 +216,21 @@ class _PostState extends State<Post> {
                           children: [
                             if (_postData['post_message'].length > 100)
                               TextSpan(
-                              text: '\n\nSee full post',
+                              text: '\nSee full post to read more',
                               style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey,
                               ),
-                            )
+                                  children: [
+                                    TextSpan(
+                                        text: String.fromCharCode(0x2192),
+                                        style: const TextStyle(
+                                            fontSize: 30,
+                                            color: Colors.grey
+                                        )
+                                    )
+                                  ]
+                              )
                           ]
                         )
                     ),
@@ -246,7 +273,7 @@ class _PostState extends State<Post> {
                           },
                           itemBuilder: (context, index) {
                             return GestureDetector(
-                                onTap: _postData['media'][index]['media_type'] == 'mp4' ? null : () {
+                                /*onDoubleTap: _postData['media'][index]['media_type'] == 'mp4' ? null : () {
                                   setState(() {
                                     _zoomedCurrentMedia = _currentMedia;
                                     _zoomedMediaController = PageController(initialPage: _currentMedia);
@@ -261,8 +288,14 @@ class _PostState extends State<Post> {
                                         );
                                       }
                                   );
-                                },
-                                child: Media(media: _postData['media'][index])
+                                },*/
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: width - (width * (98 / 100))),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(7),
+                                    child: Media(media: _postData['media'][index]),
+                                  ),
+                                )
                             );
                           }
                       ),
@@ -427,23 +460,9 @@ class _MediaState extends State<Media> {
   @override
   Widget build(BuildContext context) {
     if (_media['media_type'] == 'jpg' || _media['media_type'] == 'png') {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(7),
-          child: ImagePost(imgUrl: _media['media_reference'], zoomed: widget.zoomed ?? false),
-        ),
-      );
+      return ImagePost(imgUrl: _media['media_reference'], zoomed: widget.zoomed ?? false);
     } else {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(7),
-          child: Video(videoPath: _media['media_reference'], zoomed: true),
-        ),
-      );
+      return Video(videoPath: _media['media_reference'], zoomed: true);
     }
-
-
   }
 }

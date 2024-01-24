@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:practice_login/components/post/post.dart';
 
 import 'package:practice_login/database/firestore.dart';
 
@@ -63,120 +64,34 @@ class _NestedTabBar2 extends State<NestedTabBar2>
                               child: CircularProgressIndicator(),
                             );
                           }
+
                           final posts = snapshot.data!.docs;
+
+                          final filteredPosts = posts
+                              .where(
+                                  (post) => post['user_email'] == widget.userEmail)
+                              .toList();
 
                           if (snapshot.data == null || posts.isEmpty) {
                             return const Center(
                               child: Padding(
                                 padding: EdgeInsets.all(25),
-                                child: Text('Theres Nothing here without you'),
-                              ),
-                            );
-                          }
-                          final filteredPosts = posts
-                              .where(
-                                  (post) => post['UserEmail'] == widget.userEmail)
-                              .toList(); // Use the specified userEmail
-
-                          if (filteredPosts.isEmpty) {
-                            return const Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(25),
-                                child: Text("No posts from this user"),
+                                child: Text("No posts... Post Something"),
                               ),
                             );
                           }
 
-                          return ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: filteredPosts.length,
-                              itemBuilder: (context, index) {
-                                final post = filteredPosts[index];
-
-                                String message = post['PostMessage'];
-                                String userEmail = post['UserEmail'];
-                                Timestamp postTimeStamp = post['TimeStamp'];
-                                String formattedTimestamp = _firestoreDatabase
-                                    .formatPostTimeStamp(postTimeStamp);
-
-                                return Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: ListTile(
-                                    tileColor: Colors.white,
-                                    isThreeLine: true,
-                                    title: Padding(
-                                      padding: const EdgeInsets.only(bottom: 5),
-                                      child: ListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        trailing: const Text("try"),
-                                        leading: const CircleAvatar(
-                                            radius: 20,
-                                            backgroundImage:
-                                            AssetImage('images/Avatar1.png')),
-                                        title: Column(
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: [
-                                            Text(userEmail),
-                                            Text(
-                                              formattedTimestamp,
-                                              style: const TextStyle(fontSize: 10),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    subtitle: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(message),
-                                        const Divider(thickness: 1),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 5, bottom: 5),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  print("Tapped Like");
-                                                },
-                                                child: const Text("Like"),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  print("Tapped Comment");
-                                                },
-                                                child: const Text("Comment"),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  print("Tapped Share");
-                                                },
-                                                child: const Text("Share"),
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      side: const BorderSide(
-                                        color: Colors.white,
-                                        width: 1,
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                );
-                              });
+                          return Container(
+                              padding: const EdgeInsets.only(top: 5),
+                              color: const Color.fromARGB(15, 0, 0, 0),
+                              child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: filteredPosts.length,
+                                  itemBuilder: (context, index) {
+                                    return Post(postData: filteredPosts[index]);
+                                  })
+                          );
                         })
                   ],
                 ),

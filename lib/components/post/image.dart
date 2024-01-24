@@ -27,7 +27,10 @@ class _ImagePostState extends State<ImagePost> {
                   fit: widget.zoomed ? BoxFit.contain : BoxFit.cover,
                   width: width,
                   height: height,
-                  errorBuilder: (context, url, error) => const Center(child: CircularProgressIndicator(color: Color.fromARGB(100, 0, 0, 0))),
+                  errorBuilder: (context, url, error) => Container(
+                    height: 400,
+                    child: Center(child: CircularProgressIndicator(color: Color.fromARGB(100, 0, 0, 0)),),
+                  )
                 ) :
                 Container(
                   color: Colors.red,

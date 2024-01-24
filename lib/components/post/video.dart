@@ -88,7 +88,7 @@ class _VideoState extends State<Video> {
               ClipRRect(
                   child: Container(
                     constraints: const BoxConstraints(
-                      minHeight: 300,
+                        minHeight: 300,
                         maxHeight: 450
                     ),
                     decoration: _thumbnailPath != null ? BoxDecoration(

@@ -25,6 +25,7 @@ class CreateNewPost extends StatefulWidget {
 class _CreateNewPostState extends State<CreateNewPost> {
   final PostService _postService = PostService();
   final TextEditingController _newPostController = TextEditingController();
+  final TextEditingController _newPostTitleController = TextEditingController();
   List<PlatformFile> _filesPicked = [];
   bool _textIsNotEmpty = false;
   bool _postInProgress = false;
@@ -43,6 +44,7 @@ class _CreateNewPostState extends State<CreateNewPost> {
     super.dispose();
     _newPostController.removeListener(allowPost);
     _newPostController.dispose();
+    _newPostTitleController.dispose();
   }
 
   void _removeFile(int index) {
@@ -64,7 +66,7 @@ class _CreateNewPostState extends State<CreateNewPost> {
           builder: (context) {
             return ConfirmDialog(
                 title: 'Upload Files?',
-                message: 'Saying something interesting about your post will make it more engaging for your audiences.',
+                message: 'Saying something interesting about your post${_newPostTitleController.text.isEmpty ? ' and adding a title' : ''} will make it more engaging for your audiences.',
                 confirmButtonText: 'Post',
                 confirmAction: post
             );
@@ -75,7 +77,18 @@ class _CreateNewPostState extends State<CreateNewPost> {
           builder: (context) {
             return ConfirmDialog(
                 title: 'Confirm Post?',
-                message: 'Adding images and videos to your post will make it more visually appealing.',
+                message: 'Adding images and videos to your post${_newPostTitleController.text.isEmpty ? ' as well as a title' : ''} will make it more visually appealing.',
+                confirmButtonText: 'Post',
+                confirmAction: post
+            );
+          });
+    } else if (_newPostTitleController.text.isEmpty) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return ConfirmDialog(
+                title: 'Confirm Post?',
+                message: 'Adding a title to your post will capture your audiences\' attention more quickly',
                 confirmButtonText: 'Post',
                 confirmAction: post
             );
@@ -95,7 +108,7 @@ class _CreateNewPostState extends State<CreateNewPost> {
     try {
       if (_newPostController.text.isNotEmpty || _filesPicked.isNotEmpty) {
         showDialog(barrierDismissible: false, context: context, builder: (context) => const Center(child: CircularProgressIndicator()));
-        await _postService.addPost(_newPostController.text, _filesPicked);
+        await _postService.addPost(_newPostController.text, _newPostTitleController.text, _filesPicked);
       }
     } finally {
       widget.refresh;
@@ -144,7 +157,7 @@ class _CreateNewPostState extends State<CreateNewPost> {
                     ),
                   ),
                   onPressed: () {
-                    if (_newPostController.text.isNotEmpty || _filesPicked.isNotEmpty) {
+                    if (_newPostController.text.isNotEmpty || _filesPicked.isNotEmpty || _newPostTitleController.text.isNotEmpty) {
                       showDialog(
                           context: context,
                           builder: (context) {
@@ -175,6 +188,28 @@ class _CreateNewPostState extends State<CreateNewPost> {
               children: [
                 Container(
                   margin: const EdgeInsets.only(top: 23, left: 20, right: 20),
+                  child: TextFormField(
+                    maxLength: 30,
+                    minLines: 1,
+                    maxLines: 1,
+                    controller: _newPostTitleController,
+                    decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(13),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                                color: Colors.green
+                            )
+                        ),
+                        hintText: 'Title of your post...'
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 15, left: 20, right: 20),
                   child: TextFormField(
                     minLines: 3,
                     maxLines: 10,

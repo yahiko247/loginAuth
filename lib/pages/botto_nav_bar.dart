@@ -22,8 +22,7 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
     const FavoritePage(),
     const SearchPage(),
     const SettingPage(),
-    ProfilePage(),
-    const ChatPage(),
+    ProfilePage()
   ];
 
   @override
@@ -55,12 +54,6 @@ class _MyBottomNavBarState extends State<MyButtomNavBar> {
             setState(() {
               myCurrentIndex = index;
             });
-            if (index == 5) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ChatPage()),
-              );
-            }
           },
           items: const [
             BottomNavigationBarItem(

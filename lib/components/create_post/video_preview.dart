@@ -134,7 +134,6 @@ class _VideoPreviewState extends State<VideoPreview> {
 
 class FullScreenVideo extends StatefulWidget {
   final VideoPlayerController vidController;
-
   const FullScreenVideo({super.key, required this.vidController});
 
   @override

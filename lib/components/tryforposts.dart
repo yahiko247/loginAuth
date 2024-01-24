@@ -132,7 +132,6 @@ class _ForPosts extends State<ForPosts>{
 
                 final posts = snapshot.data!.docs;
 
-
                 if (snapshot.data == null || posts.isEmpty) {
                   return const Center(
                     child: Padding(

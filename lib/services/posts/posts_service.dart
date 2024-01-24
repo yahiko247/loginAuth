@@ -3,11 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/services/user_data_services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
 class PostService extends ChangeNotifier {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
   final CollectionReference posts = FirebaseFirestore.instance.collection('posts');
   final storageRef = FirebaseStorage.instance.ref();
@@ -49,7 +51,7 @@ class PostService extends ChangeNotifier {
     return fileRefs;
   }
 
-  Future<void> addPost(String message, List<PlatformFile>? postFiles) async {
+  Future<void> addPost(String message, String title, List<PlatformFile>? postFiles) async {
     List<Map<String, dynamic>>? fileRefs;
 
     if (postFiles != null) {
@@ -67,6 +69,7 @@ class PostService extends ChangeNotifier {
             'first_name' : userData['first_name'],
             'last_name' : userData['last_name'],
             'post_message': message,
+            'post_title': title,
             'timestamp': Timestamp.now(),
             'media': fileRefs ?? []
           });
@@ -93,5 +96,10 @@ class PostService extends ChangeNotifier {
     String formattedTimestamp = timeFormat.format(dateTime);
 
     return formattedTimestamp;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getPost(String postId) async {
+    DocumentSnapshot<Map<String, dynamic>> post = await _firestore.collection('posts').doc(postId).get();
+    return post;
   }
 }

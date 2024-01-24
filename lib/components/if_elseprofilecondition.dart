@@ -18,53 +18,58 @@ class ProfileCondition extends StatefulWidget {
 
 class _ProfileCondition extends State<ProfileCondition> {
 
-   void freelancerProfilePage(){
-     Navigator.push(context, MaterialPageRoute(builder: (context) =>  const FreelancerProfilePage()
+   Widget freelancerProfilePage(){
+
+     return FreelancerProfilePage();
+     /*Navigator.push(context, MaterialPageRoute(builder: (context) =>  const FreelancerProfilePage()
         )
-     );
+     );*/
    }
 
-   void userProfilePage(){
-     Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfilePage()
+   Widget userProfilePage(){
+     return UserProfilePage();
+     /*Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfilePage()
         )
-     );
+     );*/
    }
 
-   Future<void> freelancerIdentifier(BuildContext context) async {
-     User? user = FirebaseAuth.instance.currentUser;
-     if (user != null) {
-       DocumentSnapshot snapshot = await FirebaseFirestore.instance
-           .collection('users')
-           .doc(user.uid)
-           .get();
-       bool isFreelancer = snapshot['freelancer'] ?? false;
+   Future<DocumentSnapshot<Object?>> freelancerIdentifier2() async {
+     DocumentSnapshot snapshot = await FirebaseFirestore.instance
+         .collection('users')
+         .doc(FirebaseAuth.instance.currentUser!.uid)
+         .get();
 
-       if (isFreelancer) {
-         freelancerProfilePage();
-       } else {
-         userProfilePage();
-       }
-     }
+     return snapshot;
    }
 
    @override
    Widget build(BuildContext context) {
-     return FutureBuilder<void>(
-       future: freelancerIdentifier(context),
+     return FutureBuilder(
+       future: freelancerIdentifier2(),
        builder: (context, snapshot) {
-         if (snapshot.connectionState == ConnectionState.done) {
-           if (snapshot.hasError) {
-             return ErrorWidget('An error occurred.');
-           } else {
-             return const OnBoard();
-           }
+         if (snapshot.connectionState == ConnectionState.waiting) {
+           return Center(child: CircularProgressIndicator());
+         }
+         if (snapshot.hasError) {
+           return ErrorWidget('An error occurred.');
          } else {
-           return const Center(child: CircularProgressIndicator());
+           Object? userData = snapshot.data!.data();
+           if ((userData as Map<String, dynamic>).containsKey('freelancer')) {
+             bool? isFreelancer = userData['freelancer'];
+             if (isFreelancer == true) {
+               return freelancerProfilePage();
+             } else {
+               return userProfilePage();
+             }
+           } else {
+             return userProfilePage();
+           }
          }
        },
      );
    }
 }
+
 class AccountSettingsCondition extends StatefulWidget {
   const AccountSettingsCondition({super.key});
 
