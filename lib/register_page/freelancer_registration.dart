@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:practice_login/Components/button_register.dart';
@@ -29,6 +30,8 @@ class _FreelancerRegisterFormState extends State<FreelancerRegisterForm> {
   final confirmPasswordController = TextEditingController();
   var firstNameController = TextEditingController();
   var lastNameController = TextEditingController();
+  var priceController = TextEditingController();
+  String selectedRateType = 'HR';
 
   String response = "Null";
   List<Item> data = [];
@@ -53,6 +56,21 @@ class _FreelancerRegisterFormState extends State<FreelancerRegisterForm> {
       confirmPasswordController.clear();
     });
   }
+  addPrice() async {
+    var dataStr = jsonEncode({
+      "command": "add_price",
+      "user_id": FirebaseAuth.instance.currentUser!.uid,
+      "priceRate_type" : selectedRateType,
+      "price" : double.tryParse(priceController.text) ?? 0.0,
+    });
+    var url = 'http://192.168.1.2:80/price.php?data=$dataStr';
+    var result = await http.get(Uri.parse(url));
+    setState(() {
+      response = result.body;
+      priceController.clear();
+    });
+  }
+
  void RegisterUser() async {
     if (passwordController.text != confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -76,6 +94,7 @@ class _FreelancerRegisterFormState extends State<FreelancerRegisterForm> {
       );
     }
     createItem();
+    addPrice();
   }
 
   @override
@@ -149,6 +168,58 @@ class _FreelancerRegisterFormState extends State<FreelancerRegisterForm> {
                       controller: lastNameController,
                       hintText: 'Last Name',
                       obscuretext: false,
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            flex:2,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 5),
+                              child: TextField(
+                                keyboardType: TextInputType.number,
+                                enabled: true,
+                                controller: priceController,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                obscureText: false,
+                                maxLength: 4,
+                                decoration: InputDecoration(
+                                    enabledBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.grey.shade400),
+                                    ),
+                                    fillColor: Colors.grey.shade200,
+                                    filled: true,
+                                    hintText: ("Enter Price"),
+                                    hintStyle: TextStyle(color: Colors.grey[500])),
+                              ),
+                            ),
+                          ),
+                          DropdownButton<String>(
+                            value: selectedRateType,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedRateType = newValue!;
+                              });
+                            },
+                            items: <String>['HR', 'DAILY']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
                     ),
 
                     const SizedBox(height: 25),
