@@ -195,8 +195,7 @@ class _FreelancerProfilePage extends State<FreelancerProfilePage> {
         ),
         body: const TabBarView(
           children: <Widget>[
-            NestedTabBar('first Page'),
-            NestedTabBar('secondTab')
+            NestedTabBar('first Page')
           ],
         ),
         endDrawer: const MyDrawer(),

@@ -5,8 +5,9 @@ class EmptyView extends StatelessWidget {
   final bool displayIcon;
   final Color? textColor;
   final EdgeInsets? padding;
+  final Icon? messageIcon;
 
-  const EmptyView({super.key, required this.message, required this.displayIcon, this.textColor, this.padding});
+  const EmptyView({super.key, required this.message, required this.displayIcon, this.textColor, this.padding, this.messageIcon});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,7 @@ class EmptyView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        displayIcon ? const Icon(Icons.question_mark, color: Colors.red,) : Container(),
+        displayIcon ? messageIcon ?? Icon(Icons.question_mark, color: Colors.red) : Container(),
         Text(message, textAlign: TextAlign.center, style: TextStyle(color: textColor ?? Colors.black),),
       ],
     ));

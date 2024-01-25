@@ -24,4 +24,12 @@ class FirestoreDatabase {
 
     return formattedTimestamp;
   }
+
+  String formatDateTime(DateTime date) {
+
+    final timeFormat = DateFormat('yyyy-MM-dd \'at\' hh:mm a');
+    String formattedTimestamp = timeFormat.format(date);
+
+    return formattedTimestamp;
+  }
 }

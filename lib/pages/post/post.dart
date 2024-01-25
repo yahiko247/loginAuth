@@ -177,6 +177,14 @@ class _FullPostVideoState extends State<FullPostVideo> {
     _videoPlayerController.addListener(setPlayIcon);
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _videoPlayerController.dispose();
+    _videoPlayerController.removeListener(setPlayIcon);
+  }
+
   void setPlayIcon() {
     if (_videoPlayerController.value.isPlaying) {
       setState(() {

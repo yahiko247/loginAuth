@@ -45,7 +45,7 @@ class _NestedTabBar extends State<NestedTabBar> with TickerProviderStateMixin {
       ),
       Expanded(
           child: TabBarView(controller: _tabController, children: <Widget>[
-            const Card(
+            Card(
               margin: EdgeInsets.all(16.0),
               child: Text('A B O U T    M E'),
             ),

@@ -94,6 +94,33 @@ class _PostState extends State<Post> {
       }
   }
 
+  void openFullPost() {
+    Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return FullPost(
+                postId: _postData.id,
+                postTitle: (_postData.data() as Map<String, dynamic>).containsKey('post_title')
+                    ? _postData['post_title']
+                    : '${_postData['first_name']} ${_postData['last_name']}\' Post'
+            );
+          },
+          transitionDuration: Duration(milliseconds: 350),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(0.0, 1.0);
+            const end = Offset.zero;
+            const curve = Curves.linearToEaseOut;
+
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+
+            return SlideTransition(position: offsetAnimation, child: child);
+          },
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -116,14 +143,41 @@ class _PostState extends State<Post> {
                       showDragHandle: true,
                       context: context,
                       builder: (context) {
-                        return Container(
-                          color: Colors.white,
-                          height: 300,
+                        return SizedBox(
+                          height: 240,
+                          child: ListView(
+                            children: [
+                              ListTile(
+                                contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                                onTap: () {},
+                                leading: const Icon(Icons.delete),
+                                title: const Text('Delete post'),
+                              ),
+                              ListTile(
+                                contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                                onTap: () {},
+                                leading: const Icon(Icons.archive),
+                                title: const Text('Archive Post'),
+                              ),
+                              ListTile(
+                                contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                                onTap: () {},
+                                leading: const Icon(Icons.notifications_off),
+                                title: const Text('Mute notifications for this post'),
+                              ),
+                              ListTile(
+                                contentPadding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                                onTap: () {},
+                                leading: const Icon(Icons.comments_disabled),
+                                title: const Text('Disable comments'),
+                              )
+                            ],
+                          ),
                         );
                       }
                   );
                 } else {
-                  showModalBottomSheet(
+                  /*showModalBottomSheet(
                       showDragHandle: true,
                       context: context,
                       builder: (context) {
@@ -132,7 +186,7 @@ class _PostState extends State<Post> {
                           height: 300,
                         );
                       }
-                  );
+                  );*/
                 }
                 return;
               },),
@@ -180,32 +234,7 @@ class _PostState extends State<Post> {
                   color: Colors.white,
                   padding: EdgeInsets.only(left: 15, right: 15, bottom: _postData['media'].isNotEmpty ? 10 : 0),
                   child: GestureDetector(
-                    onTap: _postData['post_message'].length < 100 ? null : () {
-                      Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                              pageBuilder: (context, animation, secondaryAnimation) {
-                                return FullPost(
-                                    postId: _postData.id,
-                                    postTitle: (_postData.data() as Map<String, dynamic>).containsKey('post_title')
-                                        ? _postData['post_title']
-                                        : '${_postData['first_name']} ${_postData['last_name']}\' Post'
-                                );
-                              },
-                            transitionDuration: Duration(milliseconds: 350),
-                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                              const begin = Offset(0.0, 1.0);
-                              const end = Offset.zero;
-                              const curve = Curves.linearToEaseOut;
-
-                              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                              var offsetAnimation = animation.drive(tween);
-
-                              return SlideTransition(position: offsetAnimation, child: child);
-                            },
-                          )
-                      );
-                    },
+                    onTap: _postData['post_message'].length < 100 ? null : openFullPost,
                     child: RichText(
                         text: TextSpan(
                           text: formatPreviewMessage(_postData['post_message']),
@@ -304,14 +333,7 @@ class _PostState extends State<Post> {
                         child: Align(
                           alignment: Alignment.topRight,
                           child: IconButton(
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return const Dialog();
-                                    }
-                                );
-                              },
+                              onPressed: openFullPost,
                               icon: const Icon(Icons.open_in_new, color: Colors.white)
                           ),
                         ),

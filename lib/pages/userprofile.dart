@@ -99,8 +99,7 @@ class UserProfilePage extends StatelessWidget {
         ),
         body: const TabBarView(
           children: <Widget>[
-            NestedTabBar('first Page'),
-            NestedTabBar('secondTab')
+            NestedTabBar('first Page')
           ],
         ),
         endDrawer: const MyDrawer(),

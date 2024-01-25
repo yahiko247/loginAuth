@@ -170,10 +170,6 @@ class FreelancerStalkPage extends StatelessWidget {
         body: TabBarView(
           children: <Widget>[
             NestedTabBar2('first', userEmail: userEmail),
-            NestedTabBar2(
-              'second tab',
-              userEmail: userEmail,
-            )
           ],
         ),
         endDrawer: const MyDrawer(),

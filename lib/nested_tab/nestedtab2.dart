@@ -26,7 +26,7 @@ class _NestedTabBar2 extends State<NestedTabBar2>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 1, vsync: this);
   }
 
   @override

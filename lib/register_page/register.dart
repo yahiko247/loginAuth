@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:practice_login/Components/button_register.dart';
 import 'package:practice_login/Components/my_textfield.dart';
 import 'package:practice_login/Components/square_tile.dart';
+import 'package:practice_login/onBoardPage/onboard.dart';
 import 'package:practice_login/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -66,8 +67,8 @@ class _RegisterFormState extends State<RegisterForm> {
     String? myLastName = lastNameController.text;
 
     try {
-      await authService.signUp(emailController.text, passwordController.text,
-          firstNameController.text, myLastName, false);
+      await authService.signUp(emailController.text, passwordController.text, firstNameController.text, myLastName, false);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => OnBoard()));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
