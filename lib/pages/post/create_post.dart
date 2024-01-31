@@ -268,73 +268,73 @@ class _CreateNewPostState extends State<CreateNewPost> {
                     children: [
                       Row(
                         children: [
-                          OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                backgroundColor: Colors.green,
-                                side: const BorderSide(
-                                    color: Colors.green
-                                ),
-                              ),
-                              onPressed: () async {
-                                FilePickerResult? result = await FilePicker.platform.pickFiles(
-                                  type: FileType.custom,
-                                  allowedExtensions: ['jpg', 'png'],
-                                  allowMultiple: true,
-                                );
-                                if (result != null && result.files.isNotEmpty) {
-                                  result.files.removeWhere((file) => _filesPicked.contains(file));
-                                  _addFiles(result.files);
-                                }
-                              },
-                              child: const Icon(Icons.image, size: 25, color: Colors.white)
-                          ),
-                          const SizedBox(width: 10),
-                          OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                backgroundColor: Colors.blue,
-                                side: const BorderSide(
-                                    color: Colors.blue
-                                ),
-                              ),
-                              onPressed: () async {
-                                final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
-                                if (returnedImage == null) return;
-                                final file = File(returnedImage.path);
-                                setState(() {
-                                  _filesPicked.add(PlatformFile(
-                                    name: returnedImage.name,
-                                    path: returnedImage.path,
-                                    size: file.lengthSync(),
-                                  ));
-                                });
-                              },
-                              child: const Icon(Icons.camera_alt, size: 25, color: Colors.white,)
-                          ),
-                          const SizedBox(width: 10),
-                          OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                backgroundColor: Colors.red,
-                                side: const BorderSide(
-                                    color: Colors.red
-                                ),
-                              ),
-                              onPressed: () async {
-                                FilePickerResult? result = await FilePicker.platform.pickFiles(
-                                  type: FileType.custom,
-                                  allowedExtensions: ['mp4'],
-                                  allowMultiple: true,
-                                );
-                                if (result != null && result.files.isNotEmpty) {
-                                  result.files.removeWhere((file) => _filesPicked.contains(file));
-                                  _addFiles(result.files);
-                                }
-                              },
-                              child: const Icon(Icons.video_collection, size: 25, color: Colors.white,)
-                          ),
+
                         ],
+                      ),OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            backgroundColor: Colors.green,
+                            side: const BorderSide(
+                                color: Colors.green
+                            ),
+                          ),
+                          onPressed: () async {
+                            FilePickerResult? result = await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['jpg', 'png'],
+                              allowMultiple: true,
+                            );
+                            if (result != null && result.files.isNotEmpty) {
+                              result.files.removeWhere((file) => _filesPicked.contains(file));
+                              _addFiles(result.files);
+                            }
+                          },
+                          child: const Icon(Icons.image, size: 25, color: Colors.white)
+                      ),
+                      const SizedBox(width: 10),
+                      OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            backgroundColor: Colors.blue,
+                            side: const BorderSide(
+                                color: Colors.blue
+                            ),
+                          ),
+                          onPressed: () async {
+                            final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
+                            if (returnedImage == null) return;
+                            final file = File(returnedImage.path);
+                            setState(() {
+                              _filesPicked.add(PlatformFile(
+                                name: returnedImage.name,
+                                path: returnedImage.path,
+                                size: file.lengthSync(),
+                              ));
+                            });
+                          },
+                          child: const Icon(Icons.camera_alt, size: 25, color: Colors.white,)
+                      ),
+                      const SizedBox(width: 10),
+                      OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            backgroundColor: Colors.red,
+                            side: const BorderSide(
+                                color: Colors.red
+                            ),
+                          ),
+                          onPressed: () async {
+                            FilePickerResult? result = await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['mp4'],
+                              allowMultiple: true,
+                            );
+                            if (result != null && result.files.isNotEmpty) {
+                              result.files.removeWhere((file) => _filesPicked.contains(file));
+                              _addFiles(result.files);
+                            }
+                          },
+                          child: const Icon(Icons.video_collection, size: 25, color: Colors.white,)
                       ),
                       OutlinedButton(
                           style: OutlinedButton.styleFrom(

@@ -42,7 +42,7 @@ class _RegisterFormState extends State<RegisterForm> {
       "email": emailController.text,
 
     });
-    var url = 'http://192.168.1.2:80/userreg.php?data=$dataStr';
+    var url = 'http://192.168.1.17:80/userreg.php?data=$dataStr';
     var result = await http.get(Uri.parse(url));
     setState(() {
       response = result.body;

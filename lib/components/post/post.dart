@@ -383,12 +383,6 @@ class _PostState extends State<Post> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          print("Tapped Like");
-                        },
-                        child: const Padding(padding: EdgeInsets.symmetric(horizontal: 15), child: Text("Like"),),
-                      ),
-                      GestureDetector(
-                        onTap: () {
                           print("Tapped Comment");
                         },
                         child: const Padding(padding: EdgeInsets.symmetric(horizontal: 15), child: Text("Comment"),),

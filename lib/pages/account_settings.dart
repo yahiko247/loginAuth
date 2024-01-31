@@ -67,7 +67,7 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
     var dataStr = jsonEncode({
       "command": "get_allcategories",
     });
-    var url = "http://192.168.1.2:80/categories.php?data=$dataStr";
+    var url = "http://192.168.1.17:80/categories.php?data=$dataStr";
     var result = await http.get(Uri.parse(url));
     setState(() {
       allCategoryData.clear();
@@ -85,7 +85,7 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
       "command": "get_categories",
       "user_id": FirebaseAuth.instance.currentUser!.uid,
     });
-    var url = "http://192.168.1.2:80/categories.php?data=$dataStr";
+    var url = "http://192.168.1.17:80/categories.php?data=$dataStr";
     var result = await http.get(Uri.parse(url));
     setState(() {
       categoryData.clear();
@@ -103,7 +103,7 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
       "category_id": categoryID,
       "user_id": FirebaseAuth.instance.currentUser!.uid,
     });
-    var url = 'http://192.168.1.2:80/categories.php?data=$dataStr';
+    var url = 'http://192.168.1.17:80/categories.php?data=$dataStr';
     var result = await http.get(Uri.parse(url));
 
     setState(() {
@@ -116,7 +116,7 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
       "command": "get_desc",
       "user_id": FirebaseAuth.instance.currentUser!.uid,
     });
-    var url = "http://192.168.1.2:80/categories.php?data=$dataStr";
+    var url = "http://192.168.1.17:80/categories.php?data=$dataStr";
     var result = await http.get(Uri.parse(url));
     setState(() {
       descData.clear();
@@ -133,7 +133,7 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
       "command": "get_price",
       "user_id": FirebaseAuth.instance.currentUser!.uid,
     });
-    var url = "http://192.168.1.2:80/price.php?data=$dataStr";
+    var url = "http://192.168.1.17:80/price.php?data=$dataStr";
     var result = await http.get(Uri.parse(url));
     setState(() {
       priceData.clear();
@@ -154,7 +154,7 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
       "priceRate_type" : selectedRateType,
       "price" : double.tryParse(priceController.text) ?? 0.0,
     });
-    var url = "http://192.168.1.2:80/price.php?data=$dataStr";
+    var url = "http://192.168.1.17:80/price.php?data=$dataStr";
     var result = await http.get(Uri.parse(url));
     setState(() {
       priceResponse = result.body;

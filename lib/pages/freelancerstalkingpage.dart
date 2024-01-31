@@ -53,14 +53,14 @@ class FreelancerStalkPage extends StatelessWidget {
                                         if (userDataSnapshot.connectionState ==
                                             ConnectionState.waiting) {
                                           return Text(
-                                              currentUser.email!.toUpperCase(),
+                                              userEmail.toUpperCase(),
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.bold));
                                         }
                                         if (userDataSnapshot.hasError) {
                                           return Text(
-                                              currentUser.email!.toUpperCase(),
+                                              userEmail.toUpperCase(),
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.bold));
@@ -169,6 +169,7 @@ class FreelancerStalkPage extends StatelessWidget {
         ),
         body: TabBarView(
           children: <Widget>[
+            NestedTabBar2('first', userEmail: userEmail),
             NestedTabBar2('first', userEmail: userEmail),
           ],
         ),

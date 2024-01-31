@@ -21,7 +21,7 @@ class _ProfileCondition extends State<ProfileCondition> {
 
    Widget freelancerProfilePage(){
 
-     return FreelancerProfilePage();
+     return const FreelancerProfilePage();
      /*Navigator.push(context, MaterialPageRoute(builder: (context) =>  const FreelancerProfilePage()
         )
      );*/
@@ -49,7 +49,7 @@ class _ProfileCondition extends State<ProfileCondition> {
        future: freelancerIdentifier2(),
        builder: (context, snapshot) {
          if (snapshot.connectionState == ConnectionState.waiting) {
-           return Center(child: CircularProgressIndicator());
+           return const Center(child: CircularProgressIndicator());
          }
          if (snapshot.hasError) {
            return ErrorWidget('An error occurred.');

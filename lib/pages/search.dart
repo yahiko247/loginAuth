@@ -40,11 +40,11 @@ class _SearchPageState extends State<SearchPage> {
         automaticallyImplyLeading: false,
         centerTitle: true,
         surfaceTintColor: Colors.white,
-        title: Text('Search'),
+        title: const Text('Search'),
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        child: SearchableListWidget(),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: const SearchableListWidget(),
       )
     );
   }
@@ -81,10 +81,10 @@ class _SearchableListWidgetState extends State<SearchableListWidget> {
         future: _fireStore.collection('users').get(),
         builder: (context, usersSnapshot) {
           if (usersSnapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (usersSnapshot.hasError) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (usersSnapshot.hasData) {
             var usersDocs =  usersSnapshot.data!.docs;
@@ -110,7 +110,7 @@ class _SearchableListWidgetState extends State<SearchableListWidget> {
                   return [];
                 }
               },
-              emptyWidget: Padding(
+              emptyWidget: const Padding(
                 padding: EdgeInsets.only(top: 60),
                 child: EmptyView(
                   message: 'Enter a name or an email\nto search for users',
@@ -120,7 +120,7 @@ class _SearchableListWidgetState extends State<SearchableListWidget> {
               ),
               spaceBetweenSearchAndList: 10,
               inputDecoration: InputDecoration(
-                prefix: SizedBox(width: 15),
+                prefix: const SizedBox(width: 15),
                 hintText: 'Search GiGabay',
                 focusColor: Colors.black,
                 contentPadding: EdgeInsets.zero,
@@ -199,36 +199,36 @@ class _UserItemState extends State<UserItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 0),
+      padding: const EdgeInsets.symmetric(vertical: 0),
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(7))
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(7))
         ),
         child: ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-          trailing: Icon(Icons.arrow_forward_outlined),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          trailing: const Icon(Icons.arrow_forward_outlined),
           leading: const CircleAvatar(
               radius: 24,
               backgroundImage:
               AssetImage('images/Avatar1.png')
           ),
-          title: Text('${widget.user.firstName} ${widget.user.lastName}', style: TextStyle(fontWeight: FontWeight.bold)),
+          title: Text('${widget.user.firstName} ${widget.user.lastName}', style: const TextStyle(fontWeight: FontWeight.bold)),
           subtitle: widget.user.freelancer ? Row(
             children: [
               Material(
                 color: Colors.green,
                 borderRadius: const BorderRadius.all(Radius.circular(7)),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
-                  child: Text('Freelancer'),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  child: const Text('Freelancer'),
                 ),
               ),
-              SizedBox(width: 5),
+              const SizedBox(width: 5),
               Material(
                 color: Colors.orange,
                 borderRadius: const BorderRadius.all(Radius.circular(7)),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   child: Text(widget.user.categoryName.isNotEmpty ? widget.user.categoryName.first : 'Category'),
                 ),
               ),

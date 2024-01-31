@@ -46,7 +46,7 @@ class _FreelancerRegisterFormState extends State<FreelancerRegisterForm> {
       "email": emailController.text,
 
     });
-    var url = 'http://192.168.1.2:80/freelancerreg.php?data=$dataStr';
+    var url = 'http://192.168.1.17:80/freelancerreg.php?data=$dataStr';
     var result = await http.get(Uri.parse(url));
     setState(() {
       response = result.body;
@@ -64,7 +64,7 @@ class _FreelancerRegisterFormState extends State<FreelancerRegisterForm> {
       "priceRate_type" : selectedRateType,
       "price" : double.tryParse(priceController.text) ?? 0.0,
     });
-    var url = 'http://192.168.1.2:80/price.php?data=$dataStr';
+    var url = 'http://192.168.1.17:80/price.php?data=$dataStr';
     var result = await http.get(Uri.parse(url));
     setState(() {
       response = result.body;

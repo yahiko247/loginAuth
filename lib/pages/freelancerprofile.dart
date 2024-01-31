@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_login/nested_tab/nestedtab.dart';
 import 'package:practice_login/components/end_drawer.dart';
 import 'package:practice_login/services/user_data_services.dart';
+import '../nested_tab/nestedtab3.dart';
 import 'calendar.dart';
 import 'chat/chat_page.dart';
 
@@ -36,7 +36,7 @@ class _FreelancerProfilePage extends State<FreelancerProfilePage> {
       "command": "get_categories",
       "user_id": FirebaseAuth.instance.currentUser!.uid,
     });
-    var url = "http://192.168.1.2:80/categories.php?data=$dataStr";
+    var url = "http://192.168.1.17:80/categories.php?data=$dataStr";
     var result = await http.get(Uri.parse(url));
     setState(() {
       data.clear();
@@ -102,16 +102,16 @@ class _FreelancerProfilePage extends State<FreelancerProfilePage> {
                                           builder: (context, userDataSnapshot) {
                                             if (userDataSnapshot.connectionState ==
                                                 ConnectionState.waiting) {
-                                              return Text(
-                                                  currentUser.email!.toUpperCase(),
-                                                  style: const TextStyle(
+                                              return const Text(
+                                                  " ",
+                                                  style: TextStyle(
                                                       color: Colors.black,
                                                       fontWeight: FontWeight.bold));
                                             }
                                             if (userDataSnapshot.hasError) {
-                                              return Text(
-                                                  currentUser.email!.toUpperCase(),
-                                                  style: const TextStyle(
+                                              return const Text(
+                                                  " ",
+                                                  style: TextStyle(
                                                       color: Colors.black,
                                                       fontWeight: FontWeight.bold));
                                             }
@@ -195,7 +195,8 @@ class _FreelancerProfilePage extends State<FreelancerProfilePage> {
         ),
         body: const TabBarView(
           children: <Widget>[
-            NestedTabBar('first Page')
+            NestedTabBar3('first Page'),
+            NestedTabBar3('second Page'),
           ],
         ),
         endDrawer: const MyDrawer(),

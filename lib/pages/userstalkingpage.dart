@@ -53,21 +53,21 @@ class UserStalkPage extends StatelessWidget {
                                         if (userDataSnapshot.connectionState ==
                                             ConnectionState.waiting) {
                                           return Text(
-                                              currentUser.email!.toUpperCase(),
+                                              userEmail.toUpperCase(),
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.bold));
                                         }
                                         if (userDataSnapshot.hasError) {
                                           return Text(
-                                              currentUser.email!.toUpperCase(),
+                                              userEmail.toUpperCase(),
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.bold));
                                         }
 
                                         Map<String, dynamic>? userData =
-                                        userDataSnapshot.data?.docs.first.data()!;
+                                        userDataSnapshot.data?.docs.first.data();
                                         return Text(userData?['first_name'] +' ' + userData?['last_name'],
                                             style: const TextStyle(
                                                 color: Colors.black,
