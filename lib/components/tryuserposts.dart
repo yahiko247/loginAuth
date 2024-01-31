@@ -77,34 +77,6 @@ class _ForUserPosts extends State<ForUserPosts> with TickerProviderStateMixin{
     return SingleChildScrollView(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 25, right: 25),
-            child: Row(
-              children: [
-                Expanded(
-                    child: GestureDetector(
-                      child: MyTextField(
-                          controller: newPostController,
-                          hintText: "Create a post",
-                          obscuretext: false,
-                          disableInput: true
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) {
-                                  return const CreateNewPost(returnIndex: 4);
-                                }
-                            )
-                        );
-                      },
-                    )
-                ),
-                Container(padding: const EdgeInsets.only(right: 20), child: IconButton(onPressed: addImages, icon: const Icon(Icons.photo, size: 30,)))
-              ],
-            ),
-          ),
           StreamBuilder(
               stream: _postService.getPostsStream(),
               builder: (context, snapshot) {

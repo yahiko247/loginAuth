@@ -93,32 +93,52 @@ class _ForPosts extends State<ForPosts>{
     return SingleChildScrollView(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 15, bottom: 15),
-            child: Row(
-              children: [
-                Expanded(
-                    child: GestureDetector(
-                      child: MyTextField(
+          Container(
+            color: Color.fromARGB(15, 0, 0, 0),
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child:  Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(bottomRight: Radius.circular(7), bottomLeft: Radius.circular(7)),
+                color: Colors.white
+              ),
+              padding: const EdgeInsets.only(top: 15, bottom: 20),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: Container(
+                        padding: EdgeInsets.only(left: 25),
+                        child: TextField(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) {
+                                      return const CreateNewPost();
+                                    }
+                                )
+                            );
+                          },
+                          readOnly: true,
                           controller: newPostController,
-                          hintText: "Create a post",
-                          obscuretext: false,
-                          disableInput: true
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) {
-                                  return const CreateNewPost();
-                                }
-                            )
-                        );
-                      },
-                    )
-                ),
-                Container(padding: const EdgeInsets.only(right: 20), child: IconButton(onPressed: addFiles, icon: const Icon(Icons.photo, size: 30,)))
-              ],
+                          decoration: InputDecoration(
+                            hintText: 'Create a post',
+                            focusColor: Colors.black,
+                            contentPadding: EdgeInsets.all(13),
+                            fillColor: Colors.white,
+                            focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey), borderRadius: BorderRadius.circular(8.0)),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: const BorderSide(color: Colors.grey)),
+                          ),
+                        ),
+                      )
+                  ),
+                  Container(
+                      padding: const EdgeInsets.only(right: 25, left: 15),
+                      child: GestureDetector(
+                        onTap: addFiles,
+                        child: Icon(Icons.image_outlined, size: 30,),
+                      ))
+                ],
+              ),
             ),
           ),
           StreamBuilder(

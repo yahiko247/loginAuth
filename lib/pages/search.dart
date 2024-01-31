@@ -111,7 +111,7 @@ class _SearchableListWidgetState extends State<SearchableListWidget> {
                 }
               },
               emptyWidget: Padding(
-                padding: EdgeInsets.only(top: 130),
+                padding: EdgeInsets.only(top: 60),
                 child: EmptyView(
                   message: 'Enter a name or an email\nto search for users',
                   displayIcon: true,

@@ -20,11 +20,8 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
   final FirestoreDatabase _firestoreDatabase = FirestoreDatabase();
-  final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
   late QueryDocumentSnapshot<Object?> _postData;
   late PageController _mediaController;
-  late PageController _zoomedMediaController;
-  int _zoomedCurrentMedia = 0;
   int _currentMedia = 0;
 
   @override

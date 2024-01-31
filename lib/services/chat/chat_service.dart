@@ -11,7 +11,6 @@ import 'package:practice_login/services/user_data_services.dart';
 // Models
 import 'package:practice_login/model/message.dart';
 
-
 class ChatService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
