@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import  'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:practice_login/components/user_settings/category_checklist.dart';
 import '../services/user_data_services.dart';
 
 class Item {
@@ -41,16 +42,16 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
   @override
   void initState() {
     super.initState();
-    refreshData();
-    getDesc();
-    refreshData2();
+/*    refreshData();*/
+/*    getDesc();*/
+/*    refreshData2();*/
     getPrice();
   }
 
-  String categoryResponse = "Null";
+/*  String categoryResponse = "Null";
   List<Item> categoryData = [];
   String descResponse = "Null";
-  List<Item> descData = [];
+  List<Item> descData = [];*/
 
   String allCatResponse = "Null";
   List<Item2> allCategoryData= [];
@@ -61,9 +62,7 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
   String priceResponse = "Null";
   List<Item3> priceData = [];
 
-
-
-  refreshData2() async {
+/*  refreshData2() async {
     var dataStr = jsonEncode({
       "command": "get_allcategories",
     });
@@ -79,8 +78,8 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
         ));
       }
     });
-  }
-  refreshData() async {
+  }*/
+/*  refreshData() async {
     var dataStr = jsonEncode({
       "command": "get_categories",
       "user_id": FirebaseAuth.instance.currentUser!.uid,
@@ -96,8 +95,8 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
         ));
       }
     });
-  }
-  updateItem(String categoryID) async {
+  }*/
+/*  updateItem(String categoryID) async {
     var dataStr = jsonEncode({
       "command": "update",
       "category_id": categoryID,
@@ -127,7 +126,7 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
         ));
       }
     });
-  }
+  }*/
   getPrice() async {
     var dataStr = jsonEncode({
       "command": "get_price",
@@ -147,6 +146,7 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
       }
     });
   }
+
   updatePrice() async {
     var dataStr = jsonEncode({
       "command": "update_price",
@@ -220,7 +220,6 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
                           icon: const Icon(Icons.edit))
               ),
 
-
               const LineDivider(),
               ListTile(
               title:const Padding(
@@ -263,80 +262,59 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
                       icon: const Icon(Icons.edit))
               ),
               const LineDivider(),
-               ListTile(
-                title:const Padding(
-                  padding: EdgeInsets.only(bottom:3),
-                  child: Text("Category",
-                    style:
-                    TextStyle(fontWeight: FontWeight.bold),),
-                ),
-                subtitle: Text(
-                  categoryData.isNotEmpty ? categoryData[0].category_name : 'Category',
-                  ),
-                   trailing: IconButton(
-                       onPressed: (){
-                         showDialog(context: context,
-                             builder: (context) => AlertDialog(
-                               title: const Text("Update"),
-                               content: SizedBox(
-                                 width: double.maxFinite,
-                                 height: 200,
-                                 child: ListView.builder(itemCount:allCategoryData.length,
-                                     itemBuilder:(context, index)  {
-                                       return ListTile(
-                                         title: TextButton(
-                                           onPressed: (){
-                                             setState(() {
-                                               selectedCategoryID = allCategoryData[index].categoryID;
-                                             });
-                                           },
-                                             child: Row(
-                                               children: [
-                                                 Padding(
-                                                   padding: const EdgeInsets.only(right: 3),
-                                                   child: Text(allCategoryData[index].categoryID),
-                                                 ),
-                                                 Text(allCategoryData[index].categoryName),
-
-                                               ],
-                                             )),
-                                       );
-                                     }
-                                 ),
-                               ),
-                               actions:  [
-                                 ElevatedButton(
-                                   onPressed: (){
-                                     showDialog(
-                                         context: context,
-                                         builder: (context) => AlertDialog(
-                                           content: const Text("Are you sure you want to change category?"),
-                                           actions: [
-                                             TextButton(
-                                                 onPressed: (){
-                                                   updateItem(selectedCategoryID);
-                                                   Navigator.of(context).pop();
-                                                 },
-                                                 child: const Text("Yes")
-                                             ),
-                                             TextButton(
-                                                 onPressed: (){
-                                                   Navigator.of(context).pop();
-                                                 },
-                                                 child: const Text("No")
-                                             ),
-                                           ],
-                                         )
-                                     );
-
-                                   },
-                                     child: const Text("Update")
-                                 ),
-                               ],
-                             ),
-                         );
-                       },
-                       icon: const Icon(Icons.edit))
+              FutureBuilder(
+                  future: _userDataServices.getCurrentUserDataAsFuture(),
+                  builder: (context, currentUserSnapshot) {
+                    if (currentUserSnapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (currentUserSnapshot.hasError) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (currentUserSnapshot.hasData) {
+                      Map<String, dynamic> currentUserData = currentUserSnapshot.data!.data()!;
+                      if (currentUserData.containsKey('freelancer')) {
+                        List<dynamic> userCategories = currentUserData.containsKey('categories') ? currentUserData['categories'] : [];
+                        if (currentUserData['freelancer'] == true || currentUserData['uid'] == '3tAYJ86NvfTbIQvLLvKUxlHvgiv1') {
+                          return ListTile(
+                              title:const Padding(
+                                padding: EdgeInsets.only(bottom:3),
+                                child: Text("Categories",
+                                  style:
+                                  TextStyle(fontWeight: FontWeight.bold),),
+                              ),
+                              subtitle: RichText(
+                                text: TextSpan(
+                                  text: '',
+                                  children: List.generate(
+                                      userCategories.length, (index) {
+                                        return TextSpan(
+                                          text: index == userCategories.length - 1 ? '${userCategories[index]}':'${userCategories[index]}, '
+                                        );
+                                  })
+                                ),
+                              ),
+                              trailing: IconButton(
+                                  onPressed: (){
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return CategoryDialog(userCategories: userCategories);
+                                        }
+                                    );
+                                  },
+                                  icon: const Icon(Icons.edit))
+                          );
+                        } else {
+                          return Container();
+                        }
+                      } else {
+                        return Container();
+                      }
+                    } else {
+                      return Container();
+                    }
+                  }
               ),
               const LineDivider(),
               ListTile(
@@ -344,7 +322,7 @@ class _FreelancerAccountSettings extends State<FreelancerAccountSettings>{
                   style:  TextStyle(
                     fontWeight: FontWeight.bold),),
               subtitle:Text(
-                descData.isNotEmpty ? descData[0].category_name : 'description',
+                /*descData.isNotEmpty ? descData[0].category_name : */'description',
                 ),
              ),
               const LineDivider(),

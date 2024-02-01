@@ -97,7 +97,7 @@ class _SearchableListWidgetState extends State<SearchableListWidget> {
               style: const TextStyle(fontSize: 16),
               searchTextController: _userSearchController,
               builder: (list, index, item) {
-                return UserItem(user: item);
+                return UserItem(user: item, searchText: _userSearchController.text);
               },
               initialList: const [],
               filter: (input) {
@@ -105,7 +105,8 @@ class _SearchableListWidgetState extends State<SearchableListWidget> {
                   return users.where((element) => element.firstName.toLowerCase().contains(input.toLowerCase())
                       || element.lastName.toLowerCase().contains(input.toLowerCase())
                       || ('${element.firstName.toLowerCase()}${element.lastName.toLowerCase()}').replaceAll(' ', '').contains(input.replaceAll(' ', '').toLowerCase())
-                      || element.email.toLowerCase().contains(input.toLowerCase())).toList();
+                      || element.email.toLowerCase().contains(input.toLowerCase())
+                      || element.categories.any((category) => (category.contains(input)))).toList();
                 } else {
                   return [];
                 }
@@ -139,7 +140,8 @@ class _SearchableListWidgetState extends State<SearchableListWidget> {
 
 class UserItem extends StatefulWidget {
   final User user;
-  const UserItem({super.key, required this.user});
+  final String searchText;
+  const UserItem({super.key, required this.user, required this.searchText});
 
   @override
   State<UserItem> createState() => _UserItemState();
@@ -224,14 +226,31 @@ class _UserItemState extends State<UserItem> {
                 ),
               ),
               const SizedBox(width: 5),
-              Material(
-                color: Colors.orange,
-                borderRadius: const BorderRadius.all(Radius.circular(7)),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: Text(widget.user.categoryName.isNotEmpty ? widget.user.categoryName.first : 'Category'),
-                ),
-              ),
+              if (widget.user.categories.isNotEmpty)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: List.generate(1, (index) {
+                    if (widget.user.categories.where((element) => element.contains(widget.searchText.toLowerCase())).length == 0) {
+                      return Material(
+                        color: Colors.orange,
+                        borderRadius: const BorderRadius.all(Radius.circular(7)),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Text(widget.user.categories.first),
+                        ),
+                      );
+                    } else {
+                      return Material(
+                        color: Colors.orange,
+                        borderRadius: const BorderRadius.all(Radius.circular(7)),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Text(widget.user.categories.where((element) => element.contains(widget.searchText.toLowerCase())).first),
+                        ),
+                      );
+                    }
+                  }),
+                )
             ],
           ) : null,
           onTap: () {
@@ -249,7 +268,7 @@ class User {
   final String firstName;
   final String lastName;
   final bool freelancer;
-  final List<dynamic> categoryName;
+  final List<dynamic> categories;
 
   const User({
     required this.email,
@@ -257,20 +276,36 @@ class User {
     required this.firstName,
     required this.lastName,
     required this.freelancer,
-    required this.categoryName
+    required this.categories
   });
 
   factory User.fromSnapshot(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
     if (data.containsKey('freelancer')) {
-      return User(
-          email: data['email'],
-          uid: data['uid'],
-          firstName: data['first_name'],
-          lastName: data['last_name'],
-          freelancer: data['freelancer'],
-          categoryName: data.containsKey('category_name') ? data['category_name'] : []
-      );
+      List<dynamic> categoriesList = [];
+      if (data.containsKey('categories')) {
+        categoriesList = data['categories'];
+        categoriesList = categoriesList.map((dynamic str) {
+          return str.toLowerCase();
+        }).toList();
+        return User(
+            email: data['email'],
+            uid: data['uid'],
+            firstName: data['first_name'],
+            lastName: data['last_name'],
+            freelancer: data['freelancer'],
+            categories: categoriesList
+        );
+      } else {
+        return User(
+            email: data['email'],
+            uid: data['uid'],
+            firstName: data['first_name'],
+            lastName: data['last_name'],
+            freelancer: data['freelancer'],
+            categories: []
+        );
+      }
     } else {
       return User(
           email: data['email'],
@@ -278,7 +313,7 @@ class User {
           firstName: data['first_name'],
           lastName: data['last_name'],
           freelancer: false,
-          categoryName: []
+          categories: []
       );
     }
   }

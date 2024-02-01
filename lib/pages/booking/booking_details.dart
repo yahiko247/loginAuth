@@ -471,14 +471,5 @@ class _ToDoItemState extends State<ToDoItem> {
         ],
       ),
     );
-
-    /*CheckboxListTile(
-      title: Text(_toDo[_itemIndex]['title'], style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
-      subtitle: Text(_toDo[_itemIndex]['description']),
-      value: _isChecked,
-      onChanged: (bool? value) {
-
-      },
-    );*/
   }
 }

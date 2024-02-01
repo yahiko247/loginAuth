@@ -305,4 +305,15 @@ class UserDataServices extends ChangeNotifier {
     }
   }
 
+  Future<void> updateCategories(List<dynamic> updatedCategories) async {
+    DocumentSnapshot<Map<String, dynamic>> userDataSnapshot = await getCurrentUserDataAsFuture();
+    if (userDataSnapshot.exists) {
+      Map<String, dynamic> userData = userDataSnapshot.data()!;
+      try {
+        await _fireStore.collection('users').doc(_firebaseAuth.currentUser!.uid).set({'categories':updatedCategories}, SetOptions(merge: true));
+      } catch (e) {
+        throw Exception(e);
+      }
+    }
+  }
 }
