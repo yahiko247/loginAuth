@@ -3,11 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/onBoardPage/onboard.dart';
 import 'package:practice_login/pages/freelancerprofile.dart';
-import 'package:practice_login/pages/homepage.dart';
 import 'package:practice_login/pages/userprofile.dart';
 
-import '../pages/freelancerstalkingpage.dart';
-import '../pages/userstalkingpage.dart';
 
 class ProfileCondition extends StatefulWidget {
   const ProfileCondition({super.key});

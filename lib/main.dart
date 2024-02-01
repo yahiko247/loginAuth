@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const OnBoard(),
       routes: {
-        '/freelancerprofile': (context) => FreelancerProfilePage(),
+        '/freelancerprofile': (context) => const FreelancerProfilePage(),
         '/userprofile': (context) => UserProfilePage(),
       },
 

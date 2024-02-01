@@ -1,10 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:practice_login/components/chat/warning_dialog.dart';
 import 'package:practice_login/pages/booking/enter_booking_details.dart';
 import 'package:practice_login/services/booking/booking_services.dart';
-import 'package:flutter/services.dart';
 import 'package:practice_login/services/user_data_services.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -33,10 +31,10 @@ class _BookPage extends State<BookPage> {
               future: _userDataServices.getUserDataThroughEmail(widget.userEmail),
               builder: (context, userSnapshot) {
                 if (userSnapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (userSnapshot.hasError) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (userSnapshot.hasData) {
                   Map<String, dynamic> userData = userSnapshot.data!.docs.first.data();
@@ -56,7 +54,7 @@ class _BookPage extends State<BookPage> {
                                     freelancerId: userData['uid']
                                 );
                               },
-                              transitionDuration: Duration(milliseconds: 400),
+                              transitionDuration: const Duration(milliseconds: 400),
                               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                                 const begin = Offset(0.0, 1.0);
                                 const end = Offset.zero;
@@ -198,7 +196,7 @@ class _BookPage extends State<BookPage> {
                       height: 25,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
-                          color: Color.fromRGBO(240, 240, 240, 1)),
+                          color: const Color.fromRGBO(240, 240, 240, 1)),
                       child: const Center(child: Text("Available", style: TextStyle(fontWeight: FontWeight.bold)))),
                 ),
                 Expanded(

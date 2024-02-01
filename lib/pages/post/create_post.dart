@@ -5,7 +5,6 @@ import 'package:practice_login/components/chat/warning_dialog.dart';
 import 'package:practice_login/components/create_post/confirm_dialog.dart';
 import 'package:practice_login/components/create_post/video_preview.dart';
 import 'package:practice_login/pages/botto_nav_bar.dart';
-import 'package:practice_login/pages/homepage.dart';
 import 'package:practice_login/services/posts/posts_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
@@ -266,7 +265,7 @@ class _CreateNewPostState extends State<CreateNewPost> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
+                      const Row(
                         children: [
 
                         ],

@@ -17,7 +17,7 @@ class ClientBook extends StatefulWidget {
 }
 
 class _ClientBookState extends State<ClientBook> {
-  UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
+  final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
   final BookingServices _bookingServices = BookingServices();
 
   void showRequestReceipt(Map<String, dynamic> bookingDetails) {
@@ -34,10 +34,10 @@ class _ClientBookState extends State<ClientBook> {
                         future: _userDataServices.getCurrentUserDataAsFuture(),
                         builder: (context, clientSnapshot) {
                           if (clientSnapshot.connectionState == ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
+                            return const Center(child: CircularProgressIndicator());
                           }
                           if (clientSnapshot.hasError) {
-                            return Center(child: CircularProgressIndicator());
+                            return const Center(child: CircularProgressIndicator());
                           }
                           if (clientSnapshot.hasData) {
                             Map<String, dynamic> clientData = clientSnapshot.data!.data()!;
@@ -45,68 +45,68 @@ class _ClientBookState extends State<ClientBook> {
                                 future: _userDataServices.getUserDataAsFuture(bookingDetails['freelancer_user_id']),
                                 builder: (context, freelancerSnapshot) {
                                   if (clientSnapshot.connectionState == ConnectionState.waiting) {
-                                    return Center(child: CircularProgressIndicator());
+                                    return const Center(child: CircularProgressIndicator());
                                   }
                                   if (clientSnapshot.hasError) {
-                                    return Center(child: CircularProgressIndicator());
+                                    return const Center(child: CircularProgressIndicator());
                                   }
                                   if (freelancerSnapshot.hasData) {
                                     Map<String, dynamic> freelancerData = freelancerSnapshot.data!.data()!;
                                     return Container(
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                           color: Colors.white,
                                           borderRadius: BorderRadius.all(Radius.circular(10))
                                       ),
-                                      padding: EdgeInsets.symmetric(vertical: 15),
+                                      padding: const EdgeInsets.symmetric(vertical: 15),
                                       width: width,
                                       child: Column(
                                         children: [
                                           if (widget.status != 'completed')
                                             Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 25),
+                                                padding: const EdgeInsets.symmetric(horizontal: 25),
                                                 width: width,
                                                 child: ListTile(
                                                   contentPadding: EdgeInsets.zero,
-                                                  title: Text(
+                                                  title: const Text(
                                                     'Booking Details',
                                                     style: TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 25,
                                                     ),
                                                   ),
-                                                  trailing: InkWell(child: Icon(Icons.clear, size: 28,), onTap: () {Navigator.pop(context);}),
+                                                  trailing: InkWell(child: const Icon(Icons.clear, size: 28,), onTap: () {Navigator.pop(context);}),
                                                   subtitle: Text('Request sent: ${bookingDetails['booking_date'].toDate().day.toString()}/${bookingDetails['booking_date'].toDate().month.toString()}/${bookingDetails['booking_date'].toDate().year.toString()}'),
                                                 )
                                             ),
                                           if (widget.status == 'completed')
                                             Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 25),
+                                                padding: const EdgeInsets.symmetric(horizontal: 25),
                                                 width: width,
                                                 child: ListTile(
                                                   contentPadding: EdgeInsets.zero,
-                                                  title: Text(
+                                                  title: const Text(
                                                     'Booking Details',
                                                     style: TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 25,
                                                     ),
                                                   ),
-                                                  trailing: InkWell(child: Icon(Icons.clear, size: 28,), onTap: () {Navigator.pop(context);}),
+                                                  trailing: InkWell(child: const Icon(Icons.clear, size: 28,), onTap: () {Navigator.pop(context);}),
                                                   subtitle: Text('Date Completed: ${bookingDetails['completed_date'].toDate().day.toString()}/${bookingDetails['completed_date'].toDate().month.toString()}/${bookingDetails['completed_date'].toDate().year.toString()}'),
                                                 )
                                             ),
-                                          Divider(height: 1),
+                                          const Divider(height: 1),
                                           Container(
-                                            padding: EdgeInsets.only(top: 5, bottom: 15),
+                                            padding: const EdgeInsets.only(top: 5, bottom: 15),
                                             child: Column(
                                               children: [
                                                 Container(
-                                                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                     width: width,
                                                     child: RichText(
                                                         text: TextSpan(
                                                             text: 'Requested booking ${freelancerData['first_name']} ${freelancerData['last_name']} for ',
-                                                            style: TextStyle(
+                                                            style: const TextStyle(
                                                                 color: Colors.black,
                                                                 fontSize: 14.5
                                                             ),
@@ -114,14 +114,14 @@ class _ClientBookState extends State<ClientBook> {
                                                               TextSpan(
                                                                   text: '${bookingDetails['start_date'].toDate().day.toString()}/${bookingDetails['start_date'].toDate().month.toString()}/${bookingDetails['start_date'].toDate().year.toString()} '
                                                                       '- ${bookingDetails['end_date'].toDate().day.toString()}/${bookingDetails['end_date'].toDate().month.toString()}/${bookingDetails['end_date'].toDate().year.toString()}',
-                                                                  style: TextStyle(fontWeight: FontWeight.bold)
+                                                                  style: const TextStyle(fontWeight: FontWeight.bold)
                                                               )
                                                             ]
                                                         )
                                                     )
                                                 ),
                                                 Container(
-                                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                   width: width,
                                                   child: Text(
                                                     'Client: ${clientData['first_name']} ${clientData['last_name']}',
@@ -129,7 +129,7 @@ class _ClientBookState extends State<ClientBook> {
                                                   ),
                                                 ),
                                                 Container(
-                                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                   width: width,
                                                   child: Text(
                                                     'Freelancer: ${freelancerData['first_name']} ${freelancerData['last_name']}',
@@ -137,14 +137,14 @@ class _ClientBookState extends State<ClientBook> {
                                                 ),
                                                 if (bookingDetails['location'].isNotEmpty)
                                                   Container(
-                                                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                     width: width,
                                                     child: Text(
                                                       'Location: ${bookingDetails['location']}',
                                                     ),
                                                   ),
                                                 Container(
-                                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                   width: width,
                                                   child: Text(
                                                     'Message: ${bookingDetails['message']}',
@@ -152,7 +152,7 @@ class _ClientBookState extends State<ClientBook> {
                                                 ),
                                                 if (bookingDetails['to_dos'].isNotEmpty)
                                                   Container(
-                                                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                     width: width,
                                                     child: Text(
                                                       'To Dos (${bookingDetails['to_dos'].length})',
@@ -161,7 +161,7 @@ class _ClientBookState extends State<ClientBook> {
                                                 if (bookingDetails['to_dos'].isNotEmpty)
                                                   ToDos(toDos: bookingDetails['to_dos']),
                                                 Container(
-                                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                   width: width,
                                                   child: Text(
                                                     'Duration: ${bookingDetails['start_date'].toDate().day.toString()}/${bookingDetails['start_date'].toDate().month.toString()}/${bookingDetails['start_date'].toDate().year.toString()} '
@@ -169,7 +169,7 @@ class _ClientBookState extends State<ClientBook> {
                                                   ),
                                                 ),
                                                 Container(
-                                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                   width: width,
                                                   child: Text(
                                                     'Budget: PHP ${bookingDetails['budget']}',
@@ -180,7 +180,7 @@ class _ClientBookState extends State<ClientBook> {
                                           ),
                                           if (widget.status != 'completed')
                                             Container(
-                                                padding: EdgeInsets.only(bottom: 10),
+                                                padding: const EdgeInsets.only(bottom: 10),
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                   children: [
@@ -274,7 +274,7 @@ class _ClientBookState extends State<ClientBook> {
                 radius: 24,
                 backgroundImage: AssetImage('images/Avatar1.png'),
               ),
-              title: Text('Error'),
+              title: const Text('Error'),
               subtitle: Text(freelancerSnapshot.error.toString()),
               trailing: const SizedBox(
                   width: 100,
@@ -307,7 +307,7 @@ class _ClientBookState extends State<ClientBook> {
                             bookId: widget.bookId,
                           );
                         },
-                        transitionDuration: Duration(milliseconds: 350),
+                        transitionDuration: const Duration(milliseconds: 350),
                         transitionsBuilder: (context, animation, secondaryAnimation, child) {
                           const begin = Offset(0.0, 1.0);
                           const end = Offset.zero;
@@ -328,7 +328,7 @@ class _ClientBookState extends State<ClientBook> {
               ),
               title: Text('${freelancerData['first_name']} ${freelancerData['last_name']}'),
               subtitle: Text(freelancerData['email']),
-              trailing: Container(
+              trailing: SizedBox(
                   width: 100,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -360,7 +360,7 @@ class _ClientBookState extends State<ClientBook> {
                           ],
                         ),
                       ),
-                      Icon(Icons.outbound_outlined, color: Colors.blue)
+                      const Icon(Icons.outbound_outlined, color: Colors.blue)
                     ],
                   )
               ),

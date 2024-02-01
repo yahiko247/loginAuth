@@ -103,7 +103,7 @@ class _VideoState extends State<Video> {
                         alignment: Alignment.center,
                         child: Container(
                           decoration: BoxDecoration(
-                              color: Color.fromARGB(150, 0, 0, 0),
+                              color: const Color.fromARGB(150, 0, 0, 0),
                               border: Border.all(width: 2, color: Colors.white),
                               borderRadius: BorderRadius.circular(100)
                           ),

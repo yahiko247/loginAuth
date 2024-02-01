@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/components/tryuserposts.dart';
 import 'package:practice_login/database/firestore.dart';
@@ -45,7 +44,7 @@ class _NestedTabBar extends State<NestedTabBar> with TickerProviderStateMixin {
       ),
       Expanded(
           child: TabBarView(controller: _tabController, children: <Widget>[
-            Card(
+            const Card(
               margin: EdgeInsets.all(16.0),
               child: Text('A B O U T    M E'),
             ),

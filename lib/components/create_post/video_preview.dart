@@ -85,7 +85,7 @@ class _VideoPreviewState extends State<VideoPreview> {
                             : Container(),
                       ),
                       Container(
-                        padding: EdgeInsets.only(bottom: 13),
+                        padding: const EdgeInsets.only(bottom: 13),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -100,7 +100,7 @@ class _VideoPreviewState extends State<VideoPreview> {
                                 icon: Icon(playIcon, size: 28, color: Colors.white,)
                             ),
                             Container(
-                              padding: EdgeInsets.only(bottom: 5),
+                              padding: const EdgeInsets.only(bottom: 5),
                               width: width - 200,
                               child: VideoProgressIndicator(
                                   widget.vidController,
@@ -116,7 +116,7 @@ class _VideoPreviewState extends State<VideoPreview> {
                                 onPressed: () {
                                   _enterFullScreen();
                                 },
-                                icon: Icon(Icons.fullscreen, size: 28, color: Colors.white,)
+                                icon: const Icon(Icons.fullscreen, size: 28, color: Colors.white,)
                             ),
                           ],
                         ),
@@ -210,7 +210,7 @@ class _FullScreenVideoState extends State<FullScreenVideo> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                icon: Icon(Icons.arrow_back_outlined, color: Colors.white,),
+                icon: const Icon(Icons.arrow_back_outlined, color: Colors.white,),
               ),
             )
           ),
@@ -232,7 +232,7 @@ class _FullScreenVideoState extends State<FullScreenVideo> {
                       icon: Icon(playIcon, size: 28, color: Colors.white,)
                   ),
                   Container(
-                    padding: EdgeInsets.only(bottom: 5),
+                    padding: const EdgeInsets.only(bottom: 5),
                     width: screenWidth - 125,
                     child: VideoProgressIndicator(
                         widget.vidController,

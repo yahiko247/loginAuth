@@ -1,21 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/components/post/post.dart';
-
 import 'package:practice_login/database/firestore.dart';
+import '../pages/reviews_page.dart';
 
-class NestedTabBar2 extends StatefulWidget {
+class NestedTabBar4 extends StatefulWidget {
   String userEmail;
-  NestedTabBar2(this.outerTab, {super.key, required this.userEmail});
+  NestedTabBar4(this.outerTab, {super.key, required this.userEmail});
   final currentUser = FirebaseAuth.instance.currentUser!;
 
   final String outerTab;
 
   @override
-  State<NestedTabBar2> createState() => _NestedTabBar2();
+  State<NestedTabBar4> createState() => _NestedTabBar4();
 }
 
-class _NestedTabBar2 extends State<NestedTabBar2>
+class _NestedTabBar4 extends State<NestedTabBar4>
     with TickerProviderStateMixin {
   late final TabController _tabController;
   final FirestoreDatabase database = FirestoreDatabase();
@@ -25,7 +25,7 @@ class _NestedTabBar2 extends State<NestedTabBar2>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -44,6 +44,7 @@ class _NestedTabBar2 extends State<NestedTabBar2>
           tabs: const <Widget>[
             Tab(text: 'P O S T'),
             Tab(text: 'P R O F I L E'),
+            Tab(text: 'R E V I E W S',)
           ]),
       Expanded(
           child: TabBarView(controller: _tabController, children: <Widget>[
@@ -94,6 +95,9 @@ class _NestedTabBar2 extends State<NestedTabBar2>
               margin: EdgeInsets.all(16.0),
               child: Text('A B O U T    M E'),
             ),
+            Card(
+              child: ReviewsPage(freelancerID:widget.userEmail,),
+            )
           ]))
     ]);
   }

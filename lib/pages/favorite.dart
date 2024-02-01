@@ -37,14 +37,14 @@ class _FavoritePageState extends State<FavoritePage> with TickerProviderStateMix
         appBar: AppBar(
           automaticallyImplyLeading: false,
           centerTitle: true,
-          title: Text('Bookings'),
+          title: const Text('Bookings'),
           backgroundColor: Colors.white,
         ),
         body: Column(
           children: [
             TabBar.secondary(
                 controller: _tabController,
-                tabs: <Widget>[
+                tabs: const <Widget>[
                   Tab(text: 'Ongoing'),
                   Tab(text: 'Requests'),
                   Tab(text: 'Completed'),
@@ -55,19 +55,19 @@ class _FavoritePageState extends State<FavoritePage> with TickerProviderStateMix
                     stream: _bookingServices.getBookingAsClient(),
                     builder: (context, bookingsAsClientSnapshot) {
                       if (bookingsAsClientSnapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator());
                       }
                       if (bookingsAsClientSnapshot.hasError) {
-                        return Center(child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator());
                       }
                       return StreamBuilder(
                           stream: _bookingServices.getBookingsAsFreelancer(),
                           builder: (context, bookingAsFreelancerSnapshot) {
                             if(bookingAsFreelancerSnapshot.connectionState == ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
+                              return const Center(child: CircularProgressIndicator());
                             }
                             if (bookingAsFreelancerSnapshot.hasError) {
-                              return Center(child: CircularProgressIndicator());
+                              return const Center(child: CircularProgressIndicator());
                             }
                             if (bookingAsFreelancerSnapshot.hasData) {
                               List<dynamic> bookingsData = bookingAsFreelancerSnapshot.data!.docs + bookingsAsClientSnapshot.data!.docs;

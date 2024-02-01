@@ -182,7 +182,7 @@ class _ChatPageDrawer extends State<ChatPageDrawer> {
 class ArchivedPageDrawer extends StatefulWidget {
   final String userId;
 
-  ArchivedPageDrawer({super.key, required this.userId});
+  const ArchivedPageDrawer({super.key, required this.userId});
 
   @override
   State<ArchivedPageDrawer> createState() => _ArchivedPageDrawerState();

@@ -86,7 +86,7 @@ class _FreelancerRegisterFormState extends State<FreelancerRegisterForm> {
 
     try {
       await authService.signUp(emailController.text, passwordController.text, firstNameController.text, myLastName,true);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => OnBoard()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const OnBoard()));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

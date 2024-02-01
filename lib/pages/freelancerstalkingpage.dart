@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/nested_tab/nestedtab2.dart';
+import 'package:practice_login/nested_tab/nestedtab4.dart';
 import 'package:practice_login/pages/booking.dart';
 import 'package:practice_login/pages/chat/chat_box.dart';
 import 'package:practice_login/services/user_data_services.dart';
@@ -27,7 +28,7 @@ class FreelancerStalkPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(150.0),
@@ -39,63 +40,111 @@ class FreelancerStalkPage extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 10, left: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Image.asset('images/Avatar1.png', height: 120),
-                        Container(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10, top: 50),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  FutureBuilder(
-                                      future: _userDataServices.getUserDataThroughEmail(userEmail),
-                                      builder: (context, userDataSnapshot) {
-                                        if (userDataSnapshot.connectionState ==
-                                            ConnectionState.waiting) {
-                                          return Text(
-                                              userEmail.toUpperCase(),
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold));
-                                        }
-                                        if (userDataSnapshot.hasError) {
-                                          return Text(
-                                              userEmail.toUpperCase(),
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold));
-                                        }
+                        Padding(
+                          padding: const EdgeInsets.only(left: 3,),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              FutureBuilder(
+                                future: _userDataServices.getUserDataThroughEmail(userEmail),
+                                builder: (context,snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting){
+                                  return const Text("Category");
+                                }
+                                  Map<String,dynamic> snapshotdata = snapshot.data!.docs.first.data();
 
-                                        Map<String, dynamic>? userData =
-                                        userDataSnapshot.data!.docs.first.data();
-                                        return Text(userData['first_name'] +' ' + userData['last_name'],
-                                            style: const TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold));
-                                      }),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Container(
-                                    width: 120,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: const Color.fromARGB(
-                                            255, 209, 207, 207),
-                                        borderRadius:
-                                        BorderRadius.circular(20)),
-                                    child: const Padding(
-                                      padding: EdgeInsets.only(left: 5, top: 3),
-                                      child: Text(
-                                        'Freelancer Gold Member',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.normal,
-                                            fontSize: 9),
-                                      ),
+                                  return StreamBuilder(
+                                      stream: _userDataServices.getUserDataAsStream(snapshotdata['uid']),
+                                      builder: (context,usersnapshot){
+                                        if (usersnapshot.connectionState == ConnectionState.waiting){
+                                          return const Text("Category");
+                                        }
+                                        Map<String,dynamic> userData = usersnapshot.data!.data()!;
+                                        if(userData.containsKey('categories') && userData['categories'].isNotEmpty){
+                                          return Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                userData['categories'].first ?? 'Category',
+                                              ),
+                                            ],
+                                          );
+                                        }else{
+                                          return const Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Category',
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      });
+                                }
+                              ),
+                              Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 5.0),
+                                      child: FutureBuilder(
+                                          future: _userDataServices.getUserDataThroughEmail(userEmail),
+                                          builder: (context, userDataSnapshot) {
+                                            if (userDataSnapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const Text(
+                                                 "",
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.bold));
+                                            }
+                                            if (userDataSnapshot.hasError) {
+                                              return const Text(
+                                                  "",
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.bold));
+                                            }
+
+                                            Map<String, dynamic>? userData =
+                                            userDataSnapshot.data!.docs.first.data();
+                                            return Text(userData['first_name'] +' ' + userData['last_name'],
+                                                style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold));
+                                          }),
                                     ),
-                                  )
-                                ]),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 5),
+                                      child: Container(
+                                        width: 120,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                            color: const Color.fromARGB(
+                                                255, 209, 207, 207),
+                                            borderRadius:
+                                            BorderRadius.circular(20)),
+                                        child: const Padding(
+                                          padding: EdgeInsets.only(left: 5, top: 3),
+                                          child: Text(
+                                            'Freelancer Gold Member',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.normal,
+                                                fontSize: 9),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ]),
+                            ],
                           ),
                         )
                       ],
@@ -169,8 +218,9 @@ class FreelancerStalkPage extends StatelessWidget {
         ),
         body: TabBarView(
           children: <Widget>[
-            NestedTabBar2('first', userEmail: userEmail),
-            NestedTabBar2('first', userEmail: userEmail),
+            NestedTabBar4('first', userEmail: userEmail),
+            NestedTabBar4('second', userEmail: userEmail),
+            NestedTabBar4('third', userEmail: userEmail),
           ],
         ),
         endDrawer: const MyDrawer(),

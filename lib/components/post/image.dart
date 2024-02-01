@@ -16,7 +16,7 @@ class _ImagePostState extends State<ImagePost> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
-      color: Color.fromRGBO(190, 190, 190, 1),
+      color: const Color.fromRGBO(190, 190, 190, 1),
       child: GestureDetector(
         onTap: () {},
         child: ClipRRect(
@@ -27,7 +27,7 @@ class _ImagePostState extends State<ImagePost> {
                   fit: widget.zoomed ? BoxFit.contain : BoxFit.cover,
                   width: width,
                   height: height,
-                  errorBuilder: (context, url, error) => Container(
+                  errorBuilder: (context, url, error) => const SizedBox(
                     height: 400,
                     child: Center(child: CircularProgressIndicator(color: Color.fromARGB(100, 0, 0, 0)),),
                   )

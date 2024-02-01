@@ -1,11 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/components/tryuserposts.dart';
 import 'package:practice_login/database/firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:practice_login/pages/reviews_page.dart';
 class NestedTabBar3 extends StatefulWidget {
-  const NestedTabBar3(this.outerTab, {super.key});
+  final String freelancerID;
+  const NestedTabBar3(this.outerTab, {super.key,required this.freelancerID});
 
 
   final String outerTab;
@@ -24,7 +24,7 @@ class _NestedTabBar extends State<NestedTabBar3> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -34,7 +34,7 @@ class _NestedTabBar extends State<NestedTabBar3> with TickerProviderStateMixin {
   }
 
   Widget freelancerReviewPage(){
-    return const ReviewsPage();
+    return ReviewsPage(freelancerID: widget.freelancerID,);
   }
   @override
   Widget build(BuildContext context) {
@@ -45,28 +45,21 @@ class _NestedTabBar extends State<NestedTabBar3> with TickerProviderStateMixin {
           tabs: const <Widget>[
             Tab(text: 'P R O F I L E'),
             Tab(text: 'P O S T'),
+            Tab(text: 'R E V I E W S',)
           ]
       ),
       Expanded(
           child: TabBarView(controller: _tabController, children: <Widget>[
-            Card(
-              margin: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const Text('A B O U T    M E'),
-
-                  TextButton(
-                      onPressed:(){
-                        freelancerReviewPage();
-                     },
-                      child: const Text("Freelancer's Review")
-                  ),
-                ],
-              ),
+            const Card(
+              margin: EdgeInsets.all(16.0),
+              child: Text('A B O U T    M E'),
             ),
             Card(
               child: ForUserPosts(),
             ),
+            Card(
+              child: ReviewsPage(freelancerID: widget.freelancerID,),
+            )
           ]
           )
       )

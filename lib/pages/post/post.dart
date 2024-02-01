@@ -1,9 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:practice_login/components/create_post/video_preview.dart';
-import 'package:practice_login/components/post/post.dart';
-import 'package:practice_login/components/post/video.dart';
 import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/services/posts/posts_service.dart';
 import 'package:video_player/video_player.dart';
@@ -20,7 +16,7 @@ class FullPost extends StatefulWidget {
 class _FullPostState extends State<FullPost> {
   final PostService _postService = PostService();
   final FirestoreDatabase _firestoreDatabase = FirestoreDatabase();
-  late List<VideoPlayerController> _videoControllers = [];
+  late final List<VideoPlayerController> _videoControllers = [];
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +38,7 @@ class _FullPostState extends State<FullPost> {
           future: _postService.getPost(widget.postId),
           builder: (context, postSnapshot) {
             if (postSnapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
             if (postSnapshot.hasError) {
               return ErrorWidget('error');
@@ -54,7 +50,7 @@ class _FullPostState extends State<FullPost> {
                   children: [
                     /// Post Details
                     Container(
-                      padding: EdgeInsets.only(top: 30, bottom: 5),
+                      padding: const EdgeInsets.only(top: 30, bottom: 5),
                       width: width,
                       child: ListTile(
                         contentPadding: const EdgeInsets.only(left: 20, right: 10),
@@ -105,7 +101,7 @@ class _FullPostState extends State<FullPost> {
                             padding: EdgeInsets.only(left: 15, right: 15, bottom: postData['media'].isNotEmpty ? 15 : 0),
                             child: Text(
                               postData['post_message'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16
                               ),
                             )
@@ -119,11 +115,11 @@ class _FullPostState extends State<FullPost> {
                                 (index) {
                               if (postData['media'][index]['media_type'] == 'jpg' || postData['media'][index]['media_type'] == 'png') {
                                 return Container(
-                                  padding: EdgeInsets.symmetric(vertical: 3.5),
+                                  padding: const EdgeInsets.symmetric(vertical: 3.5),
                                   child: Image.network(
                                       postData['media'][index]['media_reference'],
                                       width: width,
-                                      errorBuilder: (context, url, error) => Container(
+                                      errorBuilder: (context, url, error) => const SizedBox(
                                         height: 400,
                                         child: Center(child: CircularProgressIndicator(color: Color.fromARGB(100, 0, 0, 0)),),
                                       )
@@ -241,7 +237,7 @@ class _FullPostVideoState extends State<FullPostVideo> {
                 duration: const Duration(milliseconds: 450),
                 child: Container(
                   decoration: BoxDecoration(
-                      color: Color.fromARGB(75, 0, 0, 0),
+                      color: const Color.fromARGB(75, 0, 0, 0),
                       border: Border.all(width: 2, color: Colors.white),
                       borderRadius: BorderRadius.circular(100)
                   ),
@@ -276,10 +272,10 @@ class _FullPostVideoState extends State<FullPostVideo> {
                             ),
                           );
                         },
-                        icon: Icon(Icons.fullscreen, size: 28, color: Colors.white,)
+                        icon: const Icon(Icons.fullscreen, size: 28, color: Colors.white,)
                     ),
                     Container(
-                      padding: EdgeInsets.only(bottom: 5),
+                      padding: const EdgeInsets.only(bottom: 5),
                       width: width - 110,
                       child: VideoProgressIndicator(
                           _videoPlayerController,

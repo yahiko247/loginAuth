@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_login/components/booking/to_dos.dart';
@@ -18,7 +17,7 @@ class FreelancerBook extends StatefulWidget {
 }
 
 class _FreelancerBookState extends State<FreelancerBook> {
-  UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
+  final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
   final BookingServices _bookingServices = BookingServices();
 
   void showRequestReceipt(Map<String, dynamic> bookingDetails) {
@@ -35,10 +34,10 @@ class _FreelancerBookState extends State<FreelancerBook> {
                         future: _userDataServices.getCurrentUserDataAsFuture(),
                         builder: (context, freelancerSnapshot) {
                           if (freelancerSnapshot.connectionState == ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
+                            return const Center(child: CircularProgressIndicator());
                           }
                           if (freelancerSnapshot.hasError) {
-                            return Center(child: CircularProgressIndicator());
+                            return const Center(child: CircularProgressIndicator());
                           }
                           if (freelancerSnapshot.hasData) {
                             Map<String, dynamic> freelancerData = freelancerSnapshot.data!.data()!;
@@ -46,68 +45,68 @@ class _FreelancerBookState extends State<FreelancerBook> {
                                 future: _userDataServices.getUserDataAsFuture(bookingDetails['client_id']),
                                 builder: (context, clientSnapshot) {
                                   if (freelancerSnapshot.connectionState == ConnectionState.waiting) {
-                                    return Center(child: CircularProgressIndicator());
+                                    return const Center(child: CircularProgressIndicator());
                                   }
                                   if (freelancerSnapshot.hasError) {
-                                    return Center(child: CircularProgressIndicator());
+                                    return const Center(child: CircularProgressIndicator());
                                   }
                                   if (clientSnapshot.hasData) {
                                     Map<String, dynamic> clientData = clientSnapshot.data!.data()!;
                                     return Container(
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                           color: Colors.white,
                                           borderRadius: BorderRadius.all(Radius.circular(10))
                                       ),
-                                      padding: EdgeInsets.symmetric(vertical: 15),
+                                      padding: const EdgeInsets.symmetric(vertical: 15),
                                       width: width,
                                       child: Column(
                                         children: [
                                           if (widget.status != 'completed')
                                             Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 25),
+                                                padding: const EdgeInsets.symmetric(horizontal: 25),
                                                 width: width,
                                                 child: ListTile(
                                                   contentPadding: EdgeInsets.zero,
-                                                  title: Text(
+                                                  title: const Text(
                                                     'Booking Details',
                                                     style: TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 25,
                                                     ),
                                                   ),
-                                                  trailing: InkWell(child: Icon(Icons.clear, size: 28,), onTap: () {Navigator.pop(context);}),
+                                                  trailing: InkWell(child: const Icon(Icons.clear, size: 28,), onTap: () {Navigator.pop(context);}),
                                                   subtitle: Text('Request sent: ${bookingDetails['booking_date'].toDate().day.toString()}/${bookingDetails['booking_date'].toDate().month.toString()}/${bookingDetails['booking_date'].toDate().year.toString()}'),
                                                 )
                                             ),
                                           if (widget.status == 'completed')
                                             Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 25),
+                                                padding: const EdgeInsets.symmetric(horizontal: 25),
                                                 width: width,
                                                 child: ListTile(
                                                   contentPadding: EdgeInsets.zero,
-                                                  title: Text(
+                                                  title: const Text(
                                                     'Booking Details',
                                                     style: TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 25,
                                                     ),
                                                   ),
-                                                  trailing: InkWell(child: Icon(Icons.clear, size: 28,), onTap: () {Navigator.pop(context);}),
+                                                  trailing: InkWell(child: const Icon(Icons.clear, size: 28,), onTap: () {Navigator.pop(context);}),
                                                   subtitle: Text('Date Completed: ${bookingDetails['completed_date'].toDate().day.toString()}/${bookingDetails['completed_date'].toDate().month.toString()}/${bookingDetails['completed_date'].toDate().year.toString()}'),
                                                 )
                                             ),
-                                          Divider(height: 1),
+                                          const Divider(height: 1),
                                           Container(
-                                            padding: EdgeInsets.only(top: 5, bottom: 15),
+                                            padding: const EdgeInsets.only(top: 5, bottom: 15),
                                             child: Column(
                                               children: [
                                                 Container(
-                                                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                     width: width,
                                                     child: RichText(
                                                         text: TextSpan(
                                                             text: '${clientData['first_name']} ${clientData['last_name']} requested booking for ',
-                                                            style: TextStyle(
+                                                            style: const TextStyle(
                                                                 color: Colors.black,
                                                                 fontSize: 14.5
                                                             ),
@@ -115,14 +114,14 @@ class _FreelancerBookState extends State<FreelancerBook> {
                                                               TextSpan(
                                                                   text: '${bookingDetails['start_date'].toDate().day.toString()}/${bookingDetails['start_date'].toDate().month.toString()}/${bookingDetails['start_date'].toDate().year.toString()} '
                                                                       '- ${bookingDetails['end_date'].toDate().day.toString()}/${bookingDetails['end_date'].toDate().month.toString()}/${bookingDetails['end_date'].toDate().year.toString()}',
-                                                                  style: TextStyle(fontWeight: FontWeight.bold)
+                                                                  style: const TextStyle(fontWeight: FontWeight.bold)
                                                               )
                                                             ]
                                                         )
                                                     )
                                                 ),
                                                 Container(
-                                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                   width: width,
                                                   child: Text(
                                                     'Client: ${clientData['first_name']} ${clientData['last_name']}',
@@ -130,7 +129,7 @@ class _FreelancerBookState extends State<FreelancerBook> {
                                                   ),
                                                 ),
                                                 Container(
-                                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                   width: width,
                                                   child: Text(
                                                     'Freelancer: ${freelancerData['first_name']} ${freelancerData['last_name']}',
@@ -138,14 +137,14 @@ class _FreelancerBookState extends State<FreelancerBook> {
                                                 ),
                                                 if (bookingDetails['location'].isNotEmpty)
                                                   Container(
-                                                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                     width: width,
                                                     child: Text(
                                                       'Location: ${bookingDetails['location']}',
                                                     ),
                                                   ),
                                                 Container(
-                                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                   width: width,
                                                   child: Text(
                                                     'Message: ${bookingDetails['message']}',
@@ -153,16 +152,16 @@ class _FreelancerBookState extends State<FreelancerBook> {
                                                 ),
                                                 if (bookingDetails['to_dos'].isNotEmpty)
                                                   Container(
-                                                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                     width: width,
-                                                    child: Text(
+                                                    child: const Text(
                                                       'To Dos:',
                                                     ),
                                                   ),
                                                 if (bookingDetails['to_dos'].isNotEmpty)
                                                   ToDos(toDos: bookingDetails['to_dos']),
                                                 Container(
-                                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                   width: width,
                                                   child: Text(
                                                     'Duration: ${bookingDetails['start_date'].toDate().day.toString()}/${bookingDetails['start_date'].toDate().month.toString()}/${bookingDetails['start_date'].toDate().year.toString()} '
@@ -170,7 +169,7 @@ class _FreelancerBookState extends State<FreelancerBook> {
                                                   ),
                                                 ),
                                                 Container(
-                                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                                                   width: width,
                                                   child: Text(
                                                     'Budget: PHP ${bookingDetails['budget']}',
@@ -181,7 +180,7 @@ class _FreelancerBookState extends State<FreelancerBook> {
                                           ),
                                           if (widget.status != 'completed')
                                             Container(
-                                                padding: EdgeInsets.only(bottom: 10),
+                                                padding: const EdgeInsets.only(bottom: 10),
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                   children: [
@@ -320,7 +319,7 @@ class _FreelancerBookState extends State<FreelancerBook> {
                 radius: 24,
                 backgroundImage: AssetImage('images/Avatar1.png'),
               ),
-              title: Text('Error'),
+              title: const Text('Error'),
               subtitle: Text(clientSnapshot.error.toString()),
               trailing: const SizedBox(
                   width: 100,
@@ -353,7 +352,7 @@ class _FreelancerBookState extends State<FreelancerBook> {
                             bookId: widget.bookId,
                           );
                         },
-                        transitionDuration: Duration(milliseconds: 350),
+                        transitionDuration: const Duration(milliseconds: 350),
                         transitionsBuilder: (context, animation, secondaryAnimation, child) {
                           const begin = Offset(0.0, 1.0);
                           const end = Offset.zero;
@@ -374,7 +373,7 @@ class _FreelancerBookState extends State<FreelancerBook> {
               ),
               title: Text('${clientData['first_name']} ${clientData['last_name']}'),
               subtitle: Text(clientData['email']),
-              trailing: Container(
+              trailing: SizedBox(
                   width: 100,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -408,7 +407,7 @@ class _FreelancerBookState extends State<FreelancerBook> {
                       ),
                       Transform.rotate(
                         angle: 180 * (3.1415926535 / 180),
-                        child: Icon(Icons.outbound_outlined, color: Colors.green),
+                        child: const Icon(Icons.outbound_outlined, color: Colors.green),
                       )
                     ],
                   )

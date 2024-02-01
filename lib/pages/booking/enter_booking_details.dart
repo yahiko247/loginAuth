@@ -6,7 +6,6 @@ import 'package:practice_login/components/chat/warning_dialog.dart';
 import 'package:practice_login/pages/favorite.dart';
 import 'package:practice_login/services/booking/booking_services.dart';
 import 'package:practice_login/services/user_data_services.dart';
-import 'package:provider/provider.dart';
 
 
 class ListProvider extends ChangeNotifier {
@@ -63,7 +62,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
     // TODO: implement initState
     super.initState();
     startDate = widget.startDate;
-    startDateController.text = '${widget.startDate.day.toString()} / ${widget.startDate.month.toString()} / ${widget.startDate.year.toString()}';;
+    startDateController.text = '${widget.startDate.day.toString()} / ${widget.startDate.month.toString()} / ${widget.startDate.year.toString()}';
   }
 
   @override
@@ -94,10 +93,10 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                           future: _userDataServices.getCurrentUserDataAsFuture(),
                           builder: (context, clientSnapshot) {
                             if (clientSnapshot.connectionState == ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
+                              return const Center(child: CircularProgressIndicator());
                             }
                             if (clientSnapshot.hasError) {
-                              return Center(child: CircularProgressIndicator());
+                              return const Center(child: CircularProgressIndicator());
                             }
                             if (clientSnapshot.hasData) {
                               Map<String, dynamic> clientData = clientSnapshot.data!.data()!;
@@ -105,27 +104,27 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                                   future: _userDataServices.getUserDataAsFuture(bookingDetails['freelancer_user_id']),
                                   builder: (context, freelancerSnapshot) {
                                     if (clientSnapshot.connectionState == ConnectionState.waiting) {
-                                      return Center(child: CircularProgressIndicator());
+                                      return const Center(child: CircularProgressIndicator());
                                     }
                                     if (clientSnapshot.hasError) {
-                                      return Center(child: CircularProgressIndicator());
+                                      return const Center(child: CircularProgressIndicator());
                                     }
                                     if (freelancerSnapshot.hasData) {
                                       Map<String, dynamic> freelancerData = freelancerSnapshot.data!.data()!;
                                       return Container(
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                             color: Colors.white,
                                             borderRadius: BorderRadius.all(Radius.circular(10))
                                         ),
-                                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+                                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
                                         width: width,
                                         child: Column(
                                           children: [
-                                            Container(
+                                            SizedBox(
                                                 width: width,
                                                 child: ListTile(
                                                   contentPadding: EdgeInsets.zero,
-                                                  title: Text(
+                                                  title: const Text(
                                                     'Booking Details',
                                                     style: TextStyle(
                                                       fontWeight: FontWeight.bold,
@@ -135,18 +134,18 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                                                   subtitle: Text('${DateTime.timestamp().day.toString()}/${DateTime.timestamp().month.toString()}/${DateTime.timestamp().year.toString()}'),
                                                 )
                                             ),
-                                            Divider(height: 1),
+                                            const Divider(height: 1),
                                             Container(
-                                              padding: EdgeInsets.only(top: 5, bottom: 15),
+                                              padding: const EdgeInsets.only(top: 5, bottom: 15),
                                               child: Column(
                                                 children: [
                                                   Container(
-                                                      padding: EdgeInsets.symmetric(vertical: 5),
+                                                      padding: const EdgeInsets.symmetric(vertical: 5),
                                                       width: width,
                                                       child: RichText(
                                                           text: TextSpan(
                                                               text: 'Your request to book ${freelancerData['first_name']} ${freelancerData['last_name']} for ',
-                                                              style: TextStyle(
+                                                              style: const TextStyle(
                                                                   color: Colors.black,
                                                                   fontSize: 14.5
                                                               ),
@@ -154,8 +153,8 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                                                                 TextSpan(
                                                                     text: '${bookingDetails['start_date'].day.toString()}/${bookingDetails['start_date'].month.toString()}/${bookingDetails['start_date'].year.toString()} '
                                                                         '- ${bookingDetails['end_date'].day.toString()}/${bookingDetails['end_date'].month.toString()}/${bookingDetails['end_date'].year.toString()}',
-                                                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                                                    children: [
+                                                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                                                    children: const [
                                                                       TextSpan(
                                                                           text: ' is underway. You may message them to discuss further details.',
                                                                           style: TextStyle(fontWeight: FontWeight.normal)
@@ -167,7 +166,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                                                       )
                                                   ),
                                                   Container(
-                                                    padding: EdgeInsets.symmetric(vertical: 5),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5),
                                                     width: width,
                                                     child: Text(
                                                       'Client: ${clientData['first_name']} ${clientData['last_name']}',
@@ -175,7 +174,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                                                     ),
                                                   ),
                                                   Container(
-                                                    padding: EdgeInsets.symmetric(vertical: 5),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5),
                                                     width: width,
                                                     child: Text(
                                                       'Freelancer: ${freelancerData['first_name']} ${freelancerData['last_name']}',
@@ -183,21 +182,21 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                                                   ),
                                                   if (bookingDetails['location'].isNotEmpty)
                                                     Container(
-                                                      padding: EdgeInsets.symmetric(vertical: 5),
+                                                      padding: const EdgeInsets.symmetric(vertical: 5),
                                                       width: width,
                                                       child: Text(
                                                         'Location: ${bookingDetails['location']}',
                                                       ),
                                                     ),
                                                   Container(
-                                                    padding: EdgeInsets.symmetric(vertical: 5),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5),
                                                     width: width,
                                                     child: Text(
                                                       'Message: ${bookingDetails['message']}',
                                                     ),
                                                   ),
                                                   Container(
-                                                    padding: EdgeInsets.symmetric(vertical: 5),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5),
                                                     width: width,
                                                     child: Text(
                                                       'Duration: ${bookingDetails['start_date'].day.toString()}/${bookingDetails['start_date'].month.toString()}/${bookingDetails['start_date'].year.toString()} '
@@ -205,7 +204,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                                                     ),
                                                   ),
                                                   Container(
-                                                    padding: EdgeInsets.symmetric(vertical: 5),
+                                                    padding: const EdgeInsets.symmetric(vertical: 5),
                                                     width: width,
                                                     child: Text(
                                                       'Budget: PHP ${bookingDetails['budget']}',
@@ -215,11 +214,11 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                                               ),
                                             ),
                                             Container(
-                                              padding: EdgeInsets.only(bottom: 10),
+                                              padding: const EdgeInsets.only(bottom: 10),
                                               child: GestureDetector(
                                                 onTap: () {
                                                   Navigator.pop(context);
-                                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FavoritePage(initPage: 1)));
+                                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const FavoritePage(initPage: 1)));
                                                 },
                                                 child: Container(
                                                   width: 100,
@@ -287,14 +286,14 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                       decoration: InputDecoration(
                         hintText: 'Title',
                         focusColor: Colors.black,
-                        contentPadding: EdgeInsets.all(13),
+                        contentPadding: const EdgeInsets.all(13),
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                       ),
                       controller: titleController,
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextFormField(
                       minLines: 4,
                       maxLines: 4,
@@ -302,7 +301,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                       decoration: InputDecoration(
                         hintText: 'Add a description',
                         focusColor: Colors.black,
-                        contentPadding: EdgeInsets.all(13),
+                        contentPadding: const EdgeInsets.all(13),
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
@@ -319,7 +318,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -332,7 +331,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                   setState(() {});
                 }
               },
-              child: Text('Add'),
+              child: const Text('Add'),
             ),
           ],
         );
@@ -350,7 +349,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
       builder: (context) {
         double width = MediaQuery.of(context).size.width;
         return AlertDialog(
-          title: Text('Edit Item'),
+          title: const Text('Edit Item'),
           content: Form(
             key: editFormKey,
             child: SizedBox(
@@ -368,14 +367,14 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                       decoration: InputDecoration(
                         hintText: 'Title',
                         focusColor: Colors.black,
-                        contentPadding: EdgeInsets.all(13),
+                        contentPadding: const EdgeInsets.all(13),
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                       ),
                       controller: titleController,
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextFormField(
                       minLines: 4,
                       maxLines: 4,
@@ -383,7 +382,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                       decoration: InputDecoration(
                         hintText: 'Add a description',
                         focusColor: Colors.black,
-                        contentPadding: EdgeInsets.all(13),
+                        contentPadding: const EdgeInsets.all(13),
                         fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
@@ -400,7 +399,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -410,7 +409,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                   setState(() {});
                 }
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         );
@@ -460,18 +459,18 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.only(left: 15, right: 15),
+        padding: const EdgeInsets.only(left: 15, right: 15),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Container(
               width: width,
-              padding: EdgeInsets.only(top: 10, bottom: 20),
+              padding: const EdgeInsets.only(top: 10, bottom: 20),
               child: Column(
                 children: [
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Container(
-                    padding: EdgeInsets.only(bottom: 15),
+                    padding: const EdgeInsets.only(bottom: 15),
                     child: Row(
                       children: [
                         Expanded(
@@ -488,10 +487,10 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                             textAlign: TextAlign.center,
                             readOnly: true,
                             decoration: InputDecoration(
-                              label: Text('From'),
+                              label: const Text('From'),
                               hintText: 'From',
                               focusColor: Colors.black,
-                              contentPadding: EdgeInsets.all(13),
+                              contentPadding: const EdgeInsets.all(13),
                               fillColor: Colors.white,
                               focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
@@ -499,7 +498,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                             controller: startDateController,
                           ),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
                             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -529,7 +528,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                                   endDate = pickedDate;
                                   endDateController.text = '${pickedDate.day.toString()}/${pickedDate.month.toString()}/${pickedDate.year.toString()}';
                                   Duration duration = pickedDate.difference(startDate);
-                                  if (duration.inDays > Duration(days: 31).inDays) {
+                                  if (duration.inDays > const Duration(days: 31).inDays) {
                                     durationController.text = 'Duration: ${((duration.inDays + 1) / 31).toStringAsFixed(2)} (months)';
                                   } else {
                                     durationController.text = '${startDate.day.toString()}/${startDate.month.toString()}/${startDate.year.toString()} - '
@@ -540,10 +539,10 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                               }
                             },
                             decoration: InputDecoration(
-                              label: Text('To'),
+                              label: const Text('To'),
                               hintText: 'To',
                               focusColor: Colors.black,
-                              contentPadding: EdgeInsets.all(13),
+                              contentPadding: const EdgeInsets.all(13),
                               fillColor: Colors.white,
                               focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
@@ -558,9 +557,9 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                     onTap: () {
                     },
                     decoration: InputDecoration(
-                      label: Text('Location (optional)'),
+                      label: const Text('Location (optional)'),
                       hintText: 'Location (optional)',
-                      contentPadding: EdgeInsets.all(13),
+                      contentPadding: const EdgeInsets.all(13),
                       focusColor: Colors.black,
                       fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
@@ -568,7 +567,7 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                     ),
                     controller: locationController,
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   TextFormField(
                     onTap: () {
                     },
@@ -578,32 +577,32 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                     decoration: InputDecoration(
                       hintText: 'Message to freelancer',
                       focusColor: Colors.black,
-                      contentPadding: EdgeInsets.all(13),
+                      contentPadding: const EdgeInsets.all(13),
                       fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                     ),
                     controller: messageController,
                   ),
-                  SizedBox(height: 15),
-                  Divider(height: 1),
+                  const SizedBox(height: 15),
+                  const Divider(height: 1),
                   Container(
-                    child: Container(
+                    child: SizedBox(
                       width: width,
                       child: Column(
                         children: [
-                          Container(
+                          SizedBox(
                             height: 50,
                             width: width,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('To do (Optional)', textAlign: TextAlign.start, style: TextStyle(fontSize: 16)),
+                                const Text('To do (Optional)', textAlign: TextAlign.start, style: TextStyle(fontSize: 16)),
                                 IconButton(
                                     onPressed: () {
                                       _addItem(context);
                                     },
-                                    icon: Icon(Icons.add, size: 25,)
+                                    icon: const Icon(Icons.add, size: 25,)
                                 )
                               ],
                             ),
@@ -616,14 +615,14 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                             child: _listProvider.items.isEmpty ?
                             const Text('Tap the add button to add a to do', style: TextStyle(fontSize: 17, color: Colors.grey)) :
                             ListView(
-                                physics: NeverScrollableScrollPhysics(),
+                                physics: const NeverScrollableScrollPhysics(),
                                 children: List.generate(_listProvider.items.length, (index) {
                                   return Padding(
-                                    padding: EdgeInsets.only(bottom: 10),
+                                    padding: const EdgeInsets.only(bottom: 10),
                                     child: Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(7),
-                                        color: Color.fromRGBO(225, 225, 225, 1), // You can set your desired background color
+                                        color: const Color.fromRGBO(225, 225, 225, 1), // You can set your desired background color
                                       ),
                                       child: ListTile(
                                         onTap: () {
@@ -634,13 +633,13 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             IconButton(
-                                              icon: Icon(Icons.edit),
+                                              icon: const Icon(Icons.edit),
                                               onPressed: () {
                                                 _editToDo(context, index);
                                               },
                                             ),
                                             IconButton(
-                                              icon: Icon(Icons.delete),
+                                              icon: const Icon(Icons.delete),
                                               onPressed: () {
                                                 _removeToDo(context, index);
                                               },
@@ -657,25 +656,25 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                       ),
                     )
                   ),
-                  SizedBox(height: 10),
-                  Divider(height: 1),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 10),
+                  const Divider(height: 1),
+                  const SizedBox(height: 20),
                   TextFormField(
                     readOnly: true,
                     onTap: () {
                     },
                     decoration: InputDecoration(
-                      label: Text('Duration'),
+                      label: const Text('Duration'),
                       hintText: 'Project duration',
                       focusColor: Colors.black,
-                      contentPadding: EdgeInsets.all(13),
+                      contentPadding: const EdgeInsets.all(13),
                       fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                     ),
                     controller: durationController,
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   TextFormField(
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -683,21 +682,21 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                       }
                       return null;
                     },
-                    keyboardType: TextInputType.numberWithOptions(),
+                    keyboardType: const TextInputType.numberWithOptions(),
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: InputDecoration(
-                      prefix: Text('PHP: '),
-                      label: Text('Budget / Pricing'),
+                      prefix: const Text('PHP: '),
+                      label: const Text('Budget / Pricing'),
                       hintText: 'Enter your budget',
                       focusColor: Colors.black,
-                      contentPadding: EdgeInsets.all(13),
+                      contentPadding: const EdgeInsets.all(13),
                       fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                     ),
                     controller: budgetController,
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   TextFormField(
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -708,33 +707,33 @@ class _EnterBookingDetailsState extends State<EnterBookingDetails> {
                     keyboardType: TextInputType.phone,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: InputDecoration(
-                      prefix: Text('+63: '),
-                      prefixIcon: Icon(Icons.phone),
-                      label: Text('Phone Number'),
+                      prefix: const Text('+63: '),
+                      prefixIcon: const Icon(Icons.phone),
+                      label: const Text('Phone Number'),
                       focusColor: Colors.black,
-                      contentPadding: EdgeInsets.all(13),
+                      contentPadding: const EdgeInsets.all(13),
                       fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                     ),
                     controller: phoneNumberController,
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   TextField(
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.email),
-                      label: Text('Email Address (optional)'),
+                      prefixIcon: const Icon(Icons.email),
+                      label: const Text('Email Address (optional)'),
                       hintText: 'Your email address',
                       focusColor: Colors.black,
-                      contentPadding: EdgeInsets.all(13),
+                      contentPadding: const EdgeInsets.all(13),
                       fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black), borderRadius: BorderRadius.circular(8.0)),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                     ),
                     controller: emailController,
                   ),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                   GestureDetector(
                     onTap: () {
                       Map<String, dynamic> bookingDetails = {};

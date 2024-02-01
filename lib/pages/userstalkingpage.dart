@@ -52,16 +52,16 @@ class UserStalkPage extends StatelessWidget {
                                       builder: (context, userDataSnapshot) {
                                         if (userDataSnapshot.connectionState ==
                                             ConnectionState.waiting) {
-                                          return Text(
-                                              userEmail.toUpperCase(),
-                                              style: const TextStyle(
+                                          return const Text(
+                                              "",
+                                              style: TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.bold));
                                         }
                                         if (userDataSnapshot.hasError) {
-                                          return Text(
-                                              userEmail.toUpperCase(),
-                                              style: const TextStyle(
+                                          return const Text(
+                                             "",
+                                              style: TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.bold));
                                         }
@@ -152,6 +152,7 @@ class UserStalkPage extends StatelessWidget {
         ),
         body: TabBarView(
           children: <Widget>[
+            NestedTabBar2('first', userEmail: userEmail),
             NestedTabBar2('first', userEmail: userEmail)
           ],
         ),

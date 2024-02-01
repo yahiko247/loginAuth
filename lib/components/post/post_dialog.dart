@@ -59,7 +59,7 @@ class _PostState extends State<Post> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       isThreeLine: true,
       title: Container(
           padding: EdgeInsets.symmetric(horizontal: width - (width * (98 / 100))),
@@ -207,11 +207,11 @@ class _PostState extends State<Post> {
                   child: const Divider(height: 1),
                 ),
                 Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10))
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 13, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -273,7 +273,7 @@ class _ZoomMediaState extends State<ZoomMedia> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    return Container(
+    return SizedBox(
       width: width,
       child: PageView.builder(
           scrollDirection: Axis.horizontal,

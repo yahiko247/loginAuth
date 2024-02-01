@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:practice_login/components/post/post.dart';
 import 'package:practice_login/database/firestore.dart';
 import 'package:practice_login/pages/post/create_post.dart';
-import 'package:practice_login/components/my_textfield.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:practice_login/services/posts/posts_service.dart';
@@ -94,10 +92,10 @@ class _ForPosts extends State<ForPosts>{
       child: Column(
         children: [
           Container(
-            color: Color.fromARGB(15, 0, 0, 0),
-            padding: EdgeInsets.symmetric(horizontal: 15),
+            color: const Color.fromARGB(15, 0, 0, 0),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child:  Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(bottomRight: Radius.circular(7), bottomLeft: Radius.circular(7)),
                 color: Colors.white
               ),
@@ -106,7 +104,7 @@ class _ForPosts extends State<ForPosts>{
                 children: [
                   Expanded(
                       child: Container(
-                        padding: EdgeInsets.only(left: 25),
+                        padding: const EdgeInsets.only(left: 25),
                         child: TextField(
                           onTap: () {
                             Navigator.push(
@@ -123,7 +121,7 @@ class _ForPosts extends State<ForPosts>{
                           decoration: InputDecoration(
                             hintText: 'Create a post',
                             focusColor: Colors.black,
-                            contentPadding: EdgeInsets.all(13),
+                            contentPadding: const EdgeInsets.all(13),
                             fillColor: Colors.white,
                             focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey), borderRadius: BorderRadius.circular(8.0)),
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0), borderSide: const BorderSide(color: Colors.grey)),
@@ -135,7 +133,7 @@ class _ForPosts extends State<ForPosts>{
                       padding: const EdgeInsets.only(right: 25, left: 15),
                       child: GestureDetector(
                         onTap: addFiles,
-                        child: Icon(Icons.image_outlined, size: 30,),
+                        child: const Icon(Icons.image_outlined, size: 30,),
                       ))
                 ],
               ),

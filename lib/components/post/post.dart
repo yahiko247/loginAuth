@@ -8,7 +8,6 @@ import 'package:practice_login/pages/freelancerstalkingpage.dart';
 import 'package:practice_login/pages/post/post.dart';
 import 'package:practice_login/pages/profile.dart';
 import 'package:practice_login/pages/userstalkingpage.dart';
-import 'package:practice_login/services/user_data_services.dart';
 
 class Post extends StatefulWidget {
   final QueryDocumentSnapshot<Object?> postData;
@@ -103,7 +102,7 @@ class _PostState extends State<Post> {
                     : '${_postData['first_name']} ${_postData['last_name']}\' Post'
             );
           },
-          transitionDuration: Duration(milliseconds: 350),
+          transitionDuration: const Duration(milliseconds: 350),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(0.0, 1.0);
             const end = Offset.zero;
@@ -288,7 +287,7 @@ class _PostState extends State<Post> {
                   child: Stack(
                     children: [
                       PageView.builder(
-                          physics: AlwaysScrollableScrollPhysics(),
+                          physics: const AlwaysScrollableScrollPhysics(),
                           scrollDirection: Axis.horizontal,
                           controller: _mediaController,
                           itemCount: _postData['media'].length,

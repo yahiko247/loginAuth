@@ -7,16 +7,16 @@ import 'package:practice_login/services/user_data_services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
-class PostService extends ChangeNotifier {
+class FeedbackService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final UserDataServices _userDataServices = UserDataServices(userID: FirebaseAuth.instance.currentUser!.uid);
-  final CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+  final CollectionReference feedback = FirebaseFirestore.instance.collection('feedback');
   final storageRef = FirebaseStorage.instance.ref();
   final timeStamp = FieldValue.serverTimestamp();
   double _uploadProgress = 0.0;
   double get uploadProgress => _uploadProgress;
 
-  Future<List<Map<String, dynamic>>> uploadFiles(List<PlatformFile> files) async {
+  Future<List<Map<String, dynamic>>> uploadFiles(List<PlatformFile> files,String freelancerID) async {
     String timeStamp = DateTime.now().toString();
     final userId = FirebaseAuth.instance.currentUser!.uid;
     List<Map<String, dynamic>> fileRefs = [];
@@ -26,7 +26,7 @@ class PostService extends ChangeNotifier {
       for (int i = 0; i < files.length; i++) {
         try {
           SettableMetadata metadata = SettableMetadata(contentType: files[i].extension);
-          UploadTask uploadTask = storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}').putFile(File(files[i].path!), metadata);
+          UploadTask uploadTask = storageRef.child('feedback/$freelancerID/$userId/$timeStamp/$i${files[i].name}').putFile(File(files[i].path!), metadata);
 
           uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
             _uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -36,8 +36,8 @@ class PostService extends ChangeNotifier {
 
           await uploadTask;
           Map<String,dynamic> fileRefWithMetaData = {};
-          fileRefWithMetaData['media_reference'] = await storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}').getDownloadURL();
-          FullMetadata metaData = await storageRef.child('posts/$userId/$timeStamp/$i${files[i].name}').getMetadata();
+          fileRefWithMetaData['media_reference'] = await storageRef.child('feedback/$freelancerID/$userId/$timeStamp/$i${files[i].name}').getDownloadURL();
+          FullMetadata metaData = await storageRef.child('posts/$freelancerID/$userId/$timeStamp/$i${files[i].name}').getMetadata();
           fileRefWithMetaData['media_type'] = metaData.contentType;
           fileRefWithMetaData['media_title'] = metaData.name;
           fileRefWithMetaData['media_size'] = metaData.size;
@@ -50,11 +50,11 @@ class PostService extends ChangeNotifier {
     return fileRefs;
   }
 
-  Future<void> addPost(String message, String title, List<PlatformFile>? postFiles) async {
+  Future<void> addFeedback(String message, List<PlatformFile>? postFiles, String freelancerID,double ratingValue) async {
     List<Map<String, dynamic>>? fileRefs;
 
     if (postFiles != null) {
-      fileRefs = await uploadFiles(postFiles);
+      fileRefs = await uploadFiles(postFiles,freelancerID);
     }
 
     DocumentSnapshot<Map<String, dynamic>> userDataSnapShot = await _userDataServices.getCurrentUserDataAsFuture();
@@ -62,13 +62,13 @@ class PostService extends ChangeNotifier {
       Map<String, dynamic>? userData = userDataSnapShot.data();
       if (userData!.isNotEmpty) {
         try {
-          await posts.add({
-            'user_email': userData['email'],
-            'user_id' : userData['uid'],
-            'first_name' : userData['first_name'],
-            'last_name' : userData['last_name'],
-            'post_message': message,
-            'post_title': title,
+          await feedback.doc(freelancerID).collection('feedback').add({
+            'rating_value': ratingValue,
+            'client_email': userData['email'],
+            'client_id' : userData['uid'],
+            'client_first_name' : userData['first_name'],
+            'client_last_name' : userData['last_name'],
+            'feedback_message': message,
             'timestamp': Timestamp.now(),
             'media': fileRefs ?? []
           });
@@ -79,16 +79,16 @@ class PostService extends ChangeNotifier {
     }
   }
 
-  Stream<QuerySnapshot> getPostsStream() {
-    final postsStream = FirebaseFirestore.instance
-        .collection('posts')
+  Stream<QuerySnapshot> getFeedbackStream(String freelancerID) {
+    final feedbackStream = FirebaseFirestore.instance
+        .collection('feedback').doc(freelancerID).collection('feedback')
         .orderBy('timestamp', descending: true)
         .snapshots();
 
-    return postsStream;
+    return feedbackStream;
   }
 
-  String formatPostTimeStamp(Timestamp timestamp) {
+  String formatFeedbackTimeStamp(Timestamp timestamp) {
     DateTime dateTime = timestamp.toDate();
 
     final timeFormat = DateFormat('yyyy-MM-dd \'at\' hh:mm a');
@@ -101,4 +101,15 @@ class PostService extends ChangeNotifier {
     DocumentSnapshot<Map<String, dynamic>> post = await _firestore.collection('posts').doc(postId).get();
     return post;
   }
+
+  Stream<QuerySnapshot> getFeedbacks(String freelancerID){
+    return _firestore.collection('feedback')
+        .doc(freelancerID)
+        .collection('feedback')
+        .orderBy('timestamp',descending: false)
+        .snapshots();
+  }
+  
+  
 }
+

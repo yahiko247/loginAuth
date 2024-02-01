@@ -60,7 +60,7 @@ class _FreelancerProfilePage extends State<FreelancerProfilePage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(150.0),
@@ -74,22 +74,42 @@ class _FreelancerProfilePage extends State<FreelancerProfilePage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const CircleAvatar(radius: 70,backgroundImage: AssetImage('images/Avatar1.png')),
+                        Image.asset('images/Avatar1.png', height: 120),
                         Padding(
                           padding: const EdgeInsets.only(left:3),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    data.isNotEmpty ? data[0].category_name : 'Category',
-                                  ),
-                                ],
-                              ),
+                              StreamBuilder(
+                                  stream: _userDataServices.getCurrentUserDataAsStream(),
+                                  builder: (context,usersnapshot){
+                                    if (usersnapshot.connectionState == ConnectionState.waiting){
+                                      return const Text("Category");
+                                    }
+                                    Map<String,dynamic> userData = usersnapshot.data!.data()!;
+                                    if(userData.containsKey('categories') && userData['categories'].isNotEmpty){
+                                      return Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            userData['categories'].first ?? 'Category',
+                                          ),
+                                        ],
+                                      );
+                                    }else{
+                                      return const Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Category',
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                  }),
                               Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,10 +213,11 @@ class _FreelancerProfilePage extends State<FreelancerProfilePage> {
             backgroundColor: const Color.fromARGB(255, 124, 210, 231),
           ),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: <Widget>[
-            NestedTabBar3('first Page'),
-            NestedTabBar3('second Page'),
+            NestedTabBar3('first Page', freelancerID: currentUser.uid ,),
+            NestedTabBar3('second Page', freelancerID:currentUser.uid,),
+            NestedTabBar3('3rd page',freelancerID:currentUser.uid,),
           ],
         ),
         endDrawer: const MyDrawer(),

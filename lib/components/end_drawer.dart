@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:practice_login/components/if_elseprofilecondition.dart';
 import 'package:practice_login/pages/account_settings.dart';
-import 'package:practice_login/pages/calendar.dart';
-import 'package:practice_login/pages/chat/chat_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:practice_login/pages/reviews_page.dart';
-import 'package:practice_login/register_page/freelancer_registration.dart';
 import '../pages/feedback_page.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -59,10 +55,10 @@ class MyDrawer extends StatelessWidget {
               onTap: () {
                 // Add your logic for logging out
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Ratings()));
+                    MaterialPageRoute(builder: (context) =>  const Ratings(freelancerID:'oA7akk8b0FgnnqoGcy13Nx4HETo1',)));
               },
             ),
-            ListTile(
+           /* ListTile(
               title: const Text('Debug/Test Reviews Page'),
               onTap: () {
                 // Add your logic for logging out
@@ -70,8 +66,8 @@ class MyDrawer extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const ReviewsPage()));
-              },
-            ),
+              },*//*
+            ),*/
           ],
         ),
       ),

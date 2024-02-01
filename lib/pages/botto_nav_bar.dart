@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_login/pages/chat/chat_page.dart';
 import 'package:practice_login/pages/favorite.dart';
 import 'package:practice_login/pages/homepage.dart';
 import 'package:practice_login/pages/profile.dart';

@@ -15,7 +15,7 @@ class EmptyView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        displayIcon ? messageIcon ?? Icon(Icons.question_mark, color: Colors.red) : Container(),
+        displayIcon ? messageIcon ?? const Icon(Icons.question_mark, color: Colors.red) : Container(),
         Text(message, textAlign: TextAlign.center, style: TextStyle(color: textColor ?? Colors.black),),
       ],
     ));

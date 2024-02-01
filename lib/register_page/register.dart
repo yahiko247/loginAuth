@@ -68,7 +68,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
     try {
       await authService.signUp(emailController.text, passwordController.text, firstNameController.text, myLastName, false);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => OnBoard()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const OnBoard()));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
